@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../inject/inject.dart';
+import '../../../inject/get_it.dart';
 import '../bloc/letters_bloc.dart';
 
 class LettersPage extends StatelessWidget {

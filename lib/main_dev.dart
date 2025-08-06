@@ -7,17 +7,18 @@ import 'package:frontend/features/auth/view/bloc/login/login_bloc.dart';
 import 'package:frontend/features/auth/view/bloc/signup/signup_bloc.dart';
 import 'package:frontend/features/todo/view/bloc/todo_bloc.dart';
 import 'package:frontend/bloc/user/user_bloc.dart';
+import 'package:frontend/inject/inject.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 
 import 'app/logger/log_colors.dart';
 import 'app/logger/logger_utils.dart';
 import 'inject/get_it.dart';
-import 'inject/inject.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await configInjector(getIt, env: prod.name);
+  await configInjector(GetIt.instance, env: dev.name);
   Bloc.observer = MyBlocObserver();
   hierarchicalLoggingEnabled = true;
   Logger.root.onRecord.listen(watchRecords);
@@ -41,6 +42,7 @@ Future<void> main() async {
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
     }
   };
+
   runApp(
     MultiBlocProvider(
       providers: [

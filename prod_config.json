@@ -1,0 +1,5 @@
+{
+    "HTTP_HOST": "container-app-rhrbr-universe.containerapps.ru",
+    "HTTP_PROTOCOL": "https",
+    "WS_PROTOCOL": "wss"
+}

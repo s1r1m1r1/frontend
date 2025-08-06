@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/view/bloc/auth_cubit.dart';
+import '../inject/get_it.dart';
 import '../inject/inject.dart';
 import '../l10n/app_localizations.dart';
 import 'router/build_router.dart';
