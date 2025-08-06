@@ -3,11 +3,12 @@ import 'package:get_it/get_it.dart';
 
 import 'inject.config.dart';
 
-///  /\_/\
-/// ( o.o )
-///  > ^ <
+@InjectableInit(preferRelativeImports: false)
+configInjector(GetIt getIt, {String? env, EnvironmentFilter? environmentFilter}) {
+  return getIt.init(environmentFilter: environmentFilter, environment: env);
+}
 
-final getIt = GetIt.instance;
-
-@InjectableInit()
-Future<void> configureDependencies() async => getIt.init();
+const platformApple = Environment('apple');
+const platformAndroid = Environment('android');
+const platformWeb = Environment('web');
+const platformProd = Environment('prod');

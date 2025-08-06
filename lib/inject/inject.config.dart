@@ -35,9 +35,13 @@ import 'package:frontend/features/ws_counter/domain/ws_config_repository.dart'
     as _i500;
 import 'package:frontend/features/ws_counter/view/bloc/counter_bloc.dart'
     as _i545;
+import 'package:frontend/inject/app_config.dart' as _i716;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:web_socket_client/web_socket_client.dart' as _i948;
+
+const String _dev = 'dev';
+const String _prod = 'prod';
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -46,9 +50,10 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final wsSocketModule = _$WsSocketModule();
     final dbClientModule = _$DbClientModule();
+    final appConfigModule = _$AppConfigModule();
     final dioModule = _$DioModule();
+    final wsSocketModule = _$WsSocketModule();
     gh.factory<_i990.UserBloc>(() => _i990.UserBloc());
     gh.lazySingleton<_i684.WsCounterRepository>(
       () => _i684.WsCounterRepository(),
@@ -58,14 +63,37 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i684.WsLettersRepository(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i948.WebSocket>(() => wsSocketModule.wsWithToken);
     gh.lazySingleton<_i83.WebSocketClient>(() => _i83.WebSocketClient());
     gh.lazySingleton<_i569.DbClient>(() => dbClientModule.dbClient);
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.retryDio(),
-      instanceName: 'retryDio',
+    gh.lazySingleton<_i716.AppConfig>(
+      () => appConfigModule.appConfigDev,
+      registerFor: {_dev},
     );
     gh.lazySingleton<_i151.AdminRepository>(() => _i151.AdminRepositoryImpl());
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.registrationDio(gh<_i716.AppConfig>()),
+      instanceName: 'registration',
+    );
+    gh.lazySingleton<_i935.UserRepository>(() => _i935.UserRepositoryImpl());
+    gh.lazySingleton<_i948.WebSocket>(
+      () => wsSocketModule.wsWithToken(gh<_i716.AppConfig>()),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.retryDio(gh<_i716.AppConfig>()),
+      instanceName: 'retryDio',
+    );
+    gh.lazySingleton<_i716.AppConfig>(
+      () => appConfigModule.appConfigProd,
+      registerFor: {_prod},
+    );
+    gh.factory<_i91.AdminBloc>(
+      () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
+    );
+    gh.lazySingleton<_i436.RegistrationApiService>(
+      () => _i436.RegistrationApiService(
+        gh<_i361.Dio>(instanceName: 'registration'),
+      ),
+    );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
         gh<_i684.WsCounterRepository>(),
@@ -75,25 +103,20 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.registrationDio(),
-      instanceName: 'registration',
-    );
-    gh.lazySingleton<_i935.UserRepository>(() => _i935.UserRepositoryImpl());
-    gh.factory<_i91.AdminBloc>(
-      () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
-    );
-    gh.lazySingleton<_i436.RegistrationApiService>(
-      () => _i436.RegistrationApiService(
-        gh<_i361.Dio>(instanceName: 'registration'),
-      ),
-    );
     gh.lazySingleton<_i887.AuthRepository>(
       () => _i887.AuthRepositoryImpl(
         gh<_i436.RegistrationApiService>(),
         gh<_i569.DbClient>(),
       ),
       dispose: (i) => i.dispose(),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.dio(
+        gh<_i887.AuthRepository>(),
+        gh<_i716.AppConfig>(),
+        gh<_i361.Dio>(instanceName: 'retryDio'),
+      ),
+      instanceName: 'withToken',
     );
     gh.factory<_i1034.AuthCubit>(
       () => _i1034.AuthCubit(gh<_i887.AuthRepository>()),
@@ -103,13 +126,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i805.LoginBloc>(
       () => _i805.LoginBloc(gh<_i887.AuthRepository>()),
-    );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.dio(
-        gh<_i887.AuthRepository>(),
-        gh<_i361.Dio>(instanceName: 'retryDio'),
-      ),
-      instanceName: 'withToken',
     );
     gh.lazySingleton<_i365.ProtectedApiService>(
       () => _i365.ProtectedApiService(gh<_i361.Dio>(instanceName: 'withToken')),
@@ -141,8 +157,10 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$WsSocketModule extends _i558.WsSocketModule {}
-
 class _$DbClientModule extends _i788.DbClientModule {}
 
+class _$AppConfigModule extends _i716.AppConfigModule {}
+
 class _$DioModule extends _i339.DioModule {}
+
+class _$WsSocketModule extends _i558.WsSocketModule {}

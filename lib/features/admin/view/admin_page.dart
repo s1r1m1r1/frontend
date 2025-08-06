@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/admin/bloc/admin_bloc.dart';
 
-import '../../../inject/inject.dart';
+import '../../../inject/get_it.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
