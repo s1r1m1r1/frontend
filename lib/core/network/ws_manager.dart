@@ -9,6 +9,8 @@ import 'package:sha_red/sha_red.dart';
 import '../../features/admin/_domain/admin_repository.dart';
 import '../typedef.dart';
 
+const generalRoomId = 'general';
+
 @lazySingleton
 class WsManager {
   final WsCounterRepository _counterRepository;
