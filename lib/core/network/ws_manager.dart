@@ -9,7 +9,7 @@ import 'package:sha_red/sha_red.dart';
 import '../../features/admin/_domain/admin_repository.dart';
 import '../typedef.dart';
 
-const generalRoomId = 'general';
+const mainRoomId = 'main';
 
 @lazySingleton
 class WsManager {
@@ -54,6 +54,9 @@ class WsManager {
         case WsEventFromServer.adminInfo:
           final payload = IdPayload.fromJson(fromServer.payload as Json);
           _adminRepository.setInfo(payload.id);
+        case WsEventFromServer.joinedMain:
+          // TODO: Handle this case.
+          throw UnimplementedError();
       }
     });
   }

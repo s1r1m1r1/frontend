@@ -23,7 +23,7 @@ GoRouter buildRouter(BuildContext context) {
       );
       if (authStatus == AuthStatus.loggedIn) {
         if (state.uri.path == LoginRoute.path || state.uri.path == SignupRoute.path) {
-          return HomeRoute.path;
+          return MenuRoute.path;
         }
       }
 
