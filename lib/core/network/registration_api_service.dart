@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
-import 'package:frontend/features/auth/data/request_email_credential_dto.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
@@ -16,7 +15,7 @@ class RegistrationApiService {
 
   RegistrationApiService(@Named('registration') this._client);
 
-  Future<TokenDto> signup(RequestEmailCredentialDto dto) async {
+  Future<TokenDto> signup(EmailCredentialDto dto) async {
     final response = await _client.post(
       '/users/signup',
       data: json.encode(dto.toJson()),
@@ -41,7 +40,7 @@ class RegistrationApiService {
     }
   }
 
-  Future<TokenDto> login(RequestEmailCredentialDto dto) async {
+  Future<TokenDto> login(EmailCredentialDto dto) async {
     debugPrint('$green Login start $reset ');
     final response = await _client.post('/users/login', data: dto.toJson());
     if (response.statusCode == HttpStatus.accepted) {

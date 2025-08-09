@@ -14,6 +14,7 @@ List<RouteBase> get $appRoutes => [
   $wSCounterRoute,
   $lettersRoute,
   $adminRoute,
+  $menuRoute,
 ];
 
 RouteBase get $homeRoute =>
@@ -166,6 +167,29 @@ mixin _$AdminRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/admin');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $menuRoute =>
+    GoRouteData.$route(path: '/menu', factory: _$MenuRoute._fromState);
+
+mixin _$MenuRoute on GoRouteData {
+  static MenuRoute _fromState(GoRouterState state) => const MenuRoute();
+
+  @override
+  String get location => GoRouteData.$location('/menu');
 
   @override
   void go(BuildContext context) => context.go(location);

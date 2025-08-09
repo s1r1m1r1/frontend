@@ -28,16 +28,16 @@ class MyBlocObserver extends BlocObserver {
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
-    if (kDebugMode) {
-      /* UNCOMMENT IF YOU NEED TO FILTER SPECIFIC BLOCS
+    // if (kDebugMode) {
+    /* UNCOMMENT IF YOU NEED TO FILTER SPECIFIC BLOCS
          JUST COPY LINE AND RENAME WHAT YOU WANT */
-      // if(bloc is! OtherCubit) return;
-      _logger.info(
-        '${bloc.runtimeType}:\n'
-        'event: ${transition.event}\n'
-        'state: ${transition.nextState}',
-      );
-    }
+    // if(bloc is! OtherCubit) return;
+    _logger.info(
+      '${bloc.runtimeType}:\n'
+      'event: ${transition.event}\n'
+      'state: ${transition.nextState}',
+    );
+    // }
     super.onTransition(bloc, transition);
   }
 
@@ -57,7 +57,8 @@ class MyBlocObserver extends BlocObserver {
 
   @override
   void onCreate(BlocBase bloc) {
-    if (kDebugMode) _logger.info('${bloc.runtimeType} onCreate()');
+    // if (kDebugMode)
+    _logger.info('${bloc.runtimeType} onCreate()');
     super.onCreate(bloc);
   }
 

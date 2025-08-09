@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/admin/view/admin_page.dart';
 import '../../features/auth/view/pages/signup_screen.dart';
 import '../../features/letters/view/letters_page.dart';
+import '../../features/menu/view/menu_page.dart';
 import '../../features/screens/home_screen.dart';
 
 part 'routes.g.dart';
@@ -72,4 +73,13 @@ class AdminRoute extends GoRouteData with _$AdminRoute {
 
   @override
   Widget build(_, _) => AdminPage();
+}
+
+@TypedGoRoute<MenuRoute>(path: MenuRoute.path)
+class MenuRoute extends GoRouteData with _$MenuRoute {
+  static const path = '/menu';
+  const MenuRoute();
+
+  @override
+  Widget build(_, _) => MenuPage();
 }

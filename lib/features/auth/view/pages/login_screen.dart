@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
               listener: (context, state) {
                 if (state is LoginSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome back")));
-                  HomeRoute().go(context);
+                  MenuRoute().go(context);
                 } else if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Failed: ${state.error}')));
                 }
