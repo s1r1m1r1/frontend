@@ -5,9 +5,9 @@ import 'package:frontend/core/network/registration_api_service.dart';
 import 'package:frontend/db/db_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:injectable/injectable.dart';
+import 'package:sha_red/sha_red.dart';
 
 import '../../../app/logger/log_colors.dart';
-import '../data/request_email_credential_dto.dart';
 import 'auth_status.dart';
 
 const _tokenKey = '__tokenK__';
@@ -25,10 +25,13 @@ abstract class AuthRepository {
   String? getRefreshToken();
 
   void onTokenExpired();
+  void logOut();
 
   Future<void> signup(String email, String password);
 
   Future<bool> refreshAccessToken();
+
+  Future<void> setTokens(TokenDto payload);
 }
 
 @LazySingleton(as: AuthRepository)
@@ -100,7 +103,7 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<bool> login(String email, String password) async {
     try {
       debugPrint('login');
-      final response = await _api.login(RequestEmailCredentialDto(email: email, password: password));
+      final response = await _api.login(EmailCredentialDto(email: email, password: password));
       _authStatusSbj.add(AuthStatus.loggedIn);
       _refreshTokenSubj.add(response.refreshToken);
       _tokenSubj.add(response.accessToken);
@@ -112,12 +115,8 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<void> signup(String email, String password) async {
-    final response = await _api.signup(RequestEmailCredentialDto(email: email, password: password));
-    await _client.saveKeyValue(_tokenKey, response.accessToken);
-    await _client.saveKeyValue(_refreshTokenK, response.refreshToken);
-    _authStatusSbj.add(AuthStatus.loggedIn);
-    _refreshTokenSubj.add(response.refreshToken);
-    _tokenSubj.add(response.accessToken);
+    final tokens = await _api.signup(EmailCredentialDto(email: email, password: password));
+    setTokens(tokens);
   }
 
   @override
@@ -128,15 +127,29 @@ class AuthRepositoryImpl extends AuthRepository {
     }
     try {
       final tokens = await _api.refresh(_refreshTokenSubj.value!);
-      await _client.saveKeyValue(_tokenKey, tokens.accessToken);
-      await _client.saveKeyValue(_refreshTokenK, tokens.refreshToken);
-      _refreshTokenSubj.add(tokens.refreshToken);
-      _tokenSubj.add(tokens.accessToken);
-      _authStatusSbj.add(AuthStatus.loggedIn);
+      setTokens(tokens);
       return true;
     } catch (e) {
       debugPrint('Failed to refresh access token: $e');
       return false;
     }
+  }
+
+  @override
+  Future<void> setTokens(TokenDto tokens) async {
+    await _client.saveKeyValue(_tokenKey, tokens.accessToken);
+    await _client.saveKeyValue(_refreshTokenK, tokens.refreshToken);
+    _refreshTokenSubj.add(tokens.refreshToken);
+    _tokenSubj.add(tokens.accessToken);
+    _authStatusSbj.add(AuthStatus.loggedIn);
+  }
+
+  @override
+  void logOut() {
+    unawaited(_client.deleteKeyValue(_tokenKey));
+    unawaited(_client.deleteKeyValue(_refreshTokenK));
+    _tokenSubj.add(null);
+    _refreshTokenSubj.add(null);
+    _authStatusSbj.add(AuthStatus.loggedOut);
   }
 }

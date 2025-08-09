@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/view/bloc/auth_cubit.dart';
 import '../inject/get_it.dart';
-import '../inject/inject.dart';
 import '../l10n/app_localizations.dart';
 import 'router/build_router.dart';
 
@@ -58,6 +57,8 @@ class _AppView extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark(),
       localizationsDelegates: const [
         AppLocalizations.delegate, // Your app's localization delegate
         GlobalMaterialLocalizations.delegate, // Material widgets localizations

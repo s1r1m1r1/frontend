@@ -49,6 +49,10 @@ dependencies:
   web_socket_client: ^0.2.1
   bloc_concurrency: ^0.3.0
 
+dependency_overrides:
+  sha_red:
+    path: ../sha_red
+
 dev_dependencies:
   build_runner: ^2.5.0
   injectable_generator: ^2.5.0
