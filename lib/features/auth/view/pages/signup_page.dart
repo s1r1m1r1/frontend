@@ -2,17 +2,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/router/routes.dart';
-import 'package:frontend/features/auth/view/bloc/signup/signup_bloc.dart';
+import 'package:frontend/features/auth/logic/signup.bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+import '../../../../inject/get_it.dart';
+
+class SignupPage extends StatelessWidget {
+  const SignupPage({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(create: (_) => getIt<SignupBloc>(), child: const _SignupView());
+  }
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupView extends StatefulWidget {
+  const _SignupView();
+
+  @override
+  State<_SignupView> createState() => _SignupViewState();
+}
+
+class _SignupViewState extends State<_SignupView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -24,12 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
         padding: const EdgeInsets.all(16.0),
         child: BlocListener<SignupBloc, SignupState>(
           listener: (context, state) {
-            if (state is SignupSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-              // Navigate to login screen after successful signup
-
-              GoRouter.of(context).pushReplacement(LoginRoute.path);
-            } else if (state is SignupFailure) {
+            if (state is SignupFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup Failed: ${state.error}')));
             }
           },

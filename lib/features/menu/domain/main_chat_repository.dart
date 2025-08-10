@@ -20,7 +20,7 @@ class MainChatRepository {
 
   void joinRoom() {
     debugPrint('joinRoom send: ${send != null}');
-    send?.call(jsonEncode(WsToServer(roomId: mainRoomId, eventType: WsEventToServer.joinMain, payload: {}).toJson()));
+    // send?.call(jsonEncode(WsToServer(eventType: WsEventToServer.joinMain, payload: {}).toJson()));
   }
 
   @disposeMethod

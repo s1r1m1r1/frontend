@@ -1,4 +1,4 @@
-part of 'signup_bloc.dart';
+part of 'signup.bloc.dart';
 
 abstract class SignupState extends Equatable {
   const SignupState();

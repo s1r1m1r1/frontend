@@ -15,7 +15,7 @@ class RegistrationApiService {
 
   RegistrationApiService(@Named('registration') this._client);
 
-  Future<TokenDto> signup(EmailCredentialDto dto) async {
+  Future<TokensDto> signup(EmailCredentialDto dto) async {
     final response = await _client.post(
       '/users/signup',
       data: json.encode(dto.toJson()),
@@ -24,7 +24,7 @@ class RegistrationApiService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final decoded = response.data; // Assuming it returns some user data/
 
-      return TokenDto.fromJson(decoded);
+      return TokensDto.fromJson(decoded);
     } else {
       throw Exception('Failed to sign up');
     }
@@ -40,32 +40,39 @@ class RegistrationApiService {
     }
   }
 
-  Future<TokenDto> login(EmailCredentialDto dto) async {
+  Future<TokensDto> login(EmailCredentialDto dto) async {
     debugPrint('$green Login start $reset ');
     final response = await _client.post('/users/login', data: dto.toJson());
     if (response.statusCode == HttpStatus.accepted) {
       final decoded = response.data; // Assuming it returns some user data/token
       debugPrint('$green Login response: $reset $decoded');
-      return TokenDto.fromJson(decoded);
+      return TokensDto.fromJson(decoded);
     } else {
       throw Exception('Failed to log in');
     }
   }
 
-  Future<TokenDto> refresh(String refreshToken) async {
+  Future<TokensDto> refresh(String refreshToken) async {
     debugPrint('$green refresh start $reset ');
     final response = await _client.post(
       '/users/refresh',
-      data: RefreshDto(refreshToken).toJson(),
+      data: RefreshTokenDto(refreshToken).toJson(),
       options: Options(headers: {'Content-Type': 'application/json'}),
     );
 
     if (response.statusCode == HttpStatus.accepted) {
       final decoded = response.data; // Assuming it returns some user data/token
       debugPrint('$green Refresh token $reset response: $decoded');
-      return TokenDto.fromJson(decoded);
+      return TokensDto.fromJson(decoded);
     } else {
       throw Exception('Failed to refresh token');
+    }
+  }
+
+  Future<void> profile(String token) async {
+    final response = await _client.get('/profile', options: Options(headers: {'Authorization': 'Bearer $token'}));
+    if (response.statusCode == 200) {
+      return;
     }
   }
 }

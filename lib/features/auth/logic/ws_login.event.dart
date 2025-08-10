@@ -1,13 +1,13 @@
-part of 'login_bloc.dart';
+part of 'ws_login.bloc.dart';
 
-abstract class LoginEvent extends Equatable {
-  const LoginEvent();
+abstract class WsLoginEvent extends Equatable {
+  const WsLoginEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginButtonPressed extends LoginEvent {
+class LoginButtonPressed extends WsLoginEvent {
   final String username;
   final String password;
 

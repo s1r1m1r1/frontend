@@ -3,7 +3,6 @@
     "explorer.fileNesting.enabled": true,
     // "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
-        "*.bloc.dart": "${capture}.event.dart,${capture}.state.dart",
         "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata,devtools_options.yaml,codemagic.yaml,analysis_options.yaml,.tool-versions,flutter_jank_*.json,flutter_launcher_i*.yaml,flutter_*.png,flutter_native*.yaml,crowdin.yml,",
     },
     // видимоcть файлов

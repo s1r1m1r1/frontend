@@ -8,6 +8,7 @@ part of 'routes.dart';
 
 List<RouteBase> get $appRoutes => [
   $homeRoute,
+  $pendingRoute,
   $loginRoute,
   $signupRoute,
   $todoListRoute,
@@ -25,6 +26,29 @@ mixin _$HomeRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/home');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $pendingRoute =>
+    GoRouteData.$route(path: '/pending', factory: _$PendingRoute._fromState);
+
+mixin _$PendingRoute on GoRouteData {
+  static PendingRoute _fromState(GoRouterState state) => const PendingRoute();
+
+  @override
+  String get location => GoRouteData.$location('/pending');
 
   @override
   void go(BuildContext context) => context.go(location);

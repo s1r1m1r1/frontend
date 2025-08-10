@@ -21,11 +21,15 @@ import 'package:frontend/db/db_modulte.dart' as _i788;
 import 'package:frontend/features/admin/_domain/admin_repository.dart' as _i151;
 import 'package:frontend/features/admin/bloc/admin_bloc.dart' as _i91;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
-import 'package:frontend/features/auth/view/bloc/auth_cubit.dart' as _i1034;
-import 'package:frontend/features/auth/view/bloc/login/login_bloc.dart'
-    as _i805;
-import 'package:frontend/features/auth/view/bloc/signup/signup_bloc.dart'
-    as _i917;
+import 'package:frontend/features/auth/logic/auth_cubit.dart' as _i233;
+import 'package:frontend/features/auth/logic/login.bloc.dart' as _i213;
+import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
+import 'package:frontend/features/auth/logic/with_token/http_with_token_bloc.dart'
+    as _i592;
+import 'package:frontend/features/auth/logic/with_token/ws_with_token.bloc.dart'
+    as _i107;
+import 'package:frontend/features/auth/logic/ws_login.bloc.dart' as _i966;
+import 'package:frontend/features/auth/logic/ws_signup.bloc.dart' as _i268;
 import 'package:frontend/features/letters/bloc/letters_bloc.dart' as _i861;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
@@ -67,11 +71,11 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i83.WebSocketClient>(() => _i83.WebSocketClient());
-    gh.lazySingleton<_i569.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i346.MainChatRepository>(
       () => _i346.MainChatRepository(),
       dispose: (i) => i.dispose(),
     );
+    gh.lazySingleton<_i569.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
@@ -105,6 +109,12 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.dispose(),
     );
+    gh.factory<_i107.WsWithTokenBloc>(
+      () => _i107.WsWithTokenBloc(gh<_i887.AuthRepository>()),
+    );
+    gh.factory<_i592.HttpWithTokenBloc>(
+      () => _i592.HttpWithTokenBloc(gh<_i887.AuthRepository>()),
+    );
     gh.lazySingleton<_i948.WebSocket>(
       () =>
           wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
@@ -128,14 +138,20 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'withToken',
     );
-    gh.factory<_i1034.AuthCubit>(
-      () => _i1034.AuthCubit(gh<_i887.AuthRepository>()),
+    gh.factory<_i233.AuthCubit>(
+      () => _i233.AuthCubit(gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i917.SignupBloc>(
-      () => _i917.SignupBloc(gh<_i887.AuthRepository>()),
+    gh.factory<_i415.SignupBloc>(
+      () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i805.LoginBloc>(
-      () => _i805.LoginBloc(gh<_i887.AuthRepository>()),
+    gh.factory<_i213.LoginBloc>(
+      () => _i213.LoginBloc(gh<_i887.AuthRepository>()),
+    );
+    gh.factory<_i966.WsLoginBloc>(
+      () => _i966.WsLoginBloc(gh<_i887.AuthRepository>()),
+    );
+    gh.factory<_i268.WsSignupBloc>(
+      () => _i268.WsSignupBloc(gh<_i887.AuthRepository>()),
     );
     gh.lazySingleton<_i365.ProtectedApiService>(
       () => _i365.ProtectedApiService(gh<_i361.Dio>(instanceName: 'withToken')),

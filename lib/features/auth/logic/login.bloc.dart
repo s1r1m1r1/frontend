@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 
-part 'login_event.dart';
-part 'login_state.dart';
+part 'login.event.dart';
+part 'login.state.dart';
 
 @injectable
 class LoginBloc extends Bloc<LoginEvent, LoginState> {

@@ -1,4 +1,4 @@
-enum AuthStatus { loggedIn, loggedOut }
+enum AuthStatus { pending, loggedIn, loggedOut }
 
 extension AuthStatusExtension on AuthStatus {
   /// Checks if the current authentication status is 'loggedIn'.

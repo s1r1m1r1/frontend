@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/app.dart';
 import 'package:frontend/app/app_bloc_observer.dart';
-import 'package:frontend/features/auth/view/bloc/login/login_bloc.dart';
-import 'package:frontend/features/auth/view/bloc/signup/signup_bloc.dart';
+import 'package:frontend/features/auth/logic/signup.bloc.dart';
 import 'package:frontend/features/todo/view/bloc/todo_bloc.dart';
 import 'package:frontend/bloc/user/user_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -45,7 +44,6 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<UserBloc>(create: (_) => getIt<UserBloc>()..add(LoadUsers())),
-        BlocProvider<LoginBloc>(create: (_) => getIt<LoginBloc>()),
         BlocProvider<SignupBloc>(create: (_) => getIt<SignupBloc>()),
         BlocProvider<TodoBloc>(create: (_) => getIt<TodoBloc>()..add(LoadTodosEvent())),
       ],
