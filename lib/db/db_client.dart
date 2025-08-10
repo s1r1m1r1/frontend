@@ -1,6 +1,7 @@
 // Define a table for key-value pairs
 
 import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
 // import 'package:drift/native.dart';
 
 import 'connection/native.dart';
@@ -13,6 +14,23 @@ class DbClient extends _$DbClient {
 
   @override
   int get schemaVersion => 1; // Increment this if you change your schema
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) {
+      return m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 1) {
+        await m.createAll();
+      }
+    },
+    beforeOpen: (details) async {
+      // Make sure that foreign keys are enabled
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
+  // Perform any actions before the database is opened
 
   // Method to save a key-value pair
   Future<void> saveKeyValue(String key, String value) {

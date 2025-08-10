@@ -1,19 +1,29 @@
 // lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/auth/view/bloc/login/login_bloc.dart';
+import 'package:frontend/features/auth/logic/login.bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/routes.dart';
+import '../../../../inject/get_it.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(create: (_) => getIt<LoginBloc>(), child: _LoginView());
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginView extends StatefulWidget {
+  const _LoginView({super.key});
+
+  @override
+  State<_LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -27,10 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(16.0),
             child: BlocListener<LoginBloc, LoginState>(
               listener: (context, state) {
-                if (state is LoginSuccess) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome back")));
-                  MenuRoute().go(context);
-                } else if (state is LoginFailure) {
+                if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Failed: ${state.error}')));
                 }
               },

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/auth/view/pages/login_screen.dart';
+import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:frontend/features/ws_counter/view/page/ws_counter_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/admin/view/admin_page.dart';
-import '../../features/auth/view/pages/signup_screen.dart';
+import '../../features/auth/view/pages/pending_page.dart';
+import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/letters/view/letters_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/screens/home_screen.dart';
@@ -21,13 +22,22 @@ class HomeRoute extends GoRouteData with _$HomeRoute {
   Widget build(_, _) => const HomeScreen();
 }
 
+@TypedGoRoute<PendingRoute>(path: PendingRoute.path)
+class PendingRoute extends GoRouteData with _$PendingRoute {
+  static const path = '/pending';
+  const PendingRoute();
+
+  @override
+  Widget build(_, _) => PendingPage();
+}
+
 @TypedGoRoute<LoginRoute>(path: LoginRoute.path)
 class LoginRoute extends GoRouteData with _$LoginRoute {
   static const path = '/login';
   const LoginRoute();
 
   @override
-  Widget build(_, _) => LoginScreen();
+  Widget build(_, _) => LoginPage();
 }
 
 @TypedGoRoute<SignupRoute>(path: SignupRoute.path)
@@ -36,7 +46,7 @@ class SignupRoute extends GoRouteData with _$SignupRoute {
   const SignupRoute();
 
   @override
-  Widget build(_, _) => SignupScreen();
+  Widget build(_, _) => SignupPage();
 }
 
 @TypedGoRoute<TodoListRoute>(path: TodoListRoute.path)

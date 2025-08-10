@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:sha_red/sha_red.dart';
 
 import '../../../core/network/ws_manager.dart';
 
@@ -23,7 +20,7 @@ class AdminRepositoryImpl implements AdminRepository {
 
   @override
   void joinRoom() {
-    send?.call(jsonEncode(WsToServer(roomId: _adminRoom, eventType: WsEventToServer.joinAdmin, payload: {}).toJson()));
+    // send?.call(jsonEncode(WsToServer(eventType: WsEventToServer.joinAdmin, payload: {}).toJson()));
   }
 
   final _connectionCountSubj = BehaviorSubject<int>.seeded(0);

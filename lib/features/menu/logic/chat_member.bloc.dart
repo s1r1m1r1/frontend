@@ -56,11 +56,7 @@ class ChatMemberBloc extends Bloc<ChatMemberEvent, ChatMemberState> {
     _connectSub = _ws.connection.listen((state) {
       debugPrint('chat member state ${state.runtimeType} ');
       if (state is Connected) {
-        _ws.send.call(
-          jsonEncode(
-            WsToServer(roomId: mainRoomId, eventType: WsEventToServer.joinMain, payload: {"user": "test"}).toJson(),
-          ),
-        );
+        // _ws.send.call(jsonEncode(WsToServer(eventType: WsEventToServer.joinMain, payload: {"user": "test"}).toJson()));
       }
     });
 

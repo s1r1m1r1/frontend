@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart';
 
 import '../../app/logger/log_colors.dart';
 import '../../features/auth/domain/auth_repository.dart';
@@ -41,7 +40,7 @@ class AuthInterceptor extends Interceptor {
       // Make sure the refresh token endpoint doesn't itself trigger this logic
       // by either having a specific path check or handling its 401s differently.
       final RequestOptions requestOptions = err.requestOptions;
-      final bool tokenRefreshed = await _authRepository.refreshAccessToken();
+      final bool tokenRefreshed = await _authRepository.refreshToken();
       if (tokenRefreshed) {
         debugPrint('Token refresh successful. Retrying original request.');
         // Update the token in the original request's headers
