@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 
 import '../../../inject/get_it.dart';
+import '../../auth/logic/with_token/ws_with_token.bloc.dart';
 
 const Color primaryColor = Color(0xFF1A237E); // A dark blue for the header/buttons
 const Color secondaryColor = Color.fromARGB(255, 0, 138, 67); // A dark brown for the main area background
@@ -17,13 +18,18 @@ class MenuPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     debugPrint('MENU PAGE BUILD');
-    return BlocProvider(
-      lazy: false,
-      create: (_) {
-        final bloc = getIt<ChatMemberBloc>();
-        bloc.add(const ChatMemberEvent.started());
-        return bloc;
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          lazy: false,
+          create: (_) {
+            final bloc = getIt<ChatMemberBloc>();
+            bloc.add(const ChatMemberEvent.started());
+            return bloc;
+          },
+        ),
+        BlocProvider(create: (_) => getIt<WsWithTokenBloc>()..add(SubscribeEvent())),
+      ],
       child: const MenuView(),
     );
   }
@@ -69,7 +75,16 @@ class MenuView extends StatelessWidget {
                   ),
                   child: Center(
                     // Placeholder for the main game UI content
-                    child: Text('Game UI Content', style: TextStyle(color: accentColor)),
+                    child: Column(
+                      children: [
+                        Text('Game UI Content', style: TextStyle(color: accentColor)),
+                        BlocBuilder<WsWithTokenBloc, WithTokenState>(
+                          builder: (context, state) {
+                            return Text(state.status.toString());
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

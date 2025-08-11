@@ -55,7 +55,6 @@ class HttpWithTokenBloc extends Bloc<WithTokenEvent, WithTokenStatus> {
           case WithTokenStatus.joinWithRefresh:
             break;
         }
-        emit(status);
       },
     );
   }

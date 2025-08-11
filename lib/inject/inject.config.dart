@@ -94,6 +94,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
     );
+    gh.factory<_i326.ChatMemberBloc>(
+      () => _i326.ChatMemberBloc(gh<_i346.MainChatRepository>()),
+    );
     gh.factory<_i91.AdminBloc>(
       () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
     );
@@ -109,26 +112,12 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.dispose(),
     );
-    gh.factory<_i107.WsWithTokenBloc>(
-      () => _i107.WsWithTokenBloc(gh<_i887.AuthRepository>()),
-    );
     gh.factory<_i592.HttpWithTokenBloc>(
       () => _i592.HttpWithTokenBloc(gh<_i887.AuthRepository>()),
     );
     gh.lazySingleton<_i948.WebSocket>(
       () =>
           wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
-    );
-    gh.lazySingleton<_i684.WsManager>(
-      () => _i684.WsManager(
-        gh<_i684.WsCounterRepository>(),
-        gh<_i684.WsLettersRepository>(),
-        gh<_i151.AdminRepository>(),
-        gh<_i948.WebSocket>(),
-        gh<_i716.AppConfig>(),
-        gh<_i887.AuthRepository>(),
-      ),
-      dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i361.Dio>(
       () => dioModule.dio(
@@ -159,11 +148,27 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i739.TodoRepository>(
       () => _i739.TodoRepositoryImpl(gh<_i365.ProtectedApiService>()),
     );
-    gh.factory<_i326.ChatMemberBloc>(
-      () => _i326.ChatMemberBloc(gh<_i684.WsManager>()),
+    gh.lazySingleton<_i684.WsManager>(
+      () => _i684.WsManager(
+        gh<_i684.WsCounterRepository>(),
+        gh<_i684.WsLettersRepository>(),
+        gh<_i151.AdminRepository>(),
+        gh<_i948.WebSocket>(),
+        gh<_i716.AppConfig>(),
+        gh<_i887.AuthRepository>(),
+        gh<_i346.MainChatRepository>(),
+      ),
+      dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i500.WsConfigRepository>(
       () => _i500.WsConfigRepositoryImpl(gh<_i365.ProtectedApiService>()),
+    );
+    gh.factory<_i107.WsWithTokenBloc>(
+      () => _i107.WsWithTokenBloc(
+        gh<_i887.AuthRepository>(),
+        gh<_i346.MainChatRepository>(),
+        gh<_i684.WsManager>(),
+      ),
     );
     gh.factory<_i955.TodoBloc>(
       () => _i955.TodoBloc(gh<_i739.TodoRepository>()),

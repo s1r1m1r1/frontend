@@ -1,63 +1,111 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/core/network/ws_manager.dart';
+import 'package:frontend/features/menu/domain/main_chat_repository.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:web_socket_client/web_socket_client.dart' as wsClient;
 
 import '../../domain/auth_repository.dart';
 import '../../domain/auth_status.dart';
 
-import 'with_token.event.dart';
 import 'with_token.state.dart';
 
 export 'with_token.event.dart';
 export 'with_token.state.dart';
 
 @injectable
-class WsWithTokenBloc extends Bloc<WithTokenEvent, WithTokenStatus> {
+class WsWithTokenBloc extends Bloc<WithTokenEvent, WithTokenState> {
   final AuthRepository _auth;
+  final MainChatRepository _mainChat;
+  final WsManager _wsManager;
+  StreamSubscription? _sub;
 
-  WsWithTokenBloc(this._auth) : super(WithTokenStatus.initial) {
+  WsWithTokenBloc(this._auth, this._mainChat, this._wsManager) : super(const WithTokenState(WithTokenStatus.initial)) {
     on<SubscribeEvent>(_onSubscribe);
+    on<AuthorsTokenChanged>(_onStatusChanged);
   }
-  FutureOr<void> _onSubscribe(SubscribeEvent event, Emitter<WithTokenStatus> emit) async {
-    await emit.onEach(
-      Rx.combineLatest3(_auth.accessTokenStream, _auth.refreshTokenStream, _auth.authStatusStream, (
-        token,
-        refresh,
-        authStatus,
-      ) {
-        if (authStatus == AuthStatus.loggedIn) {
-          return WithTokenStatus.authorized;
-        }
-        if (token != null && authStatus == AuthStatus.pending) {
-          return WithTokenStatus.hasToken;
-        }
-        if (refresh != null && authStatus == AuthStatus.pending) {
-          return WithTokenStatus.hasRefresh;
-        }
-        return WithTokenStatus.unauthorized;
-      }),
-      onData: (status) {
-        switch (status) {
-          case WithTokenStatus.hasToken:
-            emit(status);
-            emit(WithTokenStatus.joinWithToken);
-            _auth.wsWithToken();
-          case WithTokenStatus.hasRefresh:
-            emit(status);
-            emit(WithTokenStatus.joinWithRefresh);
-            _auth.wsWithRefresh();
-          case WithTokenStatus.unauthorized:
-          case WithTokenStatus.authorized:
-            emit(state);
-          case WithTokenStatus.initial:
-          case WithTokenStatus.joinWithToken:
-          case WithTokenStatus.joinWithRefresh:
-            break;
-        }
-        emit(status);
-      },
-    );
+
+  Future<void> _onSubscribe(SubscribeEvent event, Emitter<WithTokenState> emit) async {
+    _sub?.cancel();
+    _sub =
+        Rx.combineLatest5(
+          _auth.accessTokenStream,
+          _auth.refreshTokenStream,
+          _auth.authStatusStream,
+          _mainChat.roomId,
+          _wsManager.connection,
+          (access, refresh, authStatus, roomId, connection) => AuthorsTokenChanged(
+            access: access,
+            refresh: refresh,
+            authStatus: authStatus,
+            roomId: roomId,
+            connection: connection,
+          ),
+        ).listen((e) async {
+          add(e);
+        });
   }
+
+  Future<void> _onStatusChanged(AuthorsTokenChanged e, Emitter<WithTokenState> emit) async {
+    final conn = e.connection;
+    final status = conn is! wsClient.Connected
+        ? WithTokenStatus.unauthorized
+        : (e.authStatus == AuthStatus.loggedIn && e.roomId != null)
+        ? WithTokenStatus.authorized
+        : (e.access != null)
+        ? WithTokenStatus.hasToken
+        : (e.refresh != null)
+        ? WithTokenStatus.hasRefresh
+        : WithTokenStatus.unauthorized;
+    emit(WithTokenState(status));
+
+    switch (status) {
+      case WithTokenStatus.hasToken:
+        emit(const WithTokenState(WithTokenStatus.joinWithToken));
+        _auth.wsWithToken();
+        break;
+      case WithTokenStatus.hasRefresh:
+        emit(const WithTokenState(WithTokenStatus.joinWithRefresh));
+        _auth.wsWithRefresh();
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _sub?.cancel();
+    return super.close();
+  }
+}
+
+class WithTokenState extends Equatable {
+  final WithTokenStatus status;
+
+  const WithTokenState(this.status);
+  @override
+  List<Object?> get props => [status];
+}
+
+abstract class WithTokenEvent {}
+
+class SubscribeEvent extends WithTokenEvent {}
+
+class AuthorsTokenChanged extends WithTokenEvent {
+  final String? access, refresh;
+  final AuthStatus authStatus;
+  final String? roomId;
+  final wsClient.ConnectionState connection;
+
+  AuthorsTokenChanged({
+    required this.access,
+    required this.refresh,
+    required this.authStatus,
+    required this.roomId,
+    required this.connection,
+  });
 }
