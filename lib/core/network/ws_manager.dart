@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
+import 'package:frontend/features/menu/domain/main_chat_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -18,6 +20,7 @@ class WsManager {
   final AuthRepository _authRepository;
   final AdminRepository _adminRepository;
   final AppConfig _appConfig;
+  final MainChatRepository _mainChatRepository;
 
   late WebSocket _ws;
   WsManager(
@@ -28,16 +31,23 @@ class WsManager {
     this._ws,
     this._appConfig,
     this._authRepository,
+    this._mainChatRepository,
   ) {
     _listen();
     _counterRepository.send = send;
     _lettersRepository.send = send;
     _adminRepository.send = send;
     _authRepository.wsSend = send;
+    _mainChatRepository.send = send;
   }
 
   /// Send an increment message to the server.
-  void send(dynamic data) => _ws.send(data);
+  void send(dynamic data) {
+    debugPrint('send $data\n\n');
+    debugPrint('${_ws.connection.state.runtimeType}');
+    _ws.send(data);
+  }
+
   StreamSubscription? _wsSubscription;
 
   /// this is  Steam
@@ -51,12 +61,36 @@ class WsManager {
       final payload = decoded['payload'];
 
       switch (eventType) {
-        case WsEventFromServer.letterCreated:
-          _lettersRepository.onLetter(payload as Json);
+        case WsEventFromServer.joinedServer:
+          final dto = JoinedServerPayload.fromJson(payload as Json);
+          if (dto.tokens != null) {
+            _authRepository.setTokens(dto.tokens!);
+          }
+          _mainChatRepository.setRoom(dto.mainRoomId);
           break;
+        case WsEventFromServer.onlineUsers:
+          final dto = OnlineUsersPayload.fromJson(payload as Json);
+          debugPrint('green count: ${dto.members.length} $reset');
+          _mainChatRepository.setOnlineMembers(dto.members);
+          break;
+        case WsEventFromServer.tokenExpired:
+          _authRepository.onTokenExpired();
+          break;
+
+        case WsEventFromServer.unauthenticated:
+          final dto = WsErrorPayload.fromJson(payload as Json);
+          if (dto.errorCode == 401) {
+            // await _authRepository.logout();
+          }
+          break;
+        case WsEventFromServer.letterCreated:
+          break;
+        // _lettersRepository.onLetter(payload as Json);
         case WsEventFromServer.joinedCounter:
+          break;
         case WsEventFromServer.counter:
-          _counterRepository.onCount(payload as Json);
+
+          // _counterRepository.onCount(payload as Json);
           break;
         case WsEventFromServer.letters:
           break;
@@ -65,38 +99,35 @@ class WsManager {
         // _lettersRepository.setLetters(payload.letters.toList());
 
         case WsEventFromServer.joinedLetters:
-          final dto = LettersPayload.fromJson(payload as Json);
-          _lettersRepository.setLetters(dto.letters.toList());
+          break;
+        // final dto = LettersPayload.fromJson(payload as Json);
+        // _lettersRepository.setLetters(dto.letters.toList());
         case WsEventFromServer.adminInfo:
+          break;
         // final payload = IdPayload.fromJson(fromServer.payload as Json);
         // _adminRepository.setInfo(payload.id);
         // case WsEventFromServer.joinedMain:
         // case WsEventFromServer.online:
         // final payload = decoded as List<String>;
         // onlineHandler?.call(payload);
-        case WsEventFromServer.loggedIn:
-          final dto = TokensDto.fromJson(payload as Json);
-          await _authRepository.setTokens(dto);
-        case WsEventFromServer.tokenExpired:
-          final refreshToken = _authRepository.getRefreshToken();
-          if (refreshToken == null) return;
-          final dto = RefreshTokenDto(refreshToken);
-          send(
-            WsToServer(
-              // roomId: 'auth',
-              eventType: WsEventToServer.withRefresh,
-              payload: dto,
-            ).toJson(RefreshTokenDto.toJsonF),
-          );
+        // final dto = TokensDto.fromJson(payload as Json);
+        // await _authRepository.setTokens(dto);
+        // final refreshToken = _authRepository.getRefreshToken();
+        // if (refreshToken == null) return;
+        // final dto = RefreshTokenDto(refreshToken);
+        // send(
+        //   WsToServer(
+        //     // roomId: 'auth',
+        //     eventType: WsEventToServer.withRefresh,
+        //     payload: dto,
+        //   ).toJson(RefreshTokenDto.toJsonF),
+        // );
 
-        case WsEventFromServer.unauthenticated:
-          break;
         case WsEventFromServer.refreshTokenExpired:
-          _authRepository.logOut();
+          // _authRepository.logOut();
           break;
-        case WsEventFromServer.onlineUsers:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+          break;
+        // throw UnimplementedError();
       }
     });
   }

@@ -100,7 +100,7 @@ class AuthRepositoryImpl extends AuthRepository {
     debugPrint('$red onTokenExpired $reset');
     unawaited(_db.deleteKeyValue(_tokenKey));
     _tokenSubj.add(null);
-    _authStatusSbj.add(AuthStatus.loggedOut);
+    _authStatusSbj.add(AuthStatus.pending);
   }
 
   @override
@@ -172,14 +172,19 @@ class AuthRepositoryImpl extends AuthRepository {
 
   //---------  ws  ------------------------------------------------------------------------------------------
   @override
-  Future<void> wsWithToken() async {
+  void wsWithToken() {
     final token = _tokenSubj.value;
+    print('WS with TOKEN: $token');
     if (token == null) {
       return;
     }
+
+    print('WS with TOKEN: next $token');
     final dto = AccessTokenDto(token);
     final body = WsToServer(eventType: WsEventToServer.withToken, payload: dto);
     final encoded = jsonEncode(body.toJson(AccessTokenDto.toJsonF));
+
+    print('WS with TOKEN: $encoded');
     wsSend?.call(encoded);
   }
 

@@ -16,11 +16,7 @@ class RegistrationApiService {
   RegistrationApiService(@Named('registration') this._client);
 
   Future<TokensDto> signup(EmailCredentialDto dto) async {
-    final response = await _client.post(
-      '/users/signup',
-      data: json.encode(dto.toJson()),
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
+    final response = await _client.post('/users/signup', data: json.encode(dto.toJson()));
     if (response.statusCode == 200 || response.statusCode == 201) {
       final decoded = response.data; // Assuming it returns some user data/
 
