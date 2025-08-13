@@ -36,6 +36,9 @@ import 'package:frontend/features/menu/domain/main_chat_repository.dart'
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
 import 'package:frontend/features/todo/domain/todo_repository.dart' as _i739;
 import 'package:frontend/features/todo/view/bloc/todo_bloc.dart' as _i955;
+import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
+import 'package:frontend/features/unit/logic/create_unit_bloc.dart' as _i712;
+import 'package:frontend/features/unit/logic/unit_bloc.dart' as _i199;
 import 'package:frontend/features/user/domain/user_repository.dart' as _i935;
 import 'package:frontend/features/ws_counter/domain/ws_client.dart' as _i83;
 import 'package:frontend/features/ws_counter/domain/ws_config_repository.dart'
@@ -148,6 +151,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i739.TodoRepository>(
       () => _i739.TodoRepositoryImpl(gh<_i365.ProtectedApiService>()),
     );
+    gh.lazySingleton<_i92.UnitRepository>(
+      () => _i92.UnitRepositoryImpl(gh<_i365.ProtectedApiService>()),
+    );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
         gh<_i684.WsCounterRepository>(),
@@ -163,6 +169,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i500.WsConfigRepository>(
       () => _i500.WsConfigRepositoryImpl(gh<_i365.ProtectedApiService>()),
     );
+    gh.factory<_i712.CreateUnitBloc>(
+      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
+    );
+    gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
     gh.factory<_i107.WsWithTokenBloc>(
       () => _i107.WsWithTokenBloc(
         gh<_i887.AuthRepository>(),

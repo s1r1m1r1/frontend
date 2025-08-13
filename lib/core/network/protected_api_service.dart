@@ -1,16 +1,62 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
-
-import '../../app/logger/log_colors.dart';
 
 @lazySingleton
 class ProtectedApiService {
   final Dio _client;
   const ProtectedApiService(@Named('withToken') this._client);
+  Future<ListUnitDto?> fetchListUnit() async {
+    final response = await _client.get('/game/unit');
+    if (response.statusCode == 200) {
+      return ListUnitDto.fromJson(response.data);
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception('Failed to load todos');
+    }
+  }
+
+  Future<UnitDto> createUnit(CreateUnitDto dto) async {
+    final response = await _client.post('/game/unit', data: json.encode(dto.toJson()));
+    if (response.statusCode == 200) {
+      return UnitDto.fromJson(response.data);
+    } else {
+      throw Exception('Failed to create todo');
+    }
+  }
+
+  Future<UnitDto> updateUnit(UpdateUnitDto dto) async {
+    print('start update');
+    final response = await _client.put('/game/unit/${dto.id}', data: json.encode(dto.toJson()));
+    if (response.statusCode != 200) {
+      print('start not 200');
+      throw Exception('Failed to update todo');
+    }
+
+    print('start good ${response.data}');
+    return UnitDto.fromJson(response.data);
+  }
+
+  Future<bool> deleteUnit(int id) async {
+    final response = await _client.delete('/game/unit/$id');
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> setSelectedUnit({required int unitId}) async {
+    final response = await _client.post('/game/selected-unit/$unitId');
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  //---------------------------------------------------------------------
 
   Future<List<TodoDto>> fetchTodos() async {
     final response = await _client.get('/todos');
