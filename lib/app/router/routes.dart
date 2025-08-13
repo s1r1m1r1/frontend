@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
+import 'package:frontend/features/unit/view/crate_unit_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:frontend/features/ws_counter/view/page/ws_counter_page.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,8 @@ import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/letters/view/letters_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/screens/home_screen.dart';
+import '../../features/unit/view/selected_unit_page.dart';
+import '../../features/unit/view/unit_page.dart';
 
 part 'routes.g.dart';
 
@@ -92,4 +95,22 @@ class MenuRoute extends GoRouteData with _$MenuRoute {
 
   @override
   Widget build(_, _) => MenuPage();
+}
+
+@TypedGoRoute<CreateUnitRoute>(path: CreateUnitRoute.path)
+class CreateUnitRoute extends GoRouteData with _$CreateUnitRoute {
+  static const path = '/create-unit';
+  const CreateUnitRoute();
+
+  @override
+  Widget build(_, _) => CreateUnitPage();
+}
+
+@TypedGoRoute<UnitRoute>(path: UnitRoute.path)
+class UnitRoute extends GoRouteData with _$UnitRoute {
+  static const path = '/unit';
+  const UnitRoute();
+
+  @override
+  Widget build(_, _) => UnitPage();
 }

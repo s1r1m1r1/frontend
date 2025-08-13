@@ -57,6 +57,8 @@ class WsManager {
     _wsSubscription = _ws.messages.listen((rawData) async {
       final decoded = jsonDecode(rawData);
       debugPrint('rawData $rawData');
+      debugPrint('rawData ${rawData.runtimeType}');
+
       final eventType = WsFromServer.enumFromJson(decoded as Json);
       final payload = decoded['payload'];
 
@@ -79,9 +81,8 @@ class WsManager {
 
         case WsEventFromServer.unauthenticated:
           final dto = WsErrorPayload.fromJson(payload as Json);
-          if (dto.errorCode == 401) {
-            // await _authRepository.logout();
-          }
+          _authRepository.logOut();
+
           break;
         case WsEventFromServer.letterCreated:
           break;

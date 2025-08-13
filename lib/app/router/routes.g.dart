@@ -16,6 +16,8 @@ List<RouteBase> get $appRoutes => [
   $lettersRoute,
   $adminRoute,
   $menuRoute,
+  $createUnitRoute,
+  $unitRoute,
 ];
 
 RouteBase get $homeRoute =>
@@ -214,6 +216,56 @@ mixin _$MenuRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/menu');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $createUnitRoute => GoRouteData.$route(
+  path: '/create-unit',
+
+  factory: _$CreateUnitRoute._fromState,
+);
+
+mixin _$CreateUnitRoute on GoRouteData {
+  static CreateUnitRoute _fromState(GoRouterState state) =>
+      const CreateUnitRoute();
+
+  @override
+  String get location => GoRouteData.$location('/create-unit');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $unitRoute =>
+    GoRouteData.$route(path: '/unit', factory: _$UnitRoute._fromState);
+
+mixin _$UnitRoute on GoRouteData {
+  static UnitRoute _fromState(GoRouterState state) => const UnitRoute();
+
+  @override
+  String get location => GoRouteData.$location('/unit');
 
   @override
   void go(BuildContext context) => context.go(location);

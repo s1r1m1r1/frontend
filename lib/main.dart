@@ -20,7 +20,6 @@ Future<void> main() async {
   Bloc.observer = MyBlocObserver();
   hierarchicalLoggingEnabled = true;
   Logger.root.onRecord.listen(watchRecords);
-
   PlatformDispatcher.instance.onError = (error, stack) {
     if (kDebugMode) {
       debugPrintStack(stackTrace: stack, label: '${red}PlatformDispatcher$reset$error');
