@@ -55,9 +55,9 @@ class WsManager {
 
   void _listen() {
     _wsSubscription = _ws.messages.listen((rawData) async {
-      final decoded = jsonDecode(rawData);
       debugPrint('rawData $rawData');
       debugPrint('rawData ${rawData.runtimeType}');
+      final decoded = jsonDecode(rawData);
 
       final eventType = WsFromServer.enumFromJson(decoded as Json);
       final payload = decoded['payload'];
@@ -71,7 +71,7 @@ class WsManager {
           _mainChatRepository.setRoom(dto.mainRoomId);
           break;
         case WsEventFromServer.onlineUsers:
-          final dto = OnlineUsersPayload.fromJson(payload as Json);
+          final dto = OnlineMemberPayload.fromJson(payload as Json);
           debugPrint('green count: ${dto.members.length} $reset');
           _mainChatRepository.setOnlineMembers(dto.members);
           break;
