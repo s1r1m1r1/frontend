@@ -1,6 +1,7 @@
 // Assuming you have a theme with these colors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/features/letters/bloc/letters_bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 
 import '../../../inject/get_it.dart';
@@ -28,7 +29,8 @@ class MenuPage extends StatelessWidget {
             return bloc;
           },
         ),
-        BlocProvider(create: (_) => getIt<WsWithTokenBloc>()..add(SubscribeEvent())),
+        BlocProvider(lazy: false, create: (_) => getIt<WsWithTokenBloc>()..add(SubscribeEvent())),
+        BlocProvider(lazy: false, create: (_) => getIt<LettersBloc>()..add(LettersEvent.started())),
       ],
       child: const MenuView(),
     );
@@ -139,8 +141,11 @@ class MenuView extends StatelessWidget {
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () {
-                          context.read<ChatMemberBloc>().add(ChatMemberEvent.membersUpdated([]));
-                          context.read<ChatMemberBloc>().add(ChatMemberEvent.started());
+                          context.read<LettersBloc>().add(
+                            LettersEvent.newPressed(
+                              'New Letter ${context.read<LettersBloc>().state.letters.length + 1}',
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
@@ -199,8 +204,28 @@ class _ChatBody extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Center(
-              child: Text('Chat History', style: TextStyle(color: Colors.white70)),
+            child: BlocBuilder<LettersBloc, LettersState>(
+              builder: (context, state) {
+                if (state.letters.isEmpty) {
+                  return const Center(child: Text('No letters'));
+                }
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    final letter = state.letters[index];
+                    return ListTile(
+                      title: Text(letter.content),
+                      subtitle: Text('From: ${letter.senderId}'),
+                      trailing: (letter.id != null)
+                          ? IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => context.read<LettersBloc>().add(LettersEvent.deletePressed(letter.id!)),
+                            )
+                          : null,
+                    );
+                  },
+                  itemCount: state.letters.length,
+                );
+              },
             ),
           ),
           Expanded(

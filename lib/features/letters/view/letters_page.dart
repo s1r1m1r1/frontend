@@ -14,7 +14,7 @@ class LettersPage extends StatelessWidget {
       body: BlocProvider(
         lazy: false,
         create: (_) =>
-            getIt<LettersBloc>()..add(const LettersStarted()), // Dispatch CounterStarted when the BLoC is created
+            getIt<LettersBloc>()..add(const LettersEvent.started()), // Dispatch CounterStarted when the BLoC is created
         child: const LetterView(),
       ),
     );
@@ -65,7 +65,7 @@ class LetterView extends StatelessWidget {
                         trailing: (letter.id != null)
                             ? IconButton(
                                 icon: const Icon(Icons.delete),
-                                onPressed: () => counterBloc.add(LettersDeleteMessagePressed(letter.id!)),
+                                onPressed: () => counterBloc.add(LettersEvent.deletePressed(letter.id!)),
                               )
                             : null,
                       );
@@ -82,7 +82,7 @@ class LetterView extends StatelessWidget {
               children: [
                 FloatingActionButton(
                   onPressed: () => counterBloc.add(
-                    LettersNewPressed('New Letter ${context.read<LettersBloc>().state.letters.length + 1}'),
+                    LettersEvent.newPressed('New Letter ${context.read<LettersBloc>().state.letters.length + 1}'),
                   ),
                   heroTag: 'new letter', // Unique tag for hero animation
                   child: const Icon(Icons.new_label),

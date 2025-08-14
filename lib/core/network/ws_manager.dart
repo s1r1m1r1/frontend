@@ -84,7 +84,18 @@ class WsManager {
           _authRepository.logOut();
 
           break;
-        case WsEventFromServer.letterCreated:
+        case WsEventFromServer.onLetter:
+          final dto = LastLetterPayload.fromJson(payload as Json);
+          _lettersRepository.onLetter(dto.letter);
+          break;
+        case WsEventFromServer.letters:
+          final dto = LetterHistoryPayload.fromJson(payload as Json);
+          _lettersRepository.setLetters(dto.letter);
+          break;
+        case WsEventFromServer.deletedLetter:
+          final dto = IdLetterPayload.fromJson(payload as Json);
+          _lettersRepository.onLetterDeleted(dto.letterId);
+          // _adminRepository.
           break;
         // _lettersRepository.onLetter(payload as Json);
         case WsEventFromServer.joinedCounter:
@@ -93,8 +104,7 @@ class WsManager {
 
           // _counterRepository.onCount(payload as Json);
           break;
-        case WsEventFromServer.letters:
-          break;
+
         // final payload = InitialPayload.fromJson(fromServer.payload as Json);
         // _counterRepository.setCount(payload.counter);
         // _lettersRepository.setLetters(payload.letters.toList());
@@ -206,11 +216,36 @@ class WsLettersRepository {
   Stream<List<LetterDto>> get letters => _lettersSubj.stream;
 
   void newLetter(String roomId, LetterDto letter) {
-    // send?.call(jsonEncode(WsToServer(eventType: WsEventToServer.newLetter, payload: letter.toJson()).toJson()));
+    send?.call(
+      jsonEncode(
+        WsToServer(
+          eventType: WsEventToServer.newLetter,
+          payload: NewLetterPayload(roomId, letter),
+        ).toJson(NewLetterPayload.toJsonF),
+      ),
+    );
   }
 
   void joinRoom(String roomId) {
-    // send?.call(jsonEncode(WsToServer(eventType: WsEventToServer.joinLetters, payload: {'roomId': roomId}).toJson()));
+    send?.call(
+      jsonEncode(
+        WsToServer(
+          eventType: WsEventToServer.joinLetters,
+          payload: LetterRoomPayload('main'),
+        ).toJson(LetterRoomPayload.toJsonF),
+      ),
+    );
+  }
+
+  void deleteLetter(String roomId, int letterId) {
+    send?.call(
+      jsonEncode(
+        WsToServer(
+          eventType: WsEventToServer.deleteLetter,
+          payload: IdLetterPayload(roomId, letterId),
+        ).toJson(IdLetterPayload.toJsonF),
+      ),
+    );
   }
 
   void leaveRoom(String roomId) {
@@ -245,14 +280,26 @@ class WsLettersRepository {
     _lettersSubj.add(letters);
   }
 
-  void onLetter(Json rawPayload) {
-    final payload = LetterDto.fromJson(rawPayload);
-    setLetters(List.of(_lettersSubj.value)..add(payload));
+  void onLetter(LetterDto letter) {
+    setLetters(List.of(_lettersSubj.value)..add(letter));
   }
 
   @disposeMethod
   void dispose() {
     send = null;
     _lettersSubj.close();
+  }
+
+  void onLetterDeleted(int letterId) {
+    debugPrint('ON LETTER DELETED $letterId');
+    final copy = List.of(_lettersSubj.value);
+    final index = copy.indexWhere((i) => i.id == letterId);
+
+    debugPrint('ON LETTER DELETED INDEX $index ${copy.length}');
+    if (index == -1) return;
+    copy.removeAt(index);
+
+    debugPrint('ON LETTER DELETED INDEX $index ${copy.length}');
+    setLetters(copy);
   }
 }

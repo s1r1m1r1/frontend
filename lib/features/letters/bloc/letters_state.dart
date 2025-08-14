@@ -10,7 +10,7 @@ class LettersState extends Equatable {
   final bool updater;
 
   @override
-  List<Object?> get props => [updater, status];
+  List<Object?> get props => [updater, status, letters];
 
   LettersState copyWith({List<LetterDto>? letters, LettersStatus? status}) {
     return LettersState(updater: !updater, letters: letters ?? this.letters, status: status ?? this.status);
