@@ -11,7 +11,6 @@ import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/letters/view/letters_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/screens/home_screen.dart';
-import '../../features/unit/view/selected_unit_page.dart';
 import '../../features/unit/view/unit_page.dart';
 
 part 'routes.g.dart';

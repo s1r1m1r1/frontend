@@ -219,7 +219,8 @@ class _ChatBody extends StatelessWidget {
                           if (state.memberIds.isEmpty) {
                             return const Center(child: Text('No members'));
                           }
-                          return ListTile(title: Text('id:${state.memberIds[index]}'));
+                          final member = state.memberIds[index];
+                          return ListTile(title: Text('id:${member.unitId} , name: ${member.name}'));
                         },
                       );
                   }

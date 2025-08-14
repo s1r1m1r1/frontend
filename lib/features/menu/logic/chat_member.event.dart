@@ -4,7 +4,7 @@ abstract class ChatMemberEvent extends Equatable {
   const ChatMemberEvent();
   const factory ChatMemberEvent.started() = StartedEvent;
   const factory ChatMemberEvent.joinMain() = JoinMainEvent;
-  const factory ChatMemberEvent.membersUpdated(List<String> memberIds) = MembersUpdatedEvent;
+  const factory ChatMemberEvent.membersUpdated(List<OnlineMemberDto> memberIds) = MembersUpdatedEvent;
 
   @override
   List<Object?> get props => [];
@@ -20,5 +20,5 @@ class JoinMainEvent extends ChatMemberEvent {
 
 class MembersUpdatedEvent extends ChatMemberEvent {
   const MembersUpdatedEvent(this.memberIds);
-  final List<String> memberIds;
+  final List<OnlineMemberDto> memberIds;
 }
