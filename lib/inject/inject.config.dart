@@ -41,11 +41,8 @@ import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
 import 'package:frontend/features/unit/logic/create_unit_bloc.dart' as _i712;
 import 'package:frontend/features/unit/logic/unit_bloc.dart' as _i199;
 import 'package:frontend/features/user/domain/user_repository.dart' as _i935;
-import 'package:frontend/features/ws_counter/domain/ws_client.dart' as _i83;
 import 'package:frontend/features/ws_counter/domain/ws_config_repository.dart'
     as _i500;
-import 'package:frontend/features/ws_counter/view/bloc/counter_bloc.dart'
-    as _i545;
 import 'package:frontend/inject/app_config.dart' as _i716;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -66,15 +63,10 @@ extension GetItInjectableX on _i174.GetIt {
     final dioModule = _$DioModule();
     final wsSocketModule = _$WsSocketModule();
     gh.factory<_i990.UserBloc>(() => _i990.UserBloc());
-    gh.lazySingleton<_i684.WsCounterRepository>(
-      () => _i684.WsCounterRepository(),
-      dispose: (i) => i.dispose(),
-    );
     gh.lazySingleton<_i684.WsLettersRepository>(
       () => _i684.WsLettersRepository(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i83.WebSocketClient>(() => _i83.WebSocketClient());
     gh.lazySingleton<_i346.MainChatRepository>(
       () => _i346.MainChatRepository(),
       dispose: (i) => i.dispose(),
@@ -155,9 +147,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i92.UnitRepository>(
       () => _i92.UnitRepositoryImpl(gh<_i365.ProtectedApiService>()),
     );
+    gh.lazySingleton<_i500.WsConfigRepository>(
+      () => _i500.WsConfigRepositoryImpl(gh<_i365.ProtectedApiService>()),
+    );
+    gh.factory<_i712.CreateUnitBloc>(
+      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
+    );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
-        gh<_i684.WsCounterRepository>(),
         gh<_i684.WsLettersRepository>(),
         gh<_i151.AdminRepository>(),
         gh<_i948.WebSocket>(),
@@ -166,12 +163,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i346.MainChatRepository>(),
       ),
       dispose: (i) => i.dispose(),
-    );
-    gh.lazySingleton<_i500.WsConfigRepository>(
-      () => _i500.WsConfigRepositoryImpl(gh<_i365.ProtectedApiService>()),
-    );
-    gh.factory<_i712.CreateUnitBloc>(
-      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
     );
     gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
     gh.factory<_i107.WsWithTokenBloc>(
@@ -183,13 +174,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i955.TodoBloc>(
       () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
-    );
-    gh.factory<_i545.CounterBloc>(
-      () => _i545.CounterBloc(
-        gh<_i684.WsCounterRepository>(),
-        gh<_i684.WsManager>(),
-        gh<_i500.WsConfigRepository>(),
-      ),
     );
     gh.factory<_i64.LettersBloc>(
       () => _i64.LettersBloc(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
-import 'package:frontend/features/ws_counter/view/page/ws_counter_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/admin/view/admin_page.dart';
@@ -57,15 +56,6 @@ class TodoListRoute extends GoRouteData with _$TodoListRoute {
 
   @override
   Widget build(_, _) => TodoListScreen();
-}
-
-@TypedGoRoute<WSCounterRoute>(path: WSCounterRoute.path)
-class WSCounterRoute extends GoRouteData with _$WSCounterRoute {
-  static const path = '/ws-counter';
-  const WSCounterRoute();
-
-  @override
-  Widget build(_, _) => CounterPage();
 }
 
 @TypedGoRoute<AdminRoute>(path: AdminRoute.path)
