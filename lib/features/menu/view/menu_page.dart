@@ -1,8 +1,9 @@
 // Assuming you have a theme with these colors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/letters/bloc/letters_bloc.dart';
+import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
+import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
 
 import '../../../inject/get_it.dart';
 import '../../auth/logic/with_token/ws_with_token.bloc.dart';
@@ -31,6 +32,7 @@ class MenuPage extends StatelessWidget {
         ),
         BlocProvider(lazy: false, create: (_) => getIt<WsWithTokenBloc>()..add(SubscribeEvent())),
         BlocProvider(lazy: false, create: (_) => getIt<LettersBloc>()..add(LettersEvent.started())),
+        BlocProvider(lazy: false, create: (_) => getIt<WsConnectionCubit>()..listenConnection()),
       ],
       child: const MenuView(),
     );
@@ -57,6 +59,12 @@ class MenuView extends StatelessWidget {
                   // Placeholder for the top-left icon
                   Container(width: 30, height: 30, color: accentColor),
                   const Spacer(),
+                  BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
+                    builder: (context, state) {
+                      return Text(state.name.toString(), style: TextStyle(fontSize: 8));
+                    },
+                  ),
+                  const SizedBox(width: 8),
                   // Top buttons
                   _buildTopButton('КАРТА'),
                   const SizedBox(width: 8),
@@ -213,6 +221,7 @@ class _ChatBody extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final letter = state.letters[index];
                     return ListTile(
+                      // selected: letter.senderId == ,
                       title: Text(letter.content),
                       subtitle: Text('From: ${letter.senderId}'),
                       trailing: (letter.id != null)
@@ -245,7 +254,12 @@ class _ChatBody extends StatelessWidget {
                             return const Center(child: Text('No members'));
                           }
                           final member = state.memberIds[index];
-                          return ListTile(title: Text('id:${member.unitId} , name: ${member.name}'));
+                          return ListTile(
+                            title: Text(
+                              'id:${member.unitId} , name: ${member.name}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
                         },
                       );
                   }

@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/admin/view/admin_page.dart';
 import '../../features/auth/view/pages/pending_page.dart';
 import '../../features/auth/view/pages/signup_page.dart';
-import '../../features/letters/view/letters_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/screens/home_screen.dart';
 import '../../features/unit/view/unit_page.dart';
@@ -67,15 +66,6 @@ class WSCounterRoute extends GoRouteData with _$WSCounterRoute {
 
   @override
   Widget build(_, _) => CounterPage();
-}
-
-@TypedGoRoute<LettersRoute>(path: LettersRoute.path)
-class LettersRoute extends GoRouteData with _$LettersRoute {
-  static const path = '/letters';
-  const LettersRoute();
-
-  @override
-  Widget build(_, _) => LettersPage();
 }
 
 @TypedGoRoute<AdminRoute>(path: AdminRoute.path)

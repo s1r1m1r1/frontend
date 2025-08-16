@@ -215,7 +215,7 @@ class WsLettersRepository {
 
   Stream<List<LetterDto>> get letters => _lettersSubj.stream;
 
-  void newLetter(String roomId, LetterDto letter) {
+  void newLetter(String roomId, CreateLetterDto letter) {
     send?.call(
       jsonEncode(
         WsToServer(
