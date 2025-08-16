@@ -13,7 +13,6 @@ List<RouteBase> get $appRoutes => [
   $signupRoute,
   $todoListRoute,
   $wSCounterRoute,
-  $lettersRoute,
   $adminRoute,
   $menuRoute,
   $createUnitRoute,
@@ -137,7 +136,6 @@ mixin _$TodoListRoute on GoRouteData {
 
 RouteBase get $wSCounterRoute => GoRouteData.$route(
   path: '/ws-counter',
-
   factory: _$WSCounterRoute._fromState,
 );
 
@@ -147,29 +145,6 @@ mixin _$WSCounterRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/ws-counter');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
-RouteBase get $lettersRoute =>
-    GoRouteData.$route(path: '/letters', factory: _$LettersRoute._fromState);
-
-mixin _$LettersRoute on GoRouteData {
-  static LettersRoute _fromState(GoRouterState state) => const LettersRoute();
-
-  @override
-  String get location => GoRouteData.$location('/letters');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -233,7 +208,6 @@ mixin _$MenuRoute on GoRouteData {
 
 RouteBase get $createUnitRoute => GoRouteData.$route(
   path: '/create-unit',
-
   factory: _$CreateUnitRoute._fromState,
 );
 

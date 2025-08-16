@@ -1,4 +1,4 @@
-part of 'letters_bloc.dart';
+part of 'letters.bloc.dart';
 
 sealed class LettersEvent extends Equatable {
   const LettersEvent();
@@ -6,7 +6,6 @@ sealed class LettersEvent extends Equatable {
   const factory LettersEvent.newPressed(String message) = _NewPressedLE;
   const factory LettersEvent.deletePressed(int letterId) = _DeletePressedLE;
   // const factory LettersEvent.onUpdateLetters(List<LetterDto> letters) = _OnUpdateLE;
-  const factory LettersEvent.connectionStateChanged(ConnectionState state) = _ConnectionStateUpdateLE;
 
   @override
   List<Object?> get props => [];
@@ -35,11 +34,4 @@ class _OnUpdateLE extends LettersEvent {
   final List<LetterDto> letters;
   @override
   List<Object> get props => [letters];
-}
-
-class _ConnectionStateUpdateLE extends LettersEvent {
-  const _ConnectionStateUpdateLE(this.state);
-  final ConnectionState state;
-  @override
-  List<Object> get props => [state];
 }

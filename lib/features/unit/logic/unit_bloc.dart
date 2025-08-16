@@ -23,7 +23,8 @@ class UnitBloc extends Bloc<UnitEvent, UnitState> {
         return;
       }
       emit(UnitState.empty);
-    } catch (e) {
+    } catch (e, s) {
+      addError(e, s);
       emit(state.copyWith(status: UnitStateStatus.failure));
     }
   }

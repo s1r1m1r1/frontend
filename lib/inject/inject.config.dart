@@ -30,10 +30,11 @@ import 'package:frontend/features/auth/logic/with_token/ws_with_token.bloc.dart'
     as _i107;
 import 'package:frontend/features/auth/logic/ws_login.bloc.dart' as _i966;
 import 'package:frontend/features/auth/logic/ws_signup.bloc.dart' as _i268;
-import 'package:frontend/features/letters/bloc/letters_bloc.dart' as _i861;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
+import 'package:frontend/features/menu/logic/letters.bloc.dart' as _i64;
+import 'package:frontend/features/menu/logic/ws_connection_cubit.dart' as _i827;
 import 'package:frontend/features/todo/domain/todo_repository.dart' as _i739;
 import 'package:frontend/features/todo/view/bloc/todo_bloc.dart' as _i955;
 import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
@@ -84,15 +85,7 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
     );
     gh.lazySingleton<_i151.AdminRepository>(() => _i151.AdminRepositoryImpl());
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.registrationDio(gh<_i716.AppConfig>()),
-      instanceName: 'registration',
-    );
     gh.lazySingleton<_i935.UserRepository>(() => _i935.UserRepositoryImpl());
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.retryDio(gh<_i716.AppConfig>()),
-      instanceName: 'retryDio',
-    );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
@@ -102,6 +95,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i91.AdminBloc>(
       () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.registrationDio(gh<_i716.AppConfig>()),
+      instanceName: 'registration',
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.retryDio(gh<_i716.AppConfig>()),
+      instanceName: 'retryDio',
     );
     gh.lazySingleton<_i436.RegistrationApiService>(
       () => _i436.RegistrationApiService(
@@ -136,11 +137,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i415.SignupBloc>(
       () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i213.LoginBloc>(
-      () => _i213.LoginBloc(gh<_i887.AuthRepository>()),
-    );
     gh.factory<_i966.WsLoginBloc>(
       () => _i966.WsLoginBloc(gh<_i887.AuthRepository>()),
+    );
+    gh.factory<_i213.LoginBloc>(
+      () => _i213.LoginBloc(gh<_i887.AuthRepository>()),
     );
     gh.factory<_i268.WsSignupBloc>(
       () => _i268.WsSignupBloc(gh<_i887.AuthRepository>()),
@@ -190,12 +191,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i500.WsConfigRepository>(),
       ),
     );
-    gh.factory<_i861.LettersBloc>(
-      () => _i861.LettersBloc(
+    gh.factory<_i64.LettersBloc>(
+      () => _i64.LettersBloc(
         gh<_i684.WsLettersRepository>(),
         gh<_i684.WsManager>(),
         gh<_i500.WsConfigRepository>(),
       ),
+    );
+    gh.factory<_i827.WsConnectionCubit>(
+      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
     );
     return this;
   }

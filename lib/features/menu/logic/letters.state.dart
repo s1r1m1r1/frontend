@@ -1,4 +1,4 @@
-part of 'letters_bloc.dart';
+part of 'letters.bloc.dart';
 
 enum LettersStatus { connected, disconnected }
 
