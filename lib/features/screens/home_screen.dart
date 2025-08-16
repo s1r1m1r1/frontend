@@ -32,12 +32,6 @@ class HomeScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                WSCounterRoute().push(context);
-              },
-              child: const Text('View Ws Counter'),
-            ),
 
             const SizedBox(height: 10),
             ElevatedButton(

@@ -65,7 +65,9 @@ class AuthRepositoryImpl extends AuthRepository {
       debugPrint('$green LOADED token: $token ,refresh: $refreshToken $reset');
       _tokenSubj.add(token);
       _refreshTokenSubj.add(refreshToken);
-      _authStatusSbj.add(token != null ? AuthStatus.pending : AuthStatus.loggedOut);
+      _authStatusSbj.add(
+        token != null ? AuthStatus.pending : AuthStatus.loggedOut,
+      );
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -78,7 +80,9 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Stream<AuthStatus> get authStatusStream => _authStatusSbj.stream;
 
-  final _authStatusSbj = BehaviorSubject<AuthStatus>.seeded(AuthStatus.loggedOut);
+  final _authStatusSbj = BehaviorSubject<AuthStatus>.seeded(
+    AuthStatus.loggedOut,
+  );
 
   @override
   @disposeMethod
@@ -114,7 +118,9 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<bool> login(String email, String password) async {
     try {
       debugPrint('login');
-      final response = await _api.login(EmailCredentialDto(email: email, password: password));
+      final response = await _api.login(
+        EmailCredentialDto(email: email, password: password),
+      );
       setTokens(response);
       return true;
     } catch (e) {
@@ -124,7 +130,9 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<void> signup(String email, String password) async {
-    final tokens = await _api.signup(EmailCredentialDto(email: email, password: password));
+    final tokens = await _api.signup(
+      EmailCredentialDto(email: email, password: password),
+    );
     setTokens(tokens);
   }
 
@@ -150,7 +158,9 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<void> setTokens(TokensDto tokens) async {
-    debugPrint('Set t: ${tokens.accessToken.value} ,r: refresh ${tokens.refreshToken.value}');
+    debugPrint(
+      'Set t: ${tokens.accessToken.value} ,r: refresh ${tokens.refreshToken.value}',
+    );
     await _db.saveKeyValue(_tokenKey, tokens.accessToken.value);
     await _db.saveKeyValue(_refreshTokenK, tokens.refreshToken.value);
     final t = await _db.getKeyValue(_tokenKey);
@@ -181,8 +191,9 @@ class AuthRepositoryImpl extends AuthRepository {
 
     print('WS with TOKEN: next $token');
     final dto = AccessTokenDto(token);
-    final body = WsToServer(eventType: WsEventToServer.withToken, payload: dto);
-    final encoded = jsonEncode(body.toJson(AccessTokenDto.toJsonF));
+    // final body = WsToServer(eventType: WsEventToServer.withToken, payload: dto);
+    final body = WWsToServer.withToken(dto).toJson();
+    final encoded = jsonEncode(body);
 
     print('WS with TOKEN: $encoded');
     wsSend?.call(encoded);
@@ -191,8 +202,8 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   void wsLogin(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
-    final body = WsToServer(eventType: WsEventToServer.login, payload: dto);
-    final encoded = jsonEncode(body.toJson(EmailCredentialDto.toJsonF));
+    final body = WWsToServer.login(dto).toJson();
+    final encoded = jsonEncode(body);
     wsSend?.call(encoded);
   }
 
@@ -203,16 +214,17 @@ class AuthRepositoryImpl extends AuthRepository {
       return;
     }
     final dto = RefreshTokenDto(refresh);
-    final body = WsToServer(eventType: WsEventToServer.withRefresh, payload: dto);
-    final encoded = jsonEncode(body.toJson(RefreshTokenDto.toJsonF));
+    final body = WWsToServer.withRefresh(dto).toJson();
+
+    final encoded = jsonEncode(body);
     wsSend?.call(encoded);
   }
 
   @override
   void wsSignup(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
-    final body = WsToServer(eventType: WsEventToServer.signup, payload: dto);
-    final encoded = jsonEncode(body.toJson(EmailCredentialDto.toJsonF));
+    final body = WWsToServer.signup(dto).toJson();
+    final encoded = jsonEncode(body);
     wsSend?.call(encoded);
   }
 
