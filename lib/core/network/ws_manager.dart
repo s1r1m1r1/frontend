@@ -55,7 +55,6 @@ class WsManager {
 
   void _listen() {
     _wsSubscription = _ws.messages.listen((rawData) async {
-      debugPrint('rawData $rawData');
       debugPrint('rawData ${rawData.runtimeType}');
       final decoded = jsonDecode(rawData);
       final freezed = WWsFromServer.fromJson(decoded as Json);
@@ -65,26 +64,61 @@ class WsManager {
             _authRepository.setTokens(dto.tokens!);
           }
           _mainChatRepository.setRoom(dto.mainRoomId);
-
+          break;
         case TokenExpired_WsFromServer():
           _authRepository.onTokenExpired();
+          break;
         case RefreshTokenExpired_WsFromServer():
           _authRepository.onRefreshTokenExpired();
+          break;
         case OnlineUsers_WsFromServer(:final dto):
           debugPrint('green count: ${dto.members.length} $reset');
           _mainChatRepository.setOnlineMembers(dto.members);
-
-        case Unauthenticated_WsFromServer(:final dto):
-          _authRepository.logOut();
-
+          break;
         case Letters_WsFromServer(:final dto):
           _lettersRepository.setLetters(dto.letters);
-
+          break;
         case OnLetter_WsFromServer(:final dto):
           _lettersRepository.onLetter(dto.letter);
-
+          break;
         case DeletedLetter_WsFromServer(:final dto):
           _lettersRepository.onLetterDeleted(dto.letterId);
+          break;
+        case StatusError_WsFromServer(:final error):
+          switch (error) {
+            case WsServerError.goingAway:
+              break;
+            case WsServerError.unsupportedData:
+              break;
+            case WsServerError.invalidFramePayloadData:
+              break;
+            case WsServerError.messageTooBig:
+              break;
+            case WsServerError.internalError:
+              break;
+            case WsServerError.serviceRestart:
+              break;
+            case WsServerError.tryAgainLater:
+              break;
+            case WsServerError.timeout:
+              break;
+            case WsServerError.unitNotFound:
+              // Todo to create page , and reconnect ws
+              break;
+            case WsServerError.authenticationFailed:
+            case WsServerError.sessionExpired:
+              _authRepository.logOut();
+            case WsServerError.unauthorized:
+              break;
+            case WsServerError.invalidToken:
+              _authRepository.onTokenExpired();
+              break;
+            case WsServerError.sessionAlreadyRegistered:
+              break;
+            case WsServerError.unknown:
+            case WsServerError.unknownFormat:
+              break;
+          }
       }
     });
   }
@@ -111,23 +145,15 @@ class WsLettersRepository {
   Stream<List<LetterDto>> get letters => _lettersSubj.stream;
 
   void newLetter(String roomId, CreateLetterDto letter) {
-    send?.call(
-      jsonEncode(WWsToServer.newLetter(NewLetterPayload(roomId, letter))),
-    );
+    send?.call(ToServer.newLetter(roomId, letter).encoded());
   }
 
   void joinRoom(String roomId) {
-    send?.call(
-      jsonEncode(WWsToServer.joinLetters(LetterRoomPayload('main')).toJson()),
-    );
+    send?.call(ToServer.joinLetters('main').encoded());
   }
 
   void deleteLetter(String roomId, int letterId) {
-    final body = WWsToServer.deleteLetter(
-      IdLetterPayload(roomId: roomId, letterId: letterId),
-    ).toJson();
-
-    final encoded = jsonEncode(body);
+    final encoded = ToServer.deleteLetter(roomId, letterId).encoded();
 
     send?.call(encoded);
   }

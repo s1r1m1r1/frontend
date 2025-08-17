@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -184,26 +183,20 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   void wsWithToken() {
     final token = _tokenSubj.value;
-    print('WS with TOKEN: $token');
     if (token == null) {
       return;
     }
 
-    print('WS with TOKEN: next $token');
-    final dto = AccessTokenDto(token);
     // final body = WsToServer(eventType: WsEventToServer.withToken, payload: dto);
-    final body = WWsToServer.withToken(dto).toJson();
-    final encoded = jsonEncode(body);
+    final encoded = ToServer.withToken(token).encoded();
 
-    print('WS with TOKEN: $encoded');
     wsSend?.call(encoded);
   }
 
   @override
   void wsLogin(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
-    final body = WWsToServer.login(dto).toJson();
-    final encoded = jsonEncode(body);
+    final encoded = ToServer.login(dto).encoded();
     wsSend?.call(encoded);
   }
 
@@ -213,18 +206,15 @@ class AuthRepositoryImpl extends AuthRepository {
     if (refresh == null) {
       return;
     }
-    final dto = RefreshTokenDto(refresh);
-    final body = WWsToServer.withRefresh(dto).toJson();
+    final encoded = ToServer.withRefresh(refresh).encoded();
 
-    final encoded = jsonEncode(body);
     wsSend?.call(encoded);
   }
 
   @override
   void wsSignup(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
-    final body = WWsToServer.signup(dto).toJson();
-    final encoded = jsonEncode(body);
+    final encoded = ToServer.signup(dto).encoded();
     wsSend?.call(encoded);
   }
 
