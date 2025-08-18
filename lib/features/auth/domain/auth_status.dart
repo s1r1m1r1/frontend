@@ -1,4 +1,13 @@
-enum AuthStatus { pending, loggedIn, loggedOut }
+enum AuthStatus {
+  initial,
+  loggedOut,
+  pendingToken,
+  pendingRefresh,
+  loggedIn,
+  wsPending,
+  wsPendingRefresh,
+  wsLoggedIn,
+}
 
 extension AuthStatusExtension on AuthStatus {
   /// Checks if the current authentication status is 'loggedIn'.

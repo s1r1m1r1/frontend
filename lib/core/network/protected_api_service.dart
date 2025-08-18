@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
@@ -20,7 +22,10 @@ class ProtectedApiService {
   }
 
   Future<UnitDto> createUnit(CreateUnitDto dto) async {
-    final response = await _client.post('/game/unit', data: json.encode(dto.toJson()));
+    final response = await _client.post(
+      '/game/unit',
+      data: json.encode(dto.toJson()),
+    );
     if (response.statusCode == 200) {
       return UnitDto.fromJson(response.data);
     } else {
@@ -29,14 +34,17 @@ class ProtectedApiService {
   }
 
   Future<UnitDto> updateUnit(UpdateUnitDto dto) async {
-    print('start update');
-    final response = await _client.put('/game/unit/${dto.id}', data: json.encode(dto.toJson()));
+    debugPrint('start update');
+    final response = await _client.put(
+      '/game/unit/${dto.id}',
+      data: json.encode(dto.toJson()),
+    );
     if (response.statusCode != 200) {
-      print('start not 200');
+      debugPrint('start not 200');
       throw Exception('Failed to update todo');
     }
 
-    print('start good ${response.data}');
+    debugPrint('start good ${response.data}');
     return UnitDto.fromJson(response.data);
   }
 
@@ -48,12 +56,23 @@ class ProtectedApiService {
     return false;
   }
 
-  Future<bool> setSelectedUnit({required int unitId}) async {
+  Future<UnitDto?> setSelectedUnit({required int unitId}) async {
     final response = await _client.post('/game/selected-unit/$unitId');
-    if (response.statusCode == 200) {
-      return true;
+    debugPrint("SetSelected JSON ${response.data} ${response.statusCode}");
+    if (response.statusCode == HttpStatus.notFound) return null;
+    if (response.statusCode != 200) {
+      throw Exception('Failed to select unit');
     }
-    return false;
+    return UnitDto.fromJson(response.data);
+  }
+
+  Future<UnitDto?> fetchSelectedUnit() async {
+    final response = await _client.get('/game/selected-unit');
+    if (response.statusCode == HttpStatus.notFound) return null;
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load unit');
+    }
+    return UnitDto.fromJson(response.data);
   }
 
   //---------------------------------------------------------------------
@@ -69,7 +88,10 @@ class ProtectedApiService {
   }
 
   Future<TodoDto> createTodo(CreateTodoDto todo) async {
-    final response = await _client.post('/todos', data: json.encode(todo.toJson()));
+    final response = await _client.post(
+      '/todos',
+      data: json.encode(todo.toJson()),
+    );
     if (response.statusCode == 200) {
       return TodoDto.fromJson(response.data);
     } else {
@@ -78,14 +100,17 @@ class ProtectedApiService {
   }
 
   Future<TodoDto> updateTodo(UpdateTodoDto dto) async {
-    print('start update');
-    final response = await _client.put('/todos/${dto.id}', data: json.encode(dto.toJson()));
+    debugPrint('start update');
+    final response = await _client.put(
+      '/todos/${dto.id}',
+      data: json.encode(dto.toJson()),
+    );
     if (response.statusCode != 200) {
-      print('start not 200');
+      debugPrint('start not 200');
       throw Exception('Failed to update todo');
     }
 
-    print('start good ${response.data}');
+    debugPrint('start good ${response.data}');
     return TodoDto.fromJson(response.data);
   }
 
@@ -95,15 +120,6 @@ class ProtectedApiService {
       return true;
     }
     return false;
-  }
-
-  Future<WsConfigDto> getWsConfig() async {
-    final response = await _client.get('/config');
-    if (response.statusCode == 200) {
-      return WsConfigDto.fromJson(response.data);
-    } else {
-      throw Exception('Failed to get ws config');
-    }
   }
 
   Future<TodoDto> fetchTodoById(String id) async {

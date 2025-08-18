@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/app/router/guard_router.dart';
+import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
+import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -47,6 +50,15 @@ class SignupRoute extends GoRouteData with _$SignupRoute {
 
   @override
   Widget build(_, _) => SignupPage();
+}
+
+@TypedGoRoute<WsConnectingRoute>(path: WsConnectingRoute.path)
+class WsConnectingRoute extends GoRouteData with _$WsConnectingRoute {
+  static const path = '/ws-connecting';
+  const WsConnectingRoute();
+
+  @override
+  Widget build(_, _) => WsConnectingPage();
 }
 
 @TypedGoRoute<TodoListRoute>(path: TodoListRoute.path)

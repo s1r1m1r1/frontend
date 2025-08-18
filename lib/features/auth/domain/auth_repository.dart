@@ -4,147 +4,119 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/core/network/registration_api_service.dart';
 import 'package:frontend/core/network/ws_manager.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/user.dart';
+import 'package:frontend/features/auth/domain/ws_game_option.dart';
+import 'package:frontend/features/unit/domain/unit.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
 import '../../../app/logger/log_colors.dart';
 import '../../../db/db_client.dart';
-import 'auth_status.dart';
 
 const _tokenKey = '__tokenK__';
 const _refreshTokenK = '__refreshTokenK__';
 
-abstract class AuthRepository {
-  Future<void> init();
-  void dispose();
-
-  AuthStatus get authStatus;
-  Stream<AuthStatus> get authStatusStream;
-  Stream<String?> get accessTokenStream;
-  Stream<String?> get refreshTokenStream;
-
-  String? getToken();
-  String? getRefreshToken();
-
-  void onTokenExpired();
-  void onRefreshTokenExpired();
-  void logOut();
-
-  Future<bool> login(String email, String password);
-  Future<void> signup(String email, String password);
-
-  Future<bool> refreshToken();
-
-  Future<void> setTokens(TokensDto payload);
-
-  FutureOr<void> withToken();
-
-  void wsWithToken();
-  void wsLogin(String email, String password);
-  void wsSignup(String email, String password);
-  void wsWithRefresh();
-
-  WsCallback? wsSend;
-}
-
-@LazySingleton(as: AuthRepository)
-class AuthRepositoryImpl extends AuthRepository {
+@lazySingleton
+class AuthRepository {
   final RegistrationApiService _api;
   final DbClient _db;
-  AuthRepositoryImpl(this._api, this._db) {
+  WsCallback? wsSend;
+  AuthRepository(this._api, this._db) {
     init();
   }
 
-  @override
   Future<void> init() async {
     try {
       final token = await _db.getKeyValue(_tokenKey);
       final refreshToken = await _db.getKeyValue(_refreshTokenK);
       debugPrint('$green LOADED token: $token ,refresh: $refreshToken $reset');
-      _tokenSubj.add(token);
-      _refreshTokenSubj.add(refreshToken);
-      _authStatusSbj.add(
-        token != null ? AuthStatus.pending : AuthStatus.loggedOut,
+      if (refreshToken == null) return;
+      final pendingSession = Session.pending(
+        accessToken: token,
+        refreshToken: refreshToken,
       );
+      sessionNtf.value = pendingSession;
     } catch (e) {
       debugPrint(e.toString());
     }
     // _sessionManager.addListener(_onChangeSessionStatus);
   }
 
-  final _tokenSubj = BehaviorSubject<String?>.seeded(null);
-  final _refreshTokenSubj = BehaviorSubject<String?>.seeded(null);
+  // final tokenNtf = ValueNotifier<String?>(null);
+  // final refreshTokenNtf = ValueNotifier<String?>(null);
+  final sessionNtf = ValueNotifier<Session?>(null);
 
-  @override
-  Stream<AuthStatus> get authStatusStream => _authStatusSbj.stream;
-
-  final _authStatusSbj = BehaviorSubject<AuthStatus>.seeded(
-    AuthStatus.loggedOut,
-  );
-
-  @override
   @disposeMethod
   void dispose() {
     // _sessionManager.removeListener(_onChangeSessionStatus);
   }
 
-  @override
-  AuthStatus get authStatus => _authStatusSbj.value;
-
-  @override
-  String? getToken() => _tokenSubj.value;
-
-  @override
-  String? getRefreshToken() => _refreshTokenSubj.value;
-
-  @override
   void onTokenExpired() {
     debugPrint('$red onTokenExpired $reset');
     unawaited(_db.deleteKeyValue(_tokenKey));
-    _tokenSubj.add(null);
-    _authStatusSbj.add(AuthStatus.pending);
+    final s = sessionNtf.value;
+    if (s != null) {
+      sessionNtf.value = s.copyWith(accessToken: null);
+    }
   }
 
-  @override
   void onRefreshTokenExpired() {
     unawaited(_db.deleteKeyValue(_refreshTokenK));
-    _tokenSubj.add(null);
-    _authStatusSbj.add(AuthStatus.loggedOut);
+    sessionNtf.value = null;
   }
 
-  @override
   Future<bool> login(String email, String password) async {
     try {
       debugPrint('login');
-      final response = await _api.login(
+      final dto = await _api.login(
         EmailCredentialDto(email: email, password: password),
       );
-      setTokens(response);
+      final session = Session.fromDto(dto);
+      sessionNtf.value = session;
+      await setTokens(dto.tokens);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  @override
   Future<void> signup(String email, String password) async {
-    final tokens = await _api.signup(
+    final dto = await _api.signup(
       EmailCredentialDto(email: email, password: password),
     );
-    setTokens(tokens);
+    final newSession = Session.fromDto(dto);
+    sessionNtf.value = newSession;
+    setTokens(dto.tokens);
   }
 
-  @override
+  Future<void> checkToken() async {
+    final session = sessionNtf.value;
+    final token = session?.accessToken;
+    if (token != null) {
+      final dto = await _api.getSession(token);
+      final newSession = Session.fromDto(dto);
+      sessionNtf.value = newSession;
+      setTokens(dto.tokens);
+
+      return;
+    }
+    final refresh = session?.refreshToken;
+    if (refresh != null) {}
+    refreshToken();
+  }
+
   Future<bool> refreshToken() async {
-    final refresh = _refreshTokenSubj.value;
+    final refresh = sessionNtf.value?.refreshToken;
     if (refresh == null) {
       debugPrint('No refresh token available');
       return false;
     }
     try {
-      final tokens = await _api.refresh(refresh);
-      setTokens(tokens);
+      final dto = await _api.refresh(refresh);
+      final newSession = Session.fromDto(dto);
+      sessionNtf.value = newSession;
+      setTokens(dto.tokens);
       return true;
     } catch (err) {
       if (err is DioException && err.response?.statusCode == 401) {
@@ -155,92 +127,90 @@ class AuthRepositoryImpl extends AuthRepository {
     }
   }
 
-  @override
   Future<void> setTokens(TokensDto tokens) async {
     debugPrint(
-      'Set t: ${tokens.accessToken.value} ,r: refresh ${tokens.refreshToken.value}',
+      'Set t: ${tokens.accessToken} ,r: refresh ${tokens.refreshToken}',
     );
-    await _db.saveKeyValue(_tokenKey, tokens.accessToken.value);
-    await _db.saveKeyValue(_refreshTokenK, tokens.refreshToken.value);
-    final t = await _db.getKeyValue(_tokenKey);
-    final r = await _db.getKeyValue(_refreshTokenK);
-    debugPrint('$red Success saved t: $t , r: $r $reset');
-    _refreshTokenSubj.add(tokens.refreshToken.value);
-    _tokenSubj.add(tokens.accessToken.value);
-    _authStatusSbj.add(AuthStatus.loggedIn);
+    await _db.saveKeyValue(_tokenKey, tokens.accessToken);
+    await _db.saveKeyValue(_refreshTokenK, tokens.refreshToken);
+    sessionNtf.value = sessionNtf.value?.copyWith(
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    );
   }
 
-  @override
   void logOut() {
     unawaited(_db.deleteKeyValue(_tokenKey));
     unawaited(_db.deleteKeyValue(_refreshTokenK));
-    _tokenSubj.add(null);
-    _refreshTokenSubj.add(null);
-    _authStatusSbj.add(AuthStatus.loggedOut);
+    sessionNtf.value = null;
   }
 
   //---------  ws  ------------------------------------------------------------------------------------------
-  @override
-  void wsWithToken() {
-    final token = _tokenSubj.value;
-    if (token == null) {
+
+  void wsJoin() {
+    final token = sessionNtf.value?.accessToken;
+    if (token != null) {
+      final encoded = ToServer.withToken(token).encoded();
+      wsSend?.call(encoded);
       return;
     }
-
-    // final body = WsToServer(eventType: WsEventToServer.withToken, payload: dto);
-    final encoded = ToServer.withToken(token).encoded();
-
-    wsSend?.call(encoded);
+    final refresh = sessionNtf.value?.refreshToken;
+    if (refresh != null) {
+      final encoded = ToServer.withRefresh(refresh).encoded();
+      wsSend?.call(encoded);
+      return;
+    }
   }
 
-  @override
   void wsLogin(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
     final encoded = ToServer.login(dto).encoded();
     wsSend?.call(encoded);
   }
 
-  @override
-  void wsWithRefresh() {
-    final refresh = _refreshTokenSubj.value;
-    if (refresh == null) {
-      return;
-    }
-    final encoded = ToServer.withRefresh(refresh).encoded();
-
-    wsSend?.call(encoded);
-  }
-
-  @override
   void wsSignup(String email, String password) {
     final dto = EmailCredentialDto(email: email, password: password);
     final encoded = ToServer.signup(dto).encoded();
     wsSend?.call(encoded);
   }
 
-  @override
-  Stream<String?> get accessTokenStream => _tokenSubj.stream;
-
-  @override
-  Stream<String?> get refreshTokenStream => _refreshTokenSubj.stream;
-
-  @override
-  FutureOr<void> withToken() async {
-    // debug
-    final token = _tokenSubj.value;
-    if (token != null) {
-      debugPrint('$magenta withToken $token $reset');
-      await _api.profile(token).onError((err, st) {
-        if (err is DioException && err.response?.statusCode == 401) {
-          debugPrint('$magenta tokenExpired  $reset');
-          onTokenExpired();
-          return;
-        }
-        debugPrint(err.toString());
-        return;
-      });
-      // valid 200 status
-      _authStatusSbj.add(AuthStatus.loggedIn);
-    }
+  void wsJoinedSession(
+    String mainRoomId,
+    UserDto user,
+    UnitDto unit, {
+    TokensDto? tokens,
+  }) {
+    final session = sessionNtf.value;
+    if (session == null) return;
+    sessionNtf.value = Session.gameJoined(
+      user: User.fromDto(user),
+      unit: Unit.fromDto(unit),
+      refreshToken: tokens?.refreshToken ?? session.refreshToken,
+      accessToken: tokens?.accessToken ?? session.accessToken,
+      gameOption: WsGameOption(mainRoomId: mainRoomId),
+    );
   }
+
+  // @override
+  // FutureOr<void> withToken() async {
+  //   // debug
+  //   debugPrint('$magenta withToken $reset');
+  //   final token = tokenNtf.value;
+  //   if (token != null) {
+  //     debugPrint('$magenta withToken $token $reset');
+  //     await _api.profile(token).onError((err, st) {
+  //       if (err is DioException && err.response?.statusCode == 401) {
+  //         debugPrint('$magenta tokenExpired  $reset');
+  //         onTokenExpired();
+  //         return;
+  //       }
+  //       debugPrint(err.toString());
+  //       return;
+  //     });
+  //     // valid 200 status
+  //     authStatusNtf.add(AuthStatus.loggedIn);
+  //     return;
+  //   }
+  //   authStatusNtf.add(AuthStatus.loggedOut);
+  // }
 }

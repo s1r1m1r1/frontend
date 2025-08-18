@@ -1,7 +1,7 @@
 // lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/auth/logic/login.bloc.dart';
+import 'package:frontend/features/auth/logic/login.cubit.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/routes.dart';
@@ -12,7 +12,10 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<LoginBloc>(), child: _LoginView());
+    return BlocProvider(
+      create: (_) => getIt<LoginCubit>(),
+      child: _LoginView(),
+    );
   }
 }
 
@@ -35,10 +38,15 @@ class _LoginViewState extends State<_LoginView> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: BlocListener<LoginBloc, LoginState>(
+            child: BlocListener<LoginCubit, LoginState>(
               listener: (context, state) {
                 if (state is LoginFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Failed: ${state.error}')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Login Failed: ${state.error}')),
+                  );
+                }
+                if (state is LoginSuccess) {
+                  PendingRoute().go(context);
                 }
               },
               child: Column(
@@ -53,15 +61,18 @@ class _LoginViewState extends State<_LoginView> {
                     obscureText: true,
                   ),
                   const SizedBox(height: 20),
-                  BlocBuilder<LoginBloc, LoginState>(
+                  BlocBuilder<LoginCubit, LoginState>(
                     builder: (context, state) {
                       if (state is LoginLoading) {
                         return const CircularProgressIndicator();
                       }
                       return ElevatedButton(
                         onPressed: () {
-                          BlocProvider.of<LoginBloc>(context).add(
-                            LoginButtonPressed(username: _usernameController.text, password: _passwordController.text),
+                          BlocProvider.of<LoginCubit>(
+                            context,
+                          ).loginButtonPressed(
+                            username: _usernameController.text,
+                            password: _passwordController.text,
                           );
                         },
                         child: const Text('Login'),

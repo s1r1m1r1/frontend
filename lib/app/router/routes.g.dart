@@ -11,6 +11,7 @@ List<RouteBase> get $appRoutes => [
   $pendingRoute,
   $loginRoute,
   $signupRoute,
+  $wsConnectingRoute,
   $todoListRoute,
   $adminRoute,
   $menuRoute,
@@ -95,6 +96,32 @@ mixin _$SignupRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/signup');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $wsConnectingRoute => GoRouteData.$route(
+  path: '/ws-connecting',
+  factory: _$WsConnectingRoute._fromState,
+);
+
+mixin _$WsConnectingRoute on GoRouteData {
+  static WsConnectingRoute _fromState(GoRouterState state) =>
+      const WsConnectingRoute();
+
+  @override
+  String get location => GoRouteData.$location('/ws-connecting');
 
   @override
   void go(BuildContext context) => context.go(location);

@@ -48,6 +48,7 @@ dependencies:
   web_socket_channel: ^3.0.3
   web_socket_client: ^0.2.1
   bloc_concurrency: ^0.3.0
+  listen_it: ^5.0.0
 
 # dependency_overrides:
 #   sha_red:

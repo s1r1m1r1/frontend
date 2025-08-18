@@ -1,7 +1,14 @@
 import 'package:equatable/equatable.dart';
+import 'package:sha_red/src/models/unit_dto.dart';
 
 class Unit extends Equatable {
-  const Unit({required this.id, required this.name, required this.atk, required this.def, required this.vitality});
+  const Unit({
+    required this.id,
+    required this.name,
+    required this.atk,
+    required this.def,
+    required this.vitality,
+  });
   final int id;
   final String name;
 
@@ -42,4 +49,14 @@ class Unit extends Equatable {
 
   @override
   List<Object?> get props => [id, name, vitality, atk, def];
+
+  factory Unit.fromDto(UnitDto dto) {
+    return Unit(
+      id: dto.id,
+      name: dto.name,
+      vitality: dto.vitality,
+      atk: dto.atk,
+      def: dto.def,
+    );
+  }
 }
