@@ -26,6 +26,8 @@ GoRouter buildRouter(BuildContext context) {
             case GameReadySession():
             case GameJoinedSession():
               return null;
+            case GameFinishedSession():
+              return null;
           }
         case LogoutAuthState():
           if (path != LoginRoute.path && path != SignupRoute.path) {

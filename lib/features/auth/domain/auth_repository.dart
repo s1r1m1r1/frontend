@@ -2,68 +2,40 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/core/network/protected_api_service.dart';
 import 'package:frontend/core/network/registration_api_service.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/features/auth/domain/user.dart';
 import 'package:frontend/features/auth/domain/ws_game_option.dart';
 import 'package:frontend/features/unit/domain/unit.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
-import '../../../app/logger/log_colors.dart';
 import '../../../db/db_client.dart';
-
-const _tokenKey = '__tokenK__';
-const _refreshTokenK = '__refreshTokenK__';
 
 @lazySingleton
 class AuthRepository {
   final RegistrationApiService _api;
+  final ProtectedApiService _protectedApi;
   final DbClient _db;
+  final SessionRepository _sessionRepository;
   WsCallback? wsSend;
-  AuthRepository(this._api, this._db) {
-    init();
-  }
+  AuthRepository(
+    this._api,
+    this._db,
+    this._sessionRepository,
+    this._protectedApi,
+  );
 
-  Future<void> init() async {
-    try {
-      final token = await _db.getKeyValue(_tokenKey);
-      final refreshToken = await _db.getKeyValue(_refreshTokenK);
-      debugPrint('$green LOADED token: $token ,refresh: $refreshToken $reset');
-      if (refreshToken == null) return;
-      final pendingSession = Session.pending(
-        accessToken: token,
-        refreshToken: refreshToken,
-      );
-      sessionNtf.value = pendingSession;
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-    // _sessionManager.addListener(_onChangeSessionStatus);
-  }
+  ValueNotifier<Session?> get sessionNtf => _sessionRepository.sessionNtf;
 
   // final tokenNtf = ValueNotifier<String?>(null);
   // final refreshTokenNtf = ValueNotifier<String?>(null);
-  final sessionNtf = ValueNotifier<Session?>(null);
-
   @disposeMethod
   void dispose() {
     // _sessionManager.removeListener(_onChangeSessionStatus);
-  }
-
-  void onTokenExpired() {
-    debugPrint('$red onTokenExpired $reset');
-    unawaited(_db.deleteKeyValue(_tokenKey));
-    final s = sessionNtf.value;
-    if (s != null) {
-      sessionNtf.value = s.copyWith(accessToken: null);
-    }
-  }
-
-  void onRefreshTokenExpired() {
-    unawaited(_db.deleteKeyValue(_refreshTokenK));
-    sessionNtf.value = null;
   }
 
   Future<bool> login(String email, String password) async {
@@ -74,7 +46,7 @@ class AuthRepository {
       );
       final session = Session.fromDto(dto);
       sessionNtf.value = session;
-      await setTokens(dto.tokens);
+      await _sessionRepository.setTokens(dto.tokens);
       return true;
     } catch (e) {
       return false;
@@ -87,17 +59,17 @@ class AuthRepository {
     );
     final newSession = Session.fromDto(dto);
     sessionNtf.value = newSession;
-    setTokens(dto.tokens);
+    await _sessionRepository.setTokens(dto.tokens);
   }
 
   Future<void> checkToken() async {
     final session = sessionNtf.value;
     final token = session?.accessToken;
     if (token != null) {
-      final dto = await _api.getSession(token);
+      final dto = await _protectedApi.getSession();
       final newSession = Session.fromDto(dto);
       sessionNtf.value = newSession;
-      setTokens(dto.tokens);
+      await _sessionRepository.setTokens(dto.tokens);
 
       return;
     }
@@ -116,33 +88,15 @@ class AuthRepository {
       final dto = await _api.refresh(refresh);
       final newSession = Session.fromDto(dto);
       sessionNtf.value = newSession;
-      setTokens(dto.tokens);
+      await _sessionRepository.setTokens(dto.tokens);
       return true;
     } catch (err) {
       if (err is DioException && err.response?.statusCode == 401) {
-        onRefreshTokenExpired();
+        _sessionRepository.onRefreshTokenExpired();
       }
       debugPrint('Failed to refresh access token: $err');
       return false;
     }
-  }
-
-  Future<void> setTokens(TokensDto tokens) async {
-    debugPrint(
-      'Set t: ${tokens.accessToken} ,r: refresh ${tokens.refreshToken}',
-    );
-    await _db.saveKeyValue(_tokenKey, tokens.accessToken);
-    await _db.saveKeyValue(_refreshTokenK, tokens.refreshToken);
-    sessionNtf.value = sessionNtf.value?.copyWith(
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    );
-  }
-
-  void logOut() {
-    unawaited(_db.deleteKeyValue(_tokenKey));
-    unawaited(_db.deleteKeyValue(_refreshTokenK));
-    sessionNtf.value = null;
   }
 
   //---------  ws  ------------------------------------------------------------------------------------------

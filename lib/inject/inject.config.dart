@@ -21,6 +21,7 @@ import 'package:frontend/db/db_modulte.dart' as _i788;
 import 'package:frontend/features/admin/_domain/admin_repository.dart' as _i151;
 import 'package:frontend/features/admin/bloc/admin_bloc.dart' as _i91;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
+import 'package:frontend/features/auth/domain/session_repository.dart' as _i166;
 import 'package:frontend/features/auth/logic/auth_cubit.dart' as _i233;
 import 'package:frontend/features/auth/logic/login.cubit.dart' as _i132;
 import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
@@ -74,6 +75,9 @@ extension GetItInjectableX on _i174.GetIt {
       registerFor: {_dev},
     );
     gh.lazySingleton<_i151.AdminRepository>(() => _i151.AdminRepositoryImpl());
+    gh.lazySingleton<_i166.SessionRepository>(
+      () => _i166.SessionRepository(gh<_i569.DbClient>()),
+    );
     gh.lazySingleton<_i935.UserRepository>(() => _i935.UserRepositoryImpl());
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
@@ -98,30 +102,45 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'registration'),
       ),
     );
-    gh.lazySingleton<_i887.AuthRepository>(
-      () => _i887.AuthRepository(
-        gh<_i436.RegistrationApiService>(),
-        gh<_i569.DbClient>(),
-      ),
-      dispose: (i) => i.dispose(),
-    );
-    gh.lazySingleton<_i948.WebSocket>(
-      () =>
-          wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
-    );
     gh.lazySingleton<_i361.Dio>(
       () => dioModule.dio(
-        gh<_i887.AuthRepository>(),
+        gh<_i166.SessionRepository>(),
         gh<_i716.AppConfig>(),
         gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
       instanceName: 'withToken',
+    );
+    gh.lazySingleton<_i365.ProtectedApiService>(
+      () => _i365.ProtectedApiService(gh<_i361.Dio>(instanceName: 'withToken')),
+    );
+    gh.lazySingleton<_i739.TodoRepository>(
+      () => _i739.TodoRepositoryImpl(gh<_i365.ProtectedApiService>()),
+    );
+    gh.lazySingleton<_i887.AuthRepository>(
+      () => _i887.AuthRepository(
+        gh<_i436.RegistrationApiService>(),
+        gh<_i569.DbClient>(),
+        gh<_i166.SessionRepository>(),
+        gh<_i365.ProtectedApiService>(),
+      ),
+      dispose: (i) => i.dispose(),
+    );
+    gh.lazySingleton<_i92.UnitRepository>(
+      () => _i92.UnitRepository(gh<_i365.ProtectedApiService>()),
+    );
+    gh.lazySingleton<_i948.WebSocket>(
+      () =>
+          wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
     );
     gh.factory<_i64.LettersBloc>(
       () => _i64.LettersBloc(
         gh<_i684.WsLettersRepository>(),
         gh<_i887.AuthRepository>(),
       ),
+    );
+    gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
+    gh.factory<_i557.SelectedUnitBloc>(
+      () => _i557.SelectedUnitBloc(gh<_i92.UnitRepository>()),
     );
     gh.factory<_i415.SignupBloc>(
       () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
@@ -141,14 +160,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i165.WsJoinCubit>(
       () => _i165.WsJoinCubit(gh<_i887.AuthRepository>()),
     );
-    gh.lazySingleton<_i365.ProtectedApiService>(
-      () => _i365.ProtectedApiService(gh<_i361.Dio>(instanceName: 'withToken')),
-    );
-    gh.lazySingleton<_i739.TodoRepository>(
-      () => _i739.TodoRepositoryImpl(gh<_i365.ProtectedApiService>()),
-    );
-    gh.lazySingleton<_i92.UnitRepository>(
-      () => _i92.UnitRepository(gh<_i365.ProtectedApiService>()),
+    gh.factory<_i955.TodoBloc>(
+      () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
     );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
@@ -156,20 +169,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i151.AdminRepository>(),
         gh<_i948.WebSocket>(),
         gh<_i716.AppConfig>(),
+        gh<_i166.SessionRepository>(),
         gh<_i887.AuthRepository>(),
         gh<_i346.MainChatRepository>(),
       ),
       dispose: (i) => i.dispose(),
-    );
-    gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
-    gh.factory<_i557.SelectedUnitBloc>(
-      () => _i557.SelectedUnitBloc(gh<_i92.UnitRepository>()),
-    );
-    gh.factory<_i955.TodoBloc>(
-      () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
-    );
-    gh.factory<_i827.WsConnectionCubit>(
-      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
     );
     gh.factory<_i725.AppStageBloc>(
       () => _i725.AppStageBloc(
@@ -179,6 +183,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i712.CreateUnitBloc>(
       () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
+    );
+    gh.factory<_i827.WsConnectionCubit>(
+      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
     );
     return this;
   }

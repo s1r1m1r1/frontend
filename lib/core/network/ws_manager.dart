@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/features/menu/domain/main_chat_repository.dart';
 import 'package:frontend/features/menu/domain/ws_repository.dart';
 import 'package:frontend/inject/app_config.dart';
@@ -18,6 +19,7 @@ import '../../features/admin/_domain/admin_repository.dart';
 class WsManager {
   // final WsCounterRepository _counterRepository;
   final WsLettersRepository _lettersRepository;
+  final SessionRepository _sessionRepository;
   final AuthRepository _authRepository;
   final AdminRepository _adminRepository;
   final AppConfig _appConfig;
@@ -31,6 +33,7 @@ class WsManager {
     // this._mainChatRepository,
     this._ws,
     this._appConfig,
+    this._sessionRepository,
     this._authRepository,
     this._mainChatRepository,
   ) {
@@ -112,25 +115,37 @@ class WsManager {
             case WsServerError.unitNotFound:
               // Todo to create page , and reconnect ws
               break;
+            // 4001
             case WsServerError.authenticationFailed:
+              break;
+            // 4002
             case WsServerError.sessionExpired:
               break;
-            // _authRepository.logOut();
+            // 4003
             case WsServerError.unauthorized:
               break;
+            // 4004
             case WsServerError.invalidToken:
-              _authRepository.onTokenExpired();
+              _sessionRepository.onTokenExpired();
               _authRepository.wsJoin();
               break;
+            // 4005
             case WsServerError.sessionAlreadyRegistered:
               debugPrint('$red [WsManager] session AlreadyRegistered $reset');
               break;
+            // 4006
+            case WsServerError.finishedDuplicateSession:
+              debugPrint('$red [WsManager] finishDuplicateSession $reset');
+
+            //5555
             case WsServerError.unknown:
+            // 5556
             case WsServerError.unknownFormat:
               debugPrint('$red [WsManager] unknown error $reset');
               break;
-            case WsServerError.finishDuplicateSession:
-              debugPrint('$red [WsManager] finishDuplicateSession $reset');
+            case WsServerError.sessionClosed:
+              debugPrint('$red [WsManager] sessionClosed $reset');
+              break;
           }
       }
     });

@@ -97,6 +97,17 @@ class MenuView extends StatelessWidget {
                   // Placeholder for the top-left icon
                   Container(width: 30, height: 30, color: accentColor),
                   const Spacer(),
+                  BlocBuilder<ChatMemberBloc, ChatMemberState>(
+                    builder: (context, state) {
+                      switch (state) {
+                        case InitialState():
+                          return Text('-0-');
+                        case SuccessState():
+                          return Text('${state.memberIds.length}');
+                      }
+                    },
+                  ),
+                  const Spacer(),
                   BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
                     builder: (context, state) {
                       return Text(

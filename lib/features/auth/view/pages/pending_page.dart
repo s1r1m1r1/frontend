@@ -47,6 +47,8 @@ class _PendingView extends StatelessWidget {
                 WsConnectingRoute().go(context);
               case GameJoinedSession():
                 MenuRoute().go(context);
+              case GameFinishedSession():
+                break;
             }
         }
       },

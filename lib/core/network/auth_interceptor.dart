@@ -1,21 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 
 import '../../app/logger/log_colors.dart';
 import '../../features/auth/domain/auth_repository.dart';
 
 class AuthInterceptor extends Interceptor {
-  final AuthRepository _authRepository;
+  final SessionRepository _repository;
   final Dio retryDio;
 
-  AuthInterceptor(this._authRepository, this.retryDio);
+  AuthInterceptor(this._repository, this.retryDio);
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final token = _authRepository
+    final token = _repository
         .sessionNtf
         .value
         ?.accessToken; // Retrieve token from secure storage
@@ -26,7 +27,7 @@ class AuthInterceptor extends Interceptor {
       debugPrint(
         '$red No token found, proceeding without Authorization header$reset',
       );
-      _authRepository.onTokenExpired();
+      _repository.onTokenExpired();
       return;
     }
     super.onRequest(options, handler);
@@ -45,7 +46,7 @@ class AuthInterceptor extends Interceptor {
     // Handle token refresh logic here if needed (e.g., 401 Unauthorized)
     if (err.response?.statusCode == 401) {
       debugPrint('$red Unauthorized. Attempting to refresh token... $reset');
-      _authRepository.onTokenExpired();
+      _repository.onTokenExpired();
       // Potentially attempt to refresh token and retry the request
     }
     super.onError(err, handler);
