@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/app.dart';
 import 'package:frontend/app/app_bloc_observer.dart';
-import 'package:frontend/features/auth/logic/signup.bloc.dart';
-import 'package:frontend/features/todo/view/bloc/todo_bloc.dart';
-import 'package:frontend/bloc/user/user_bloc.dart';
 import 'package:frontend/inject/inject.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -13,7 +10,6 @@ import 'package:logging/logging.dart';
 
 import 'app/logger/log_colors.dart';
 import 'app/logger/logger_utils.dart';
-import 'inject/get_it.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

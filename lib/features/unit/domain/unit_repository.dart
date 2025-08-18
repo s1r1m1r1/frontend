@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:sha_red/sha_red.dart';
 
 import '../../../core/network/protected_api_service.dart';

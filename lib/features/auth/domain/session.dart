@@ -60,6 +60,7 @@ sealed class Session with _$Session {
         refreshToken: dto.tokens.refreshToken,
       );
     }
+
     return WelcomeSession(
       accessToken: dto.tokens.accessToken,
       refreshToken: dto.tokens.refreshToken,

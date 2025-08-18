@@ -25,8 +25,6 @@ import 'package:frontend/features/auth/domain/session_repository.dart' as _i166;
 import 'package:frontend/features/auth/logic/auth_cubit.dart' as _i233;
 import 'package:frontend/features/auth/logic/login.cubit.dart' as _i132;
 import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
-import 'package:frontend/features/auth/logic/ws_login.bloc.dart' as _i966;
-import 'package:frontend/features/auth/logic/ws_signup.bloc.dart' as _i268;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
@@ -40,7 +38,6 @@ import 'package:frontend/features/unit/logic/create_unit_bloc.dart' as _i712;
 import 'package:frontend/features/unit/logic/selected_unit.bloc.dart' as _i557;
 import 'package:frontend/features/unit/logic/unit_bloc.dart' as _i199;
 import 'package:frontend/features/user/domain/user_repository.dart' as _i935;
-import 'package:frontend/features/user/logic/app_stage.bloc.dart' as _i725;
 import 'package:frontend/inject/app_config.dart' as _i716;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -119,7 +116,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i887.AuthRepository>(
       () => _i887.AuthRepository(
         gh<_i436.RegistrationApiService>(),
-        gh<_i569.DbClient>(),
         gh<_i166.SessionRepository>(),
         gh<_i365.ProtectedApiService>(),
       ),
@@ -145,12 +141,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i415.SignupBloc>(
       () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i966.WsLoginBloc>(
-      () => _i966.WsLoginBloc(gh<_i887.AuthRepository>()),
-    );
-    gh.factory<_i268.WsSignupBloc>(
-      () => _i268.WsSignupBloc(gh<_i887.AuthRepository>()),
-    );
     gh.factory<_i233.AuthCubit>(
       () => _i233.AuthCubit(gh<_i887.AuthRepository>()),
     );
@@ -174,12 +164,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i346.MainChatRepository>(),
       ),
       dispose: (i) => i.dispose(),
-    );
-    gh.factory<_i725.AppStageBloc>(
-      () => _i725.AppStageBloc(
-        gh<_i887.AuthRepository>(),
-        gh<_i92.UnitRepository>(),
-      ),
     );
     gh.factory<_i712.CreateUnitBloc>(
       () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
