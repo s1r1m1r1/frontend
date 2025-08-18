@@ -1,17 +1,21 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../features/auth/domain/auth_repository.dart';
 import 'auth_interceptor.dart';
 
 @module
 abstract class DioModule {
   @Named('withToken')
   @lazySingleton
-  Dio dio(AuthRepository authRepository, AppConfig appConfig, @Named('retryDio') Dio retryDio) {
+  Dio dio(
+    SessionRepository _rep,
+    AppConfig appConfig,
+    @Named('retryDio') Dio retryDio,
+  ) {
     final dio = Dio(BaseOptions(baseUrl: appConfig.httpBaseUrl));
-    dio.interceptors.add(AuthInterceptor(authRepository, retryDio));
+    dio.interceptors.add(AuthInterceptor(_rep, retryDio));
     return dio;
   }
 

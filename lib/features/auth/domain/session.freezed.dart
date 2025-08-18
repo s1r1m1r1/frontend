@@ -87,14 +87,15 @@ extension SessionPatterns on Session {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PendingSession value)?  pending,TResult Function( WelcomeSession value)?  welcome,TResult Function( GameReadySession value)?  gameReady,TResult Function( GameJoinedSession value)?  gameJoined,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PendingSession value)?  pending,TResult Function( WelcomeSession value)?  welcome,TResult Function( GameReadySession value)?  gameReady,TResult Function( GameJoinedSession value)?  gameJoined,TResult Function( GameFinishedSession value)?  gameFinished,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case PendingSession() when pending != null:
 return pending(_that);case WelcomeSession() when welcome != null:
 return welcome(_that);case GameReadySession() when gameReady != null:
 return gameReady(_that);case GameJoinedSession() when gameJoined != null:
-return gameJoined(_that);case _:
+return gameJoined(_that);case GameFinishedSession() when gameFinished != null:
+return gameFinished(_that);case _:
   return orElse();
 
 }
@@ -112,14 +113,15 @@ return gameJoined(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PendingSession value)  pending,required TResult Function( WelcomeSession value)  welcome,required TResult Function( GameReadySession value)  gameReady,required TResult Function( GameJoinedSession value)  gameJoined,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PendingSession value)  pending,required TResult Function( WelcomeSession value)  welcome,required TResult Function( GameReadySession value)  gameReady,required TResult Function( GameJoinedSession value)  gameJoined,required TResult Function( GameFinishedSession value)  gameFinished,}){
 final _that = this;
 switch (_that) {
 case PendingSession():
 return pending(_that);case WelcomeSession():
 return welcome(_that);case GameReadySession():
 return gameReady(_that);case GameJoinedSession():
-return gameJoined(_that);}
+return gameJoined(_that);case GameFinishedSession():
+return gameFinished(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -133,14 +135,15 @@ return gameJoined(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PendingSession value)?  pending,TResult? Function( WelcomeSession value)?  welcome,TResult? Function( GameReadySession value)?  gameReady,TResult? Function( GameJoinedSession value)?  gameJoined,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PendingSession value)?  pending,TResult? Function( WelcomeSession value)?  welcome,TResult? Function( GameReadySession value)?  gameReady,TResult? Function( GameJoinedSession value)?  gameJoined,TResult? Function( GameFinishedSession value)?  gameFinished,}){
 final _that = this;
 switch (_that) {
 case PendingSession() when pending != null:
 return pending(_that);case WelcomeSession() when welcome != null:
 return welcome(_that);case GameReadySession() when gameReady != null:
 return gameReady(_that);case GameJoinedSession() when gameJoined != null:
-return gameJoined(_that);case _:
+return gameJoined(_that);case GameFinishedSession() when gameFinished != null:
+return gameFinished(_that);case _:
   return null;
 
 }
@@ -157,13 +160,14 @@ return gameJoined(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? accessToken,  String refreshToken)?  pending,TResult Function( String? accessToken,  String refreshToken,  User user)?  welcome,TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken)?  gameReady,TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameJoined,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String? accessToken,  String refreshToken)?  pending,TResult Function( String? accessToken,  String refreshToken,  User user)?  welcome,TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken)?  gameReady,TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameJoined,TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameFinished,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PendingSession() when pending != null:
 return pending(_that.accessToken,_that.refreshToken);case WelcomeSession() when welcome != null:
 return welcome(_that.accessToken,_that.refreshToken,_that.user);case GameReadySession() when gameReady != null:
 return gameReady(_that.user,_that.unit,_that.accessToken,_that.refreshToken);case GameJoinedSession() when gameJoined != null:
-return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case _:
+return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case GameFinishedSession() when gameFinished != null:
+return gameFinished(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case _:
   return orElse();
 
 }
@@ -181,13 +185,14 @@ return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? accessToken,  String refreshToken)  pending,required TResult Function( String? accessToken,  String refreshToken,  User user)  welcome,required TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken)  gameReady,required TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)  gameJoined,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String? accessToken,  String refreshToken)  pending,required TResult Function( String? accessToken,  String refreshToken,  User user)  welcome,required TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken)  gameReady,required TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)  gameJoined,required TResult Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)  gameFinished,}) {final _that = this;
 switch (_that) {
 case PendingSession():
 return pending(_that.accessToken,_that.refreshToken);case WelcomeSession():
 return welcome(_that.accessToken,_that.refreshToken,_that.user);case GameReadySession():
 return gameReady(_that.user,_that.unit,_that.accessToken,_that.refreshToken);case GameJoinedSession():
-return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);}
+return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case GameFinishedSession():
+return gameFinished(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -201,13 +206,14 @@ return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? accessToken,  String refreshToken)?  pending,TResult? Function( String? accessToken,  String refreshToken,  User user)?  welcome,TResult? Function( User user,  Unit unit,  String? accessToken,  String refreshToken)?  gameReady,TResult? Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameJoined,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String? accessToken,  String refreshToken)?  pending,TResult? Function( String? accessToken,  String refreshToken,  User user)?  welcome,TResult? Function( User user,  Unit unit,  String? accessToken,  String refreshToken)?  gameReady,TResult? Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameJoined,TResult? Function( User user,  Unit unit,  String? accessToken,  String refreshToken,  WsGameOption gameOption)?  gameFinished,}) {final _that = this;
 switch (_that) {
 case PendingSession() when pending != null:
 return pending(_that.accessToken,_that.refreshToken);case WelcomeSession() when welcome != null:
 return welcome(_that.accessToken,_that.refreshToken,_that.user);case GameReadySession() when gameReady != null:
 return gameReady(_that.user,_that.unit,_that.accessToken,_that.refreshToken);case GameJoinedSession() when gameJoined != null:
-return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case _:
+return gameJoined(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case GameFinishedSession() when gameFinished != null:
+return gameFinished(_that.user,_that.unit,_that.accessToken,_that.refreshToken,_that.gameOption);case _:
   return null;
 
 }
@@ -505,6 +511,98 @@ class _$GameJoinedSessionCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = freezed,Object? refreshToken = null,Object? gameOption = null,}) {
   return _then(GameJoinedSession(
+user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
+as Unit,accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as String,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
+as WsGameOption,
+  ));
+}
+
+/// Create a copy of Session
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res> get user {
+  
+  return $UserCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}/// Create a copy of Session
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WsGameOptionCopyWith<$Res> get gameOption {
+  
+  return $WsGameOptionCopyWith<$Res>(_self.gameOption, (value) {
+    return _then(_self.copyWith(gameOption: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class GameFinishedSession extends Session implements ISessionWithTokens {
+  const GameFinishedSession({required this.user, required this.unit, this.accessToken, required this.refreshToken, required this.gameOption}): super._();
+  
+
+ final  User user;
+ final  Unit unit;
+@override final  String? accessToken;
+@override final  String refreshToken;
+ final  WsGameOption gameOption;
+
+/// Create a copy of Session
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GameFinishedSessionCopyWith<GameFinishedSession> get copyWith => _$GameFinishedSessionCopyWithImpl<GameFinishedSession>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameFinishedSession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.gameOption, gameOption) || other.gameOption == gameOption));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,user,unit,accessToken,refreshToken,gameOption);
+
+@override
+String toString() {
+  return 'Session.gameFinished(user: $user, unit: $unit, accessToken: $accessToken, refreshToken: $refreshToken, gameOption: $gameOption)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $GameFinishedSessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
+  factory $GameFinishedSessionCopyWith(GameFinishedSession value, $Res Function(GameFinishedSession) _then) = _$GameFinishedSessionCopyWithImpl;
+@override @useResult
+$Res call({
+ User user, Unit unit, String? accessToken, String refreshToken, WsGameOption gameOption
+});
+
+
+$UserCopyWith<$Res> get user;$WsGameOptionCopyWith<$Res> get gameOption;
+
+}
+/// @nodoc
+class _$GameFinishedSessionCopyWithImpl<$Res>
+    implements $GameFinishedSessionCopyWith<$Res> {
+  _$GameFinishedSessionCopyWithImpl(this._self, this._then);
+
+  final GameFinishedSession _self;
+  final $Res Function(GameFinishedSession) _then;
+
+/// Create a copy of Session
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = freezed,Object? refreshToken = null,Object? gameOption = null,}) {
+  return _then(GameFinishedSession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
 as Unit,accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable

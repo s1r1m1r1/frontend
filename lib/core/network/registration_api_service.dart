@@ -61,15 +61,4 @@ class RegistrationApiService {
       throw RegApiException('Failed to refresh token');
     }
   }
-
-  Future<SessionDto> getSession(String token) async {
-    final response = await _client.get(
-      '/session',
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
-    );
-    if (response.statusCode == 200) {
-      return SessionDto.fromJson(response.data);
-    }
-    throw RegApiException('Failed to get profile');
-  }
 }

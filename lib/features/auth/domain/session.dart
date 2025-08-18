@@ -41,6 +41,15 @@ sealed class Session with _$Session {
     required WsGameOption gameOption,
   }) = GameJoinedSession;
 
+  @Implements<ISessionWithTokens>()
+  const factory Session.gameFinished({
+    required User user,
+    required Unit unit,
+    String? accessToken,
+    required String refreshToken,
+    required WsGameOption gameOption,
+  }) = GameFinishedSession;
+
   factory Session.fromDto(SessionDto dto) {
     final user = User.fromDto(dto.user);
     if (dto.unit != null) {

@@ -10,6 +10,15 @@ import 'package:sha_red/sha_red.dart';
 class ProtectedApiService {
   final Dio _client;
   const ProtectedApiService(@Named('withToken') this._client);
+
+  Future<SessionDto> getSession() async {
+    final response = await _client.get('/session');
+    if (response.statusCode == 200) {
+      return SessionDto.fromJson(response.data);
+    }
+    throw Exception('Failed to load session');
+  }
+
   Future<ListUnitDto?> fetchListUnit() async {
     final response = await _client.get('/game/unit');
     if (response.statusCode == 200) {
