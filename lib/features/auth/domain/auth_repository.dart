@@ -19,15 +19,9 @@ import '../../../db/db_client.dart';
 class AuthRepository {
   final RegistrationApiService _api;
   final ProtectedApiService _protectedApi;
-  final DbClient _db;
   final SessionRepository _sessionRepository;
   WsCallback? wsSend;
-  AuthRepository(
-    this._api,
-    this._db,
-    this._sessionRepository,
-    this._protectedApi,
-  );
+  AuthRepository(this._api, this._sessionRepository, this._protectedApi);
 
   ValueNotifier<Session?> get sessionNtf => _sessionRepository.sessionNtf;
 
@@ -114,18 +108,6 @@ class AuthRepository {
       wsSend?.call(encoded);
       return;
     }
-  }
-
-  void wsLogin(String email, String password) {
-    final dto = EmailCredentialDto(email: email, password: password);
-    final encoded = ToServer.login(dto).encoded();
-    wsSend?.call(encoded);
-  }
-
-  void wsSignup(String email, String password) {
-    final dto = EmailCredentialDto(email: email, password: password);
-    final encoded = ToServer.signup(dto).encoded();
-    wsSend?.call(encoded);
   }
 
   void wsJoinedSession(
