@@ -10,12 +10,11 @@ class MainChatRepository {
   WsCallback? send;
   final _roomIdSubj = BehaviorSubject<String?>.seeded(null);
   final _onlineMembersSubj = BehaviorSubject<List<OnlineMemberDto>>.seeded([]);
-  Stream<String?> get roomId => _roomIdSubj.stream;
+  Stream<String?> get roomIdStream => _roomIdSubj.stream;
 
   Stream<List<OnlineMemberDto>> get onlineMembers => _onlineMembersSubj.stream;
-  void setOnlineMembers(List<OnlineMemberDto> usersIds) => _onlineMembersSubj.value = usersIds;
-
-  void setRoom(String roomId) => _roomIdSubj.add(roomId);
+  void setOnlineMembers(List<OnlineMemberDto> usersIds) =>
+      _onlineMembersSubj.value = usersIds;
 
   @disposeMethod
   void dispose() {

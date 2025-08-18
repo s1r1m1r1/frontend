@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/app.dart';
 import 'package:frontend/app/app_bloc_observer.dart';
-import 'package:frontend/features/auth/logic/signup.bloc.dart';
-import 'package:frontend/features/todo/view/bloc/todo_bloc.dart';
-import 'package:frontend/bloc/user/user_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 
@@ -22,7 +19,10 @@ Future<void> main() async {
   Logger.root.onRecord.listen(watchRecords);
   PlatformDispatcher.instance.onError = (error, stack) {
     if (kDebugMode) {
-      debugPrintStack(stackTrace: stack, label: '${red}PlatformDispatcher$reset$error');
+      debugPrintStack(
+        stackTrace: stack,
+        label: '${red}PlatformDispatcher$reset$error',
+      );
     } else {
       // Sentry.captureException(details.exception, stackTrace: details.stack);
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
@@ -39,14 +39,5 @@ Future<void> main() async {
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
     }
   };
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<UserBloc>(create: (_) => getIt<UserBloc>()..add(LoadUsers())),
-        BlocProvider<SignupBloc>(create: (_) => getIt<SignupBloc>()),
-        BlocProvider<TodoBloc>(create: (_) => getIt<TodoBloc>()..add(LoadTodosEvent())),
-      ],
-      child: const App(),
-    ),
-  );
+  runApp(const App());
 }

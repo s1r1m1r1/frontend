@@ -6,13 +6,29 @@ import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
 
 import '../../../inject/get_it.dart';
-import '../../auth/logic/with_token/ws_with_token.bloc.dart';
 
-const Color primaryColor = Color(0xFF1A237E); // A dark blue for the header/buttons
-const Color secondaryColor = Color.fromARGB(255, 0, 138, 67); // A dark brown for the main area background
-const Color accentColor = Color.fromARGB(255, 0, 235, 235); // A gold/yellow for outlines and text
+const Color primaryColor = Color(
+  0xFF1A237E,
+); // A dark blue for the header/buttons
+const Color secondaryColor = Color.fromARGB(
+  255,
+  0,
+  138,
+  67,
+); // A dark brown for the main area background
+const Color accentColor = Color.fromARGB(
+  255,
+  0,
+  235,
+  235,
+); // A gold/yellow for outlines and text
 const Color buttonColor = Color(0xFF2C3E50); // A deep blue/grey for buttons
-const Color chatBackgroundColor = Color.fromARGB(255, 135, 21, 1); // A dark brown for the chat box
+const Color chatBackgroundColor = Color.fromARGB(
+  255,
+  135,
+  21,
+  1,
+); // A dark brown for the chat box
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -30,11 +46,33 @@ class MenuPage extends StatelessWidget {
             return bloc;
           },
         ),
-        BlocProvider(lazy: false, create: (_) => getIt<WsWithTokenBloc>()..add(SubscribeEvent())),
-        BlocProvider(lazy: false, create: (_) => getIt<LettersBloc>()..add(LettersEvent.started())),
-        BlocProvider(lazy: false, create: (_) => getIt<WsConnectionCubit>()..listenConnection()),
+
+        BlocProvider(
+          lazy: false,
+          create: (_) => getIt<LettersBloc>()..add(LettersEvent.started()),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (_) => getIt<WsConnectionCubit>()..listenConnection(),
+        ),
       ],
-      child: const MenuView(),
+      child: BlocListener<WsConnectionCubit, WsConnectionStatus>(
+        listener: (context, status) {
+          switch (status) {
+            case WsConnectionStatus.init:
+            case WsConnectionStatus.connecting:
+            case WsConnectionStatus.reconnecting:
+              break;
+            case WsConnectionStatus.reconnected:
+            case WsConnectionStatus.connected:
+              break;
+            case WsConnectionStatus.disconnecting:
+            case WsConnectionStatus.disconnected:
+              break;
+          }
+        },
+        child: const MenuView(),
+      ),
     );
   }
 }
@@ -61,7 +99,10 @@ class MenuView extends StatelessWidget {
                   const Spacer(),
                   BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
                     builder: (context, state) {
-                      return Text(state.name.toString(), style: TextStyle(fontSize: 8));
+                      return Text(
+                        state.name.toString(),
+                        style: TextStyle(fontSize: 8),
+                      );
                     },
                   ),
                   const SizedBox(width: 8),
@@ -80,18 +121,17 @@ class MenuView extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey[900], // Simulating the wooden background
+                    color: Colors
+                        .blueGrey[900], // Simulating the wooden background
                     border: Border.all(color: accentColor, width: 2),
                   ),
                   child: Center(
                     // Placeholder for the main game UI content
                     child: Column(
                       children: [
-                        Text('Game UI Content', style: TextStyle(color: accentColor)),
-                        BlocBuilder<WsWithTokenBloc, WithTokenState>(
-                          builder: (context, state) {
-                            return Text(state.status.toString());
-                          },
+                        Text(
+                          'Game UI Content',
+                          style: TextStyle(color: accentColor),
                         ),
                       ],
                     ),
@@ -108,7 +148,10 @@ class MenuView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildMiddleButton('В БОЙ', Colors.green),
-                  _buildMiddleButton('ТОРГОВЛЯ', const Color.fromARGB(255, 95, 0, 52)),
+                  _buildMiddleButton(
+                    'ТОРГОВЛЯ',
+                    const Color.fromARGB(255, 95, 0, 52),
+                  ),
                   _buildMiddleButton('БАНК', Colors.blue),
                   _buildMiddleButton('НАСТРОЙКИ', Colors.grey),
                 ],
@@ -136,11 +179,15 @@ class MenuView extends StatelessWidget {
                             filled: true,
                             fillColor: Colors.black,
                             border: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color.fromARGB(255, 235, 0, 24)),
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 235, 0, 24),
+                              ),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color.fromARGB(255, 235, 0, 24)),
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 235, 0, 24),
+                              ),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -158,7 +205,9 @@ class MenuView extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: accentColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
                         child: const Text('Send'),
                       ),
@@ -227,7 +276,9 @@ class _ChatBody extends StatelessWidget {
                       trailing: (letter.id != null)
                           ? IconButton(
                               icon: const Icon(Icons.delete),
-                              onPressed: () => context.read<LettersBloc>().add(LettersEvent.deletePressed(letter.id!)),
+                              onPressed: () => context.read<LettersBloc>().add(
+                                LettersEvent.deletePressed(letter.id!),
+                              ),
                             )
                           : null,
                     );

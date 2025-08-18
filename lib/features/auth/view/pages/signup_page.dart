@@ -12,7 +12,10 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<SignupBloc>(), child: const _SignupView());
+    return BlocProvider(
+      create: (_) => getIt<SignupBloc>(),
+      child: const _SignupView(),
+    );
   }
 }
 
@@ -36,7 +39,12 @@ class _SignupViewState extends State<_SignupView> {
         child: BlocListener<SignupBloc, SignupState>(
           listener: (context, state) {
             if (state is SignupFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup Failed: ${state.error}')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Signup Failed: ${state.error}')),
+              );
+            }
+            if (state is SignupSuccess) {
+              GoRouter.of(context).pushReplacement(UnitRoute.path);
             }
           },
           child: Column(
@@ -59,9 +67,12 @@ class _SignupViewState extends State<_SignupView> {
                   }
                   return ElevatedButton(
                     onPressed: () {
-                      BlocProvider.of<SignupBloc>(
-                        context,
-                      ).add(SignupButtonPressed(email: _emailController.text, password: _passwordController.text));
+                      BlocProvider.of<SignupBloc>(context).add(
+                        SignupButtonPressed(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
                     },
                     child: const Text('Sign Up'),
                   );

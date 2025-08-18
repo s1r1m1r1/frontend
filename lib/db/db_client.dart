@@ -1,7 +1,6 @@
 // Define a table for key-value pairs
 
 import 'package:drift/drift.dart';
-import 'package:injectable/injectable.dart';
 // import 'package:drift/native.dart';
 
 import 'connection/native.dart';
@@ -34,12 +33,16 @@ class DbClient extends _$DbClient {
 
   // Method to save a key-value pair
   Future<void> saveKeyValue(String key, String value) {
-    return into(keyValueTable).insertOnConflictUpdate(KeyValueTableCompanion.insert(key: key, value: value));
+    return into(keyValueTable).insertOnConflictUpdate(
+      KeyValueTableCompanion.insert(key: key, value: value),
+    );
   }
 
   // Method to retrieve a value by key
   Future<String?> getKeyValue(String key) async {
-    final result = await (select(keyValueTable)..where((t) => t.key.equals(key))).getSingleOrNull();
+    final result = await (select(
+      keyValueTable,
+    )..where((t) => t.key.equals(key))).getSingleOrNull();
     return result?.value;
   }
 

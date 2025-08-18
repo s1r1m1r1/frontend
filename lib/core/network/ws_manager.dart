@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/menu/domain/main_chat_repository.dart';
+import 'package:frontend/features/menu/domain/ws_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -55,36 +56,41 @@ class WsManager {
 
   void _listen() {
     _wsSubscription = _ws.messages.listen((rawData) async {
-      debugPrint('rawData ${rawData.runtimeType}');
       final decoded = jsonDecode(rawData);
-      final freezed = WWsFromServer.fromJson(decoded as Json);
+      debugPrint(
+        '$yellow rawData$reset ${rawData.runtimeType} \n\n ${decoded.toString()}',
+      );
+      final freezed = ToClient.fromJson(decoded as Json);
       switch (freezed) {
-        case JoinedServer_WsFromServer(:final dto):
-          if (dto.tokens != null) {
-            _authRepository.setTokens(dto.tokens!);
-          }
-          _mainChatRepository.setRoom(dto.mainRoomId);
+        case JoinedServer_TC(
+          :final tokens,
+          :final mainRoomId,
+          :final user,
+          :final unit,
+        ):
+          _authRepository.wsJoinedSession(
+            mainRoomId,
+            user,
+            unit,
+            tokens: tokens,
+          );
+
           break;
-        case TokenExpired_WsFromServer():
-          _authRepository.onTokenExpired();
-          break;
-        case RefreshTokenExpired_WsFromServer():
-          _authRepository.onRefreshTokenExpired();
-          break;
-        case OnlineUsers_WsFromServer(:final dto):
+
+        case OnlineUsers_TC(:final dto):
           debugPrint('green count: ${dto.members.length} $reset');
           _mainChatRepository.setOnlineMembers(dto.members);
           break;
-        case Letters_WsFromServer(:final dto):
+        case Letters_TC(:final dto):
           _lettersRepository.setLetters(dto.letters);
           break;
-        case OnLetter_WsFromServer(:final dto):
+        case OnLetter_TC(:final dto):
           _lettersRepository.onLetter(dto.letter);
           break;
-        case DeletedLetter_WsFromServer(:final dto):
+        case DeletedLetter_TC(:final dto):
           _lettersRepository.onLetterDeleted(dto.letterId);
           break;
-        case StatusError_WsFromServer(:final error):
+        case StatusError_TC(:final error):
           switch (error) {
             case WsServerError.goingAway:
               break;
@@ -101,23 +107,30 @@ class WsManager {
             case WsServerError.tryAgainLater:
               break;
             case WsServerError.timeout:
+              debugPrint('$red [WsManager] timeout  $reset');
               break;
             case WsServerError.unitNotFound:
               // Todo to create page , and reconnect ws
               break;
             case WsServerError.authenticationFailed:
             case WsServerError.sessionExpired:
-              _authRepository.logOut();
+              break;
+            // _authRepository.logOut();
             case WsServerError.unauthorized:
               break;
             case WsServerError.invalidToken:
               _authRepository.onTokenExpired();
+              _authRepository.wsJoin();
               break;
             case WsServerError.sessionAlreadyRegistered:
+              debugPrint('$red [WsManager] session AlreadyRegistered $reset');
               break;
             case WsServerError.unknown:
             case WsServerError.unknownFormat:
+              debugPrint('$red [WsManager] unknown error $reset');
               break;
+            case WsServerError.finishDuplicateSession:
+              debugPrint('$red [WsManager] finishDuplicateSession $reset');
           }
       }
     });

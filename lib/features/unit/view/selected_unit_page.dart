@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/router/routes.dart';
+import 'package:frontend/features/unit/logic/selected_unit.bloc.dart';
 
 import '../domain/unit.dart';
 import '../logic/unit_bloc.dart';
@@ -10,52 +11,74 @@ class SelectedUnitView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UnitBloc, UnitState>(
-      builder: (context, state) {
-        return Column(
-          children: [
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 2,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 100),
-                itemCount: state.units.length,
-                itemBuilder: (context, index) {
-                  final unit = state.units[index];
-                  final isSelected = state.selectedId == unit.id;
-                  return GestureDetector(
-                    onTap: () {
-                      context.read<UnitBloc>().add(UnitEvent.select(unit.id));
+    return BlocBuilder<SelectedUnitBloc, SelectedUnitState>(
+      builder: (context, selectedState) {
+        return BlocBuilder<UnitBloc, UnitState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                        ),
+                    padding: const EdgeInsets.symmetric(vertical: 100),
+                    itemCount: state.units.length,
+                    itemBuilder: (context, index) {
+                      final unit = state.units[index];
+                      final isSelected = selectedState.unitId == unit.id;
+                      return GestureDetector(
+                        onTap: () {
+                          context.read<SelectedUnitBloc>().add(
+                            SelectedUnitEvent.select(unit.id),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _SelectedUnitItem(
+                                unit,
+                                isSelected: isSelected,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 50,
+                              child: Center(
+                                child: isSelected ? Icon(Icons.done) : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     },
-                    child: Row(
-                      children: [
-                        Expanded(child: _SelectedUnitItem(unit, isSelected: isSelected)),
-                        SizedBox(width: 50, child: Center(child: isSelected ? Icon(Icons.done) : null)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(
-              height: 60,
-              child: Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8)),
-                  onPressed: state.selectedId != -1
-                      ? () {
-                          MenuRoute().go(context);
-                        }
-                      : null,
-                  child: Text('continue'),
+                  ),
                 ),
-              ),
-            ),
-          ],
+                SizedBox(
+                  height: 60,
+                  child: Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                      ),
+                      onPressed: selectedState.unitId != -1
+                          ? () {
+                              PendingRoute().go(context);
+                            }
+                          : null,
+                      child: Text('continue'),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

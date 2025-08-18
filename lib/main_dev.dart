@@ -24,7 +24,10 @@ Future<void> main() async {
 
   PlatformDispatcher.instance.onError = (error, stack) {
     if (kDebugMode) {
-      debugPrintStack(stackTrace: stack, label: '${red}PlatformDispatcher$reset$error');
+      debugPrintStack(
+        stackTrace: stack,
+        label: '${red}PlatformDispatcher$reset$error',
+      );
     } else {
       // Sentry.captureException(details.exception, stackTrace: details.stack);
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
@@ -42,14 +45,5 @@ Future<void> main() async {
     }
   };
 
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<UserBloc>(create: (_) => getIt<UserBloc>()..add(LoadUsers())),
-        BlocProvider<SignupBloc>(create: (_) => getIt<SignupBloc>()),
-        BlocProvider<TodoBloc>(create: (_) => getIt<TodoBloc>()..add(LoadTodosEvent())),
-      ],
-      child: const App(),
-    ),
-  );
+  runApp(const App());
 }
