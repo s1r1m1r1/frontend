@@ -1,25 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/features/auth/logic/auth_cubit.dart';
+import 'package:frontend/features/auth/logic/logout_cubit.dart';
+import 'package:frontend/inject/get_it.dart';
 
 class WsStoppedSessionPage extends StatelessWidget {
   const WsStoppedSessionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<LogoutCubit>(),
+      child: _WsStoppedSessionView(),
+    );
+  }
+}
+
+class _WsStoppedSessionView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Text(
-            'Your session was stopped because another device logged in with your account.',
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 500),
+          child: Column(
+            children: [
+              Spacer(),
+              Text(
+                'Your session was stopped because another device logged in with your account.',
+              ),
+              SizedBox(height: 10),
+              Text('Please re-login if you wish to continue.'),
+              TextButton(
+                child: const Text('Re-login'),
+                onPressed: () {
+                  context.read<LogoutCubit>().logout();
+                },
+              ),
+              Spacer(),
+            ],
           ),
-          SizedBox(height: 10),
-          Text('Please re-login if you wish to continue.'),
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Dismiss the dialog
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

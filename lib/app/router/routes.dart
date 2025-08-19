@@ -12,19 +12,9 @@ import '../../features/admin/view/admin_page.dart';
 import '../../features/auth/view/pages/pending_page.dart';
 import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/menu/view/menu_page.dart';
-import '../../features/screens/home_screen.dart';
 import '../../features/unit/view/unit_page.dart';
 
 part 'routes.g.dart';
-
-@TypedGoRoute<HomeRoute>(path: HomeRoute.path)
-class HomeRoute extends GoRouteData with _$HomeRoute {
-  const HomeRoute();
-  static const path = '/home';
-
-  @override
-  Widget build(_, _) => const HomeScreen();
-}
 
 @TypedGoRoute<PendingRoute>(path: PendingRoute.path)
 class PendingRoute extends GoRouteData with _$PendingRoute {

@@ -9,15 +9,15 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:dio/dio.dart' as _i361;
+import 'package:chopper/chopper.dart' as _i31;
 import 'package:frontend/bloc/user/user_bloc.dart' as _i990;
-import 'package:frontend/core/network/dio_module.dart' as _i339;
-import 'package:frontend/core/network/protected_api_service.dart' as _i365;
-import 'package:frontend/core/network/registration_api_service.dart' as _i436;
+import 'package:frontend/core/db/db_client.dart' as _i522;
+import 'package:frontend/core/db/db_modulte.dart' as _i939;
+import 'package:frontend/core/network/chopper_module.dart' as _i1007;
+import 'package:frontend/core/network/registration_api.dart' as _i199;
+import 'package:frontend/core/network/with_token_api.dart' as _i1054;
 import 'package:frontend/core/network/ws_manager.dart' as _i684;
 import 'package:frontend/core/network/ws_socket_module.dart' as _i558;
-import 'package:frontend/db/db_client.dart' as _i569;
-import 'package:frontend/db/db_modulte.dart' as _i788;
 import 'package:frontend/features/admin/_domain/admin_repository.dart' as _i151;
 import 'package:frontend/features/admin/bloc/admin_bloc.dart' as _i91;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
@@ -54,31 +54,25 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dbClientModule = _$DbClientModule();
     final appConfigModule = _$AppConfigModule();
-    final dioModule = _$DioModule();
+    final chopperModule = _$ChopperModule();
     final wsSocketModule = _$WsSocketModule();
     gh.factory<_i990.UserBloc>(() => _i990.UserBloc());
     gh.lazySingleton<_i684.WsLettersRepository>(
       () => _i684.WsLettersRepository(),
       dispose: (i) => i.dispose(),
     );
+    gh.lazySingleton<_i522.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i346.MainChatRepository>(
       () => _i346.MainChatRepository(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i569.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
     );
     gh.lazySingleton<_i151.AdminRepository>(() => _i151.AdminRepositoryImpl());
     gh.lazySingleton<_i166.SessionRepository>(
-      () => _i166.SessionRepository(gh<_i569.DbClient>()),
-    );
-    gh.factory<_i64.LettersBloc>(
-      () => _i64.LettersBloc(
-        gh<_i684.WsLettersRepository>(),
-        gh<_i166.SessionRepository>(),
-      ),
+      () => _i166.SessionRepository(gh<_i522.DbClient>()),
     );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
@@ -93,63 +87,68 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i165.WsJoinCubit>(
       () => _i165.WsJoinCubit(gh<_i166.SessionRepository>()),
     );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.registrationDio(gh<_i716.AppConfig>()),
-      instanceName: 'registration',
+    gh.lazySingleton<_i31.ChopperClient>(
+      () => chopperModule.regClient(gh<_i716.AppConfig>()),
+      instanceName: 'reg',
     );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.retryDio(gh<_i716.AppConfig>()),
-      instanceName: 'retryDio',
-    );
-    gh.lazySingleton<_i436.RegistrationApiService>(
-      () => _i436.RegistrationApiService(
-        gh<_i361.Dio>(instanceName: 'registration'),
-      ),
-    );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.dio(
+    gh.lazySingleton<_i31.ChopperClient>(
+      () => chopperModule.chopperClient(
         gh<_i166.SessionRepository>(),
         gh<_i716.AppConfig>(),
-        gh<_i361.Dio>(instanceName: 'retryDio'),
       ),
       instanceName: 'withToken',
     );
-    gh.lazySingleton<_i365.ProtectedApiService>(
-      () => _i365.ProtectedApiService(gh<_i361.Dio>(instanceName: 'withToken')),
+    gh.factory<_i64.LettersBloc>(
+      () => _i64.LettersBloc(
+        gh<_i684.WsLettersRepository>(),
+        gh<_i166.SessionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i199.RegistrationApi>(
+      () => chopperModule.registrationApi(
+        gh<_i31.ChopperClient>(instanceName: 'reg'),
+      ),
+    );
+    gh.lazySingleton<_i1054.WithTokenApi>(
+      () => chopperModule.protectedApiService(
+        gh<_i31.ChopperClient>(instanceName: 'withToken'),
+      ),
     );
     gh.lazySingleton<_i739.TodoRepository>(
-      () => _i739.TodoRepositoryImpl(gh<_i365.ProtectedApiService>()),
-    );
-    gh.lazySingleton<_i887.AuthRepository>(
-      () => _i887.AuthRepository(
-        gh<_i436.RegistrationApiService>(),
-        gh<_i166.SessionRepository>(),
-        gh<_i365.ProtectedApiService>(),
-      ),
-      dispose: (i) => i.dispose(),
+      () => _i739.TodoRepositoryImpl(gh<_i1054.WithTokenApi>()),
     );
     gh.lazySingleton<_i92.UnitRepository>(
-      () => _i92.UnitRepository(gh<_i365.ProtectedApiService>()),
-    );
-    gh.lazySingleton<_i948.WebSocket>(
-      () =>
-          wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
+      () => _i92.UnitRepository(gh<_i1054.WithTokenApi>()),
     );
     gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
     gh.factory<_i557.SelectedUnitBloc>(
       () => _i557.SelectedUnitBloc(gh<_i92.UnitRepository>()),
     );
-    gh.factory<_i415.SignupBloc>(
-      () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
+    gh.factory<_i955.TodoBloc>(
+      () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
+    );
+    gh.factory<_i712.CreateUnitBloc>(
+      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
+    );
+    gh.lazySingleton<_i887.AuthRepository>(
+      () => _i887.AuthRepository(
+        gh<_i199.RegistrationApi>(),
+        gh<_i166.SessionRepository>(),
+        gh<_i1054.WithTokenApi>(),
+      ),
+    );
+    gh.lazySingleton<_i948.WebSocket>(
+      () =>
+          wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
     );
     gh.factory<_i233.AuthCubit>(
       () => _i233.AuthCubit(gh<_i887.AuthRepository>()),
     );
+    gh.factory<_i415.SignupBloc>(
+      () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
+    );
     gh.factory<_i132.LoginCubit>(
       () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
-    );
-    gh.factory<_i955.TodoBloc>(
-      () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
     );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
@@ -163,9 +162,6 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       dispose: (i) => i.dispose(),
     );
-    gh.factory<_i712.CreateUnitBloc>(
-      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
-    );
     gh.factory<_i827.WsConnectionCubit>(
       () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
     );
@@ -173,10 +169,10 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$DbClientModule extends _i788.DbClientModule {}
+class _$DbClientModule extends _i939.DbClientModule {}
 
 class _$AppConfigModule extends _i716.AppConfigModule {}
 
-class _$DioModule extends _i339.DioModule {}
+class _$ChopperModule extends _i1007.ChopperModule {}
 
 class _$WsSocketModule extends _i558.WsSocketModule {}

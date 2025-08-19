@@ -6,7 +6,6 @@ import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/features/menu/domain/main_chat_repository.dart';
-import 'package:frontend/features/menu/domain/ws_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
