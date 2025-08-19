@@ -24,7 +24,6 @@ dependencies:
   injectable: ^2.5.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
-  dio: ^5.8.0+1
   go_router: ^16.0.0
   flutter_localizations:
     sdk: flutter
@@ -49,6 +48,8 @@ dependencies:
   web_socket_client: ^0.2.1
   bloc_concurrency: ^0.3.0
   listen_it: ^5.0.0
+  chopper: ^8.3.0
+  http: ^1.5.0
 
 # dependency_overrides:
 #   sha_red:
@@ -63,6 +64,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
   go_router_builder: ^3.0.0
+  chopper_generator:
 
 flutter:
   uses-material-design: true # for icons

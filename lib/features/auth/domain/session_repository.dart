@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/core/network/ws_manager.dart';
-import 'package:frontend/db/db_client.dart';
+import 'package:frontend/core/db/db_client.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
@@ -68,7 +68,7 @@ class SessionRepository {
     );
   }
 
-  void logOut() {
+  void clean() {
     unawaited(_db.deleteKeyValue(_tokenKey));
     unawaited(_db.deleteKeyValue(_refreshTokenK));
     sessionNtf.value = null;

@@ -1,23 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/core/network/with_token_api.dart';
 import 'package:sha_red/sha_red.dart';
 
-import '../../../core/network/protected_api_service.dart';
 import 'unit.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class UnitRepository {
   UnitRepository(this._api);
-  final ProtectedApiService _api;
+  final WithTokenApi _api;
 
   final selectedUnitNtf = ValueNotifier<Unit?>(null);
   final listUnitNtf = ValueNotifier<List<Unit>>([]);
 
   @override
   Future<(int selectedId, List<Unit> units)?> fetchUnits() async {
-    final listDto = await _api.fetchListUnit();
+    final resp = await _api.fetchListUnit();
+    final listDto = resp.body;
     if (listDto == null) return null;
 
     return (
@@ -42,7 +43,8 @@ class UnitRepository {
   }
 
   FutureOr<Unit?> setSelectedUnit(int unitId) async {
-    final dto = await _api.setSelectedUnit(unitId: unitId);
+    final resp = await _api.setSelectedUnit(unitId);
+    final dto = resp.body;
     if (dto == null) return null;
     final unit = Unit.fromDto(dto);
     selectedUnitNtf.value = unit;
@@ -50,7 +52,8 @@ class UnitRepository {
   }
 
   FutureOr<Unit?> fetchSelectedUnit() async {
-    final dto = await _api.fetchSelectedUnit();
+    final resp = await _api.fetchSelectedUnit();
+    final dto = resp.body;
     if (dto == null) return null;
     final unit = Unit.fromDto(dto);
     selectedUnitNtf.value = unit;

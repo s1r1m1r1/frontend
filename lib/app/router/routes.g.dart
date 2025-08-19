@@ -7,7 +7,6 @@ part of 'routes.dart';
 // **************************************************************************
 
 List<RouteBase> get $appRoutes => [
-  $homeRoute,
   $pendingRoute,
   $loginRoute,
   $signupRoute,
@@ -19,29 +18,6 @@ List<RouteBase> get $appRoutes => [
   $createUnitRoute,
   $unitRoute,
 ];
-
-RouteBase get $homeRoute =>
-    GoRouteData.$route(path: '/home', factory: _$HomeRoute._fromState);
-
-mixin _$HomeRoute on GoRouteData {
-  static HomeRoute _fromState(GoRouterState state) => const HomeRoute();
-
-  @override
-  String get location => GoRouteData.$location('/home');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
 
 RouteBase get $pendingRoute =>
     GoRouteData.$route(path: '/pending', factory: _$PendingRoute._fromState);

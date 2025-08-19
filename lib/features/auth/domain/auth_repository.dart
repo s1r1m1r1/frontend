@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:frontend/core/network/protected_api_service.dart';
-import 'package:frontend/core/network/registration_api_service.dart';
+import 'package:frontend/app/logger/log_colors.dart';
+// import 'package:frontend/core/network/protected_api_service.dart';
+import 'package:frontend/core/network/with_token_api.dart';
+import 'package:frontend/core/network/registration_api.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
@@ -12,25 +13,26 @@ import 'package:sha_red/sha_red.dart';
 
 @lazySingleton
 class AuthRepository {
-  final RegistrationApiService _api;
-  final ProtectedApiService _protectedApi;
+  final RegistrationApi _api;
+  final WithTokenApi _protectedApi;
   final SessionRepository _sessionRepository;
   WsCallback? wsSend;
   AuthRepository(this._api, this._sessionRepository, this._protectedApi);
 
   ValueNotifier<Session?> get sessionNtf => _sessionRepository.sessionNtf;
 
-  @disposeMethod
-  void dispose() {
-    // _sessionManager.removeListener(_onChangeSessionStatus);
+  void logOut() {
+    _sessionRepository.clean();
   }
 
   Future<bool> login(String email, String password) async {
     try {
       debugPrint('login');
-      final dto = await _api.login(
+      final resp = await _api.login(
         EmailCredentialDto(email: email, password: password),
       );
+      final dto = resp.body;
+      if (dto == null) return false;
       final session = Session.fromDto(dto);
       sessionNtf.value = session;
       await _sessionRepository.setTokens(dto.tokens);
@@ -41,9 +43,11 @@ class AuthRepository {
   }
 
   Future<void> signup(String email, String password) async {
-    final dto = await _api.signup(
+    final resp = await _api.signup(
       EmailCredentialDto(email: email, password: password),
     );
+    final dto = resp.body;
+    if (dto == null) return;
     final newSession = Session.fromDto(dto);
     sessionNtf.value = newSession;
     await _sessionRepository.setTokens(dto.tokens);
@@ -53,10 +57,13 @@ class AuthRepository {
     final session = sessionNtf.value;
     final token = session?.accessToken;
     if (token != null) {
-      final dto = await _protectedApi.getSession();
-      final newSession = Session.fromDto(dto);
-      sessionNtf.value = newSession;
-      await _sessionRepository.setTokens(dto.tokens);
+      final response = await _protectedApi.getSession();
+      final dto = response.body;
+      if (dto != null) {
+        final newSession = Session.fromDto(dto);
+        sessionNtf.value = newSession;
+        await _sessionRepository.setTokens(dto.tokens);
+      }
 
       return;
     }
@@ -72,15 +79,14 @@ class AuthRepository {
       return false;
     }
     try {
-      final dto = await _api.refresh(refresh);
+      final resp = await _api.refresh(RefreshTokenDto(refresh));
+      final dto = resp.body;
+      if (dto == null) return false;
       final newSession = Session.fromDto(dto);
       sessionNtf.value = newSession;
       await _sessionRepository.setTokens(dto.tokens);
       return true;
     } catch (err) {
-      if (err is DioException && err.response?.statusCode == 401) {
-        _sessionRepository.onRefreshTokenExpired();
-      }
       debugPrint('Failed to refresh access token: $err');
       return false;
     }
