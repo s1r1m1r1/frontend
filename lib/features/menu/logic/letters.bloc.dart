@@ -4,6 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
+import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
+import 'package:frontend/features/auth/domain/ws_game_option.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
@@ -13,10 +16,10 @@ part 'letters.state.dart';
 @injectable
 class LettersBloc extends Bloc<LettersEvent, LettersState> {
   final WsLettersRepository _lettersRepository;
-  final AuthRepository _authRepository;
+  final SessionRepository _sessionRepository;
   String? _roomId;
   StreamSubscription? _lettersSubscription;
-  LettersBloc(this._lettersRepository, this._authRepository)
+  LettersBloc(this._lettersRepository, this._sessionRepository)
     : super(const LettersState()) {
     on<_StartedLE>(_onStarted);
     on<_DeletePressedLE>(_onDeletePressed);
@@ -33,10 +36,15 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
     //   return;
     // }
     // _roomId = config.lettersRoom;
-    _lettersRepository.joinRoom(_roomId!);
-    _lettersSubscription = _lettersRepository.letters.listen(
-      (letters) => add(_OnUpdateLE(letters)),
-    );
+    final session = _sessionRepository.sessionNtf.value;
+    if (session case GameJoinedSession(
+      gameOption: WsGameOption(:final mainRoomId),
+    )) {
+      _lettersRepository.joinRoom(mainRoomId);
+      _lettersSubscription = _lettersRepository.letters.listen(
+        (letters) => add(_OnUpdateLE(letters)),
+      );
+    }
   }
 
   FutureOr<void> _onDeletePressed(
