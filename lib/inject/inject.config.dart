@@ -37,7 +37,6 @@ import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
 import 'package:frontend/features/unit/logic/create_unit_bloc.dart' as _i712;
 import 'package:frontend/features/unit/logic/selected_unit.bloc.dart' as _i557;
 import 'package:frontend/features/unit/logic/unit_bloc.dart' as _i199;
-import 'package:frontend/features/user/domain/user_repository.dart' as _i935;
 import 'package:frontend/inject/app_config.dart' as _i716;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -75,7 +74,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i166.SessionRepository>(
       () => _i166.SessionRepository(gh<_i569.DbClient>()),
     );
-    gh.lazySingleton<_i935.UserRepository>(() => _i935.UserRepositoryImpl());
+    gh.factory<_i64.LettersBloc>(
+      () => _i64.LettersBloc(
+        gh<_i684.WsLettersRepository>(),
+        gh<_i166.SessionRepository>(),
+      ),
+    );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
@@ -85,6 +89,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i91.AdminBloc>(
       () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
+    );
+    gh.factory<_i165.WsJoinCubit>(
+      () => _i165.WsJoinCubit(gh<_i166.SessionRepository>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => dioModule.registrationDio(gh<_i716.AppConfig>()),
@@ -128,12 +135,6 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i64.LettersBloc>(
-      () => _i64.LettersBloc(
-        gh<_i684.WsLettersRepository>(),
-        gh<_i887.AuthRepository>(),
-      ),
-    );
     gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
     gh.factory<_i557.SelectedUnitBloc>(
       () => _i557.SelectedUnitBloc(gh<_i92.UnitRepository>()),
@@ -146,9 +147,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i132.LoginCubit>(
       () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
-    );
-    gh.factory<_i165.WsJoinCubit>(
-      () => _i165.WsJoinCubit(gh<_i887.AuthRepository>()),
     );
     gh.factory<_i955.TodoBloc>(
       () => _i955.TodoBloc(gh<_i739.TodoRepository>()),

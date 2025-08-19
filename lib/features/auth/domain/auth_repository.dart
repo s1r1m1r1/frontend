@@ -7,13 +7,8 @@ import 'package:frontend/core/network/registration_api_service.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
-import 'package:frontend/features/auth/domain/user.dart';
-import 'package:frontend/features/auth/domain/ws_game_option.dart';
-import 'package:frontend/features/unit/domain/unit.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
-
-import '../../../db/db_client.dart';
 
 @lazySingleton
 class AuthRepository {
@@ -25,8 +20,6 @@ class AuthRepository {
 
   ValueNotifier<Session?> get sessionNtf => _sessionRepository.sessionNtf;
 
-  // final tokenNtf = ValueNotifier<String?>(null);
-  // final refreshTokenNtf = ValueNotifier<String?>(null);
   @disposeMethod
   void dispose() {
     // _sessionManager.removeListener(_onChangeSessionStatus);
@@ -94,38 +87,6 @@ class AuthRepository {
   }
 
   //---------  ws  ------------------------------------------------------------------------------------------
-
-  void wsJoin() {
-    final token = sessionNtf.value?.accessToken;
-    if (token != null) {
-      final encoded = ToServer.withToken(token).encoded();
-      wsSend?.call(encoded);
-      return;
-    }
-    final refresh = sessionNtf.value?.refreshToken;
-    if (refresh != null) {
-      final encoded = ToServer.withRefresh(refresh).encoded();
-      wsSend?.call(encoded);
-      return;
-    }
-  }
-
-  void wsJoinedSession(
-    String mainRoomId,
-    UserDto user,
-    UnitDto unit, {
-    TokensDto? tokens,
-  }) {
-    final session = sessionNtf.value;
-    if (session == null) return;
-    sessionNtf.value = Session.gameJoined(
-      user: User.fromDto(user),
-      unit: Unit.fromDto(unit),
-      refreshToken: tokens?.refreshToken ?? session.refreshToken,
-      accessToken: tokens?.accessToken ?? session.accessToken,
-      gameOption: WsGameOption(mainRoomId: mainRoomId),
-    );
-  }
 
   // @override
   // FutureOr<void> withToken() async {

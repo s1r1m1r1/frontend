@@ -2,10 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
+import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/db/db_client.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
+
+import '../../unit/domain/unit.dart';
+import 'user.dart';
+import 'ws_game_option.dart';
 
 const _tokenKey = '__tokenK__';
 const _refreshTokenK = '__refreshTokenK__';
@@ -16,6 +21,7 @@ class SessionRepository {
   SessionRepository(this._db) {
     init();
   }
+  WsCallback? wsSend;
 
   Future<void> init() async {
     try {
@@ -66,5 +72,55 @@ class SessionRepository {
     unawaited(_db.deleteKeyValue(_tokenKey));
     unawaited(_db.deleteKeyValue(_refreshTokenK));
     sessionNtf.value = null;
+  }
+
+  void wsJoin() {
+    final token = sessionNtf.value?.accessToken;
+    if (token != null) {
+      final encoded = ToServer.withToken(token).encoded();
+      wsSend?.call(encoded);
+      return;
+    }
+    final refresh = sessionNtf.value?.refreshToken;
+    if (refresh != null) {
+      final encoded = ToServer.withRefresh(refresh).encoded();
+      wsSend?.call(encoded);
+      return;
+    }
+  }
+
+  void wsJoinedSession(
+    String mainRoomId,
+    UserDto user,
+    UnitDto unit, {
+    TokensDto? tokens,
+  }) {
+    final session = sessionNtf.value;
+    if (session == null) return;
+    sessionNtf.value = Session.gameJoined(
+      user: User.fromDto(user),
+      unit: Unit.fromDto(unit),
+      refreshToken: tokens?.refreshToken ?? session.refreshToken,
+      accessToken: tokens?.accessToken ?? session.accessToken,
+      gameOption: WsGameOption(mainRoomId: mainRoomId),
+    );
+  }
+
+  void wsSessionFinished() {
+    final session = sessionNtf.value;
+    debugPrint('$magenta wsSessionFinished $reset');
+    debugPrint('$session');
+    if (session is GameJoinedSession) {
+      final newSession = Session.gameFinished(
+        user: session.user,
+        unit: session.unit,
+        refreshToken: session.refreshToken,
+        gameOption: session.gameOption,
+      );
+      sessionNtf.value = newSession;
+
+      debugPrint('$magenta updated $reset');
+      debugPrint('${sessionNtf.value}');
+    }
   }
 }

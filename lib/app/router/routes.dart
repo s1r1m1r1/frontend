@@ -3,6 +3,7 @@ import 'package:frontend/app/router/guard_router.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
+import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -59,6 +60,15 @@ class WsConnectingRoute extends GoRouteData with _$WsConnectingRoute {
 
   @override
   Widget build(_, _) => WsConnectingPage();
+}
+
+@TypedGoRoute<WsStoppedSessionRoute>(path: WsStoppedSessionRoute.path)
+class WsStoppedSessionRoute extends GoRouteData with _$WsStoppedSessionRoute {
+  static const path = '/ws-stopped-session';
+  const WsStoppedSessionRoute();
+
+  @override
+  Widget build(_, _) => WsStoppedSessionPage();
 }
 
 @TypedGoRoute<TodoListRoute>(path: TodoListRoute.path)

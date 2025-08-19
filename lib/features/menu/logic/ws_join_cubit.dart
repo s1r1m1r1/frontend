@@ -3,20 +3,22 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:injectable/injectable.dart';
+
+import '../../auth/domain/session_repository.dart';
 part 'ws_join_cubit.freezed.dart';
 
 @injectable
 class WsJoinCubit extends Cubit<WsJoinState> {
-  final AuthRepository _authRepository;
-  WsJoinCubit(this._authRepository) : super(WsJoinState.initial());
+  final SessionRepository _repository;
+  WsJoinCubit(this._repository) : super(WsJoinState.initial());
 
   void subscribe() {
-    _authRepository.sessionNtf.addListener(listen);
+    _repository.sessionNtf.addListener(listen);
     listen();
   }
 
   void listen() {
-    final session = _authRepository.sessionNtf.value;
+    final session = _repository.sessionNtf.value;
     if (session is GameJoinedSession) {
       emit(WsJoinState.connected());
     }
@@ -24,12 +26,12 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 
   void wsJoin() {
     emit(WsJoinState.connecting());
-    _authRepository.wsJoin();
+    _repository.wsJoin();
   }
 
   @override
   Future<void> close() {
-    _authRepository.sessionNtf.removeListener(listen);
+    _repository.sessionNtf.removeListener(listen);
     return super.close();
   }
 }
