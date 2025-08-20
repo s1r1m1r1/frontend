@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/app/router/guard_router.dart';
-import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
@@ -9,6 +7,7 @@ import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/admin/view/admin_page.dart';
+import '../../features/auth/view/pages/email_pending_page.dart';
 import '../../features/auth/view/pages/pending_page.dart';
 import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/menu/view/menu_page.dart';
@@ -23,6 +22,15 @@ class PendingRoute extends GoRouteData with _$PendingRoute {
 
   @override
   Widget build(_, _) => PendingPage();
+}
+
+@TypedGoRoute<EmailPendingRoute>(path: EmailPendingRoute.path)
+class EmailPendingRoute extends GoRouteData with _$EmailPendingRoute {
+  static const path = '/email-pending';
+  const EmailPendingRoute();
+
+  @override
+  Widget build(_, _) => EmailPendingPage();
 }
 
 @TypedGoRoute<LoginRoute>(path: LoginRoute.path)
@@ -82,10 +90,11 @@ class AdminRoute extends GoRouteData with _$AdminRoute {
 @TypedGoRoute<MenuRoute>(path: MenuRoute.path)
 class MenuRoute extends GoRouteData with _$MenuRoute {
   static const path = '/menu';
-  const MenuRoute();
+  const MenuRoute(this.roomId);
+  final String roomId;
 
   @override
-  Widget build(_, _) => MenuPage();
+  Widget build(_, _) => MenuPage(roomId: roomId);
 }
 
 @TypedGoRoute<CreateUnitRoute>(path: CreateUnitRoute.path)

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:sha_red/src/models/unit_dto.dart';
+import 'package:sha_red/sha_red.dart';
 
 class Unit extends Equatable {
   const Unit({

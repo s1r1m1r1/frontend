@@ -49,7 +49,7 @@ class MyBlocObserver extends BlocObserver {
     // if(bloc is! OtherCubit) return;
     _logger.info(
       '${bloc.runtimeType}:\n'
-      'event: ${event}\n',
+      'event: $event\n',
     );
     // }
     super.onEvent(bloc, event);

@@ -12,7 +12,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:sha_red/sha_red.dart';
 
-import '../../features/admin/_domain/admin_repository.dart';
+import '../../features/admin/domain/admin_repository.dart';
 
 @lazySingleton
 class WsManager {
@@ -67,7 +67,7 @@ class WsManager {
         final freezed = ToClient.fromJson(decoded as Json);
         debugPrint('$yellow freezed$reset $freezed');
         switch (freezed) {
-          case JoinedServer_TC(
+          case JoinedServerTC(
             :final tokens,
             :final mainRoomId,
             :final user,
@@ -82,20 +82,20 @@ class WsManager {
 
             break;
 
-          case OnlineUsers_TC(:final dto):
+          case OnlineUsersTC(:final dto):
             debugPrint('green count: ${dto.members.length} $reset');
             _mainChatRepository.setOnlineMembers(dto.members);
             break;
-          case Letters_TC(:final dto):
+          case LettersTC(:final dto):
             _lettersRepository.setLetters(dto.letters);
             break;
-          case OnLetter_TC(:final dto):
+          case OnLetterTC(:final dto):
             _lettersRepository.onLetter(dto.letter);
             break;
-          case DeletedLetter_TC(:final dto):
+          case DeletedLetterTC(:final dto):
             _lettersRepository.onLetterDeleted(dto.letterId);
             break;
-          case StatusError_TC(:final error):
+          case StatusErrorTC(:final error):
             switch (error) {
               case WsServerError.goingAway:
                 break;
@@ -150,6 +150,8 @@ class WsManager {
               case WsServerError.sessionClosed:
                 debugPrint('$red [WsManager] sessionClosed $reset');
                 break;
+              case WsServerError.letterNotRemoved:
+                debugPrint('$red [WsManager] sessionClosed $reset');
             }
         }
       } catch (e) {

@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:injectable/injectable.dart';
 
@@ -19,8 +18,8 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 
   void listen() {
     final session = _repository.sessionNtf.value;
-    if (session is GameJoinedSession) {
-      emit(WsJoinState.connected());
+    if (session case GameJoinedSession(:final gameOption)) {
+      emit(WsJoinState.connected(gameOption.mainRoomId));
     }
   }
 
@@ -40,6 +39,6 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 sealed class WsJoinState with _$WsJoinState {
   const factory WsJoinState.initial() = InitialWsJoin;
   const factory WsJoinState.connecting() = ConnectingWsJoin;
-  const factory WsJoinState.connected() = ConnectedWsJoin;
+  const factory WsJoinState.connected(String roomId) = ConnectedWsJoin;
   const factory WsJoinState.disconnected() = DisconnectedWsJoin;
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:frontend/app/logger/log_colors.dart';
 // import 'package:frontend/core/network/protected_api_service.dart';
 import 'package:frontend/core/network/with_token_api.dart';
 import 'package:frontend/core/network/registration_api.dart';
@@ -34,8 +33,7 @@ class AuthRepository {
       final dto = resp.body;
       if (dto == null) return false;
       final session = Session.fromDto(dto);
-      sessionNtf.value = session;
-      await _sessionRepository.setTokens(dto.tokens);
+      _sessionRepository.setSession(session);
       return true;
     } catch (e) {
       return false;
@@ -49,8 +47,7 @@ class AuthRepository {
     final dto = resp.body;
     if (dto == null) return;
     final newSession = Session.fromDto(dto);
-    sessionNtf.value = newSession;
-    await _sessionRepository.setTokens(dto.tokens);
+    _sessionRepository.setSession(newSession);
   }
 
   Future<void> checkToken() async {
@@ -61,8 +58,7 @@ class AuthRepository {
       final dto = response.body;
       if (dto != null) {
         final newSession = Session.fromDto(dto);
-        sessionNtf.value = newSession;
-        await _sessionRepository.setTokens(dto.tokens);
+        _sessionRepository.setSession(newSession);
       }
 
       return;
@@ -83,8 +79,7 @@ class AuthRepository {
       final dto = resp.body;
       if (dto == null) return false;
       final newSession = Session.fromDto(dto);
-      sessionNtf.value = newSession;
-      await _sessionRepository.setTokens(dto.tokens);
+      _sessionRepository.setSession(newSession);
       return true;
     } catch (err) {
       debugPrint('Failed to refresh access token: $err');

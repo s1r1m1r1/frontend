@@ -49,8 +49,8 @@ class _WsConnectingView extends StatelessWidget {
             case InitialWsJoin():
             case ConnectingWsJoin():
               break;
-            case ConnectedWsJoin():
-              MenuRoute().go(context);
+            case ConnectedWsJoin(:final roomId):
+              MenuRoute(roomId).go(context);
               break;
             case DisconnectedWsJoin():
               break;

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../inject/get_it.dart';
 
@@ -31,7 +32,8 @@ const Color chatBackgroundColor = Color.fromARGB(
 ); // A dark brown for the chat box
 
 class MenuPage extends StatelessWidget {
-  const MenuPage({super.key});
+  final String roomId;
+  const MenuPage({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,9 @@ class MenuPage extends StatelessWidget {
 
         BlocProvider(
           lazy: false,
-          create: (_) => getIt<LettersBloc>()..add(LettersEvent.started()),
+          create: (_) =>
+              GetIt.I.get<LettersBloc>(param1: roomId)
+                ..add(LettersEvent.started()),
         ),
         BlocProvider(
           lazy: false,
@@ -168,65 +172,9 @@ class MenuView extends StatelessWidget {
                 ],
               ),
             ),
+
             // Bottom Chat Box
-            Container(
-              color: chatBackgroundColor,
-              height: 200,
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  // Chat history area
-                  Expanded(child: _ChatBody()),
-                  const SizedBox(height: 8),
-                  // Chat input area
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Enter message...',
-                            hintStyle: const TextStyle(color: Colors.white54),
-                            filled: true,
-                            fillColor: Colors.black,
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 235, 0, 24),
-                              ),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 235, 0, 24),
-                              ),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<LettersBloc>().add(
-                            LettersEvent.newPressed(
-                              'New Letter ${context.read<LettersBloc>().state.letters.length + 1}',
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: accentColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: const Text('Send'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            const _ChatView(),
           ],
         ),
       ),
@@ -255,6 +203,95 @@ class MenuView extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Text(text),
+    );
+  }
+}
+
+class _ChatView extends StatefulWidget {
+  const _ChatView();
+
+  @override
+  State<_ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<_ChatView> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: chatBackgroundColor,
+      height: 200,
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          // Chat history area
+          Expanded(child: _ChatBody()),
+          const SizedBox(height: 8),
+          // Chat input area
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  // Assign the controller to the TextField
+                  controller: _controller,
+                  // Set the maximum length for the input
+                  maxLength: 1000,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Enter message...',
+                    hintStyle: const TextStyle(color: Colors.white54),
+                    filled: true,
+                    fillColor: Colors.black,
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 235, 0, 24),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 235, 0, 24),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    // counterText:  '',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  final message = _controller.text;
+                  context.read<LettersBloc>().add(
+                    LettersEvent.newPressed(message),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: accentColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                child: const Text('Send'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -110,33 +110,67 @@ String toString() {
 
 
 class ConnectedWsJoin implements WsJoinState {
-  const ConnectedWsJoin();
+  const ConnectedWsJoin(this.roomId);
   
 
+ final  String roomId;
 
-
+/// Create a copy of WsJoinState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ConnectedWsJoinCopyWith<ConnectedWsJoin> get copyWith => _$ConnectedWsJoinCopyWithImpl<ConnectedWsJoin>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectedWsJoin);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectedWsJoin&&(identical(other.roomId, roomId) || other.roomId == roomId));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,roomId);
 
 @override
 String toString() {
-  return 'WsJoinState.connected()';
+  return 'WsJoinState.connected(roomId: $roomId)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $ConnectedWsJoinCopyWith<$Res> implements $WsJoinStateCopyWith<$Res> {
+  factory $ConnectedWsJoinCopyWith(ConnectedWsJoin value, $Res Function(ConnectedWsJoin) _then) = _$ConnectedWsJoinCopyWithImpl;
+@useResult
+$Res call({
+ String roomId
+});
 
 
+
+
+}
+/// @nodoc
+class _$ConnectedWsJoinCopyWithImpl<$Res>
+    implements $ConnectedWsJoinCopyWith<$Res> {
+  _$ConnectedWsJoinCopyWithImpl(this._self, this._then);
+
+  final ConnectedWsJoin _self;
+  final $Res Function(ConnectedWsJoin) _then;
+
+/// Create a copy of WsJoinState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? roomId = null,}) {
+  return _then(ConnectedWsJoin(
+null == roomId ? _self.roomId : roomId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

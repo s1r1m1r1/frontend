@@ -18,8 +18,10 @@ import 'package:frontend/core/network/registration_api.dart' as _i199;
 import 'package:frontend/core/network/with_token_api.dart' as _i1054;
 import 'package:frontend/core/network/ws_manager.dart' as _i684;
 import 'package:frontend/core/network/ws_socket_module.dart' as _i558;
-import 'package:frontend/features/admin/_domain/admin_repository.dart' as _i151;
-import 'package:frontend/features/admin/bloc/admin_bloc.dart' as _i91;
+import 'package:frontend/features/admin/domain/admin_repository.dart' as _i730;
+import 'package:frontend/features/admin/domain/fake_user_repository.dart'
+    as _i575;
+import 'package:frontend/features/admin/logic/admin_bloc.dart' as _i497;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
 import 'package:frontend/features/auth/domain/session_repository.dart' as _i166;
 import 'package:frontend/features/auth/logic/auth_cubit.dart' as _i233;
@@ -70,7 +72,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
     );
-    gh.lazySingleton<_i151.AdminRepository>(() => _i151.AdminRepositoryImpl());
+    gh.lazySingleton<_i730.AdminRepository>(() => _i730.AdminRepositoryImpl());
+    gh.factory<_i497.AdminBloc>(
+      () => _i497.AdminBloc(gh<_i730.AdminRepository>()),
+    );
     gh.lazySingleton<_i166.SessionRepository>(
       () => _i166.SessionRepository(gh<_i522.DbClient>()),
     );
@@ -78,11 +83,15 @@ extension GetItInjectableX on _i174.GetIt {
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
     );
+    gh.factoryParam<_i64.LettersBloc, String, dynamic>(
+      (_roomId, _) => _i64.LettersBloc(
+        gh<_i684.WsLettersRepository>(),
+        gh<_i166.SessionRepository>(),
+        _roomId,
+      ),
+    );
     gh.factory<_i326.ChatMemberBloc>(
       () => _i326.ChatMemberBloc(gh<_i346.MainChatRepository>()),
-    );
-    gh.factory<_i91.AdminBloc>(
-      () => _i91.AdminBloc(gh<_i151.AdminRepository>()),
     );
     gh.factory<_i165.WsJoinCubit>(
       () => _i165.WsJoinCubit(gh<_i166.SessionRepository>()),
@@ -97,12 +106,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i716.AppConfig>(),
       ),
       instanceName: 'withToken',
-    );
-    gh.factory<_i64.LettersBloc>(
-      () => _i64.LettersBloc(
-        gh<_i684.WsLettersRepository>(),
-        gh<_i166.SessionRepository>(),
-      ),
     );
     gh.lazySingleton<_i199.RegistrationApi>(
       () => chopperModule.registrationApi(
@@ -150,10 +153,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i132.LoginCubit>(
       () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
     );
+    gh.lazySingleton<_i575.FakeUserRepository>(
+      () => _i575.FakeUserRepository(
+        gh<_i166.SessionRepository>(),
+        gh<_i887.AuthRepository>(),
+      ),
+    );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(
         gh<_i684.WsLettersRepository>(),
-        gh<_i151.AdminRepository>(),
+        gh<_i730.AdminRepository>(),
         gh<_i948.WebSocket>(),
         gh<_i716.AppConfig>(),
         gh<_i166.SessionRepository>(),
