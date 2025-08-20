@@ -16,7 +16,7 @@ abstract class AdminRepository {
 class AdminRepositoryImpl implements AdminRepository {
   @override
   WsCallback? send;
-  static const _adminRoom = 'admin';
+  // static const _adminRoom = 'admin';
 
   @override
   void joinRoom() {

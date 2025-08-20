@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:frontend/features/admin/_domain/admin_repository.dart';
+import 'package:frontend/features/admin/domain/admin_repository.dart';
 import 'package:injectable/injectable.dart';
 
 part 'admin_bloc.freezed.dart';
@@ -26,7 +26,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     }, transformer: sequential());
   }
 
-  Future<void> _create(_CreateAdminEvent event, Emitter<AdminState> emitter) async {
+  Future<void> _create(
+    _CreateAdminEvent event,
+    Emitter<AdminState> emitter,
+  ) async {
     _adminRepository.joinRoom();
     await emitter.onEach<int>(
       _adminRepository.connectionCount,
@@ -38,11 +41,17 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     // ...
   }
 
-  Future<void> _update(_UpdateAdminEvent event, Emitter<AdminState> emitter) async {
+  Future<void> _update(
+    _UpdateAdminEvent event,
+    Emitter<AdminState> emitter,
+  ) async {
     // ...
   }
 
-  Future<void> _delete(_DeleteAdminEvent event, Emitter<AdminState> emitter) async {
+  Future<void> _delete(
+    _DeleteAdminEvent event,
+    Emitter<AdminState> emitter,
+  ) async {
     // ...
   }
 }

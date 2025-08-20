@@ -27,6 +27,7 @@ abstract class ChopperModule {
       ],
       interceptors: [
         BearerInterceptor(repository),
+        LoggerInterceptor(),
         // LoggingInterceptor(),
         // RegistrationInterceptor(),
         // You can add a `HttpLoggingInterceptor` for more detailed logs
@@ -53,7 +54,7 @@ abstract class ChopperModule {
         RegistrationApi.create(),
       ],
       interceptors: [
-        RegInterceptor(),
+        LoggerInterceptor(),
         // BearerInterceptor(repository),
         // LoggingInterceptor(),
         // RegistrationInterceptor(),

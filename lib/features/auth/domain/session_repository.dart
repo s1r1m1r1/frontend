@@ -56,7 +56,7 @@ class SessionRepository {
     sessionNtf.value = null;
   }
 
-  Future<void> setTokens(TokensDto tokens) async {
+  Future<void> updateTokens(TokensDto tokens) async {
     debugPrint(
       'Set t: ${tokens.accessToken} ,r: refresh ${tokens.refreshToken}',
     );
@@ -121,6 +121,14 @@ class SessionRepository {
 
       debugPrint('$magenta updated $reset');
       debugPrint('${sessionNtf.value}');
+    }
+  }
+
+  void setSession(Session session) async {
+    sessionNtf.value = session;
+    unawaited(_db.saveKeyValue(_refreshTokenK, session.refreshToken));
+    if (session.accessToken != null) {
+      unawaited(_db.saveKeyValue(_tokenKey, session.accessToken!));
     }
   }
 }

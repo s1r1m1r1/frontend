@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/admin/bloc/admin_bloc.dart';
+import 'package:frontend/features/admin/logic/admin_bloc.dart';
 
 import '../../../inject/get_it.dart';
 
@@ -8,7 +8,10 @@ class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<AdminBloc>()..add(const AdminEvent.create()), child: _AdminView());
+    return BlocProvider(
+      create: (_) => getIt<AdminBloc>()..add(const AdminEvent.create()),
+      child: _AdminView(),
+    );
   }
 }
 

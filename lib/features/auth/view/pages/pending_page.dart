@@ -45,8 +45,8 @@ class _PendingView extends StatelessWidget {
                 UnitRoute().go(context);
               case GameReadySession():
                 WsConnectingRoute().go(context);
-              case GameJoinedSession():
-                MenuRoute().go(context);
+              case GameJoinedSession(:final gameOption):
+                MenuRoute(gameOption.mainRoomId).go(context);
               case GameFinishedSession():
                 break;
             }

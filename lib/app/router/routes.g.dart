@@ -8,6 +8,7 @@ part of 'routes.dart';
 
 List<RouteBase> get $appRoutes => [
   $pendingRoute,
+  $emailPendingRoute,
   $loginRoute,
   $signupRoute,
   $wsConnectingRoute,
@@ -27,6 +28,32 @@ mixin _$PendingRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/pending');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $emailPendingRoute => GoRouteData.$route(
+  path: '/email-pending',
+  factory: _$EmailPendingRoute._fromState,
+);
+
+mixin _$EmailPendingRoute on GoRouteData {
+  static EmailPendingRoute _fromState(GoRouterState state) =>
+      const EmailPendingRoute();
+
+  @override
+  String get location => GoRouteData.$location('/email-pending');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -190,10 +217,14 @@ RouteBase get $menuRoute =>
     GoRouteData.$route(path: '/menu', factory: _$MenuRoute._fromState);
 
 mixin _$MenuRoute on GoRouteData {
-  static MenuRoute _fromState(GoRouterState state) => const MenuRoute();
+  static MenuRoute _fromState(GoRouterState state) =>
+      MenuRoute(state.uri.queryParameters['room-id']!);
+
+  MenuRoute get _self => this as MenuRoute;
 
   @override
-  String get location => GoRouteData.$location('/menu');
+  String get location =>
+      GoRouteData.$location('/menu', queryParams: {'room-id': _self.roomId});
 
   @override
   void go(BuildContext context) => context.go(location);

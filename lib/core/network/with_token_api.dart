@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:chopper/chopper.dart';
 import 'package:sha_red/sha_red.dart';
-import 'package:http/http.dart' as http;
 part 'with_token_api.chopper.dart';
 
 // Import your DTOs here
