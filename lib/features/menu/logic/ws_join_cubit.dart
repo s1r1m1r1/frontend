@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/session.dart';
@@ -9,15 +11,15 @@ part 'ws_join_cubit.freezed.dart';
 @injectable
 class WsJoinCubit extends Cubit<WsJoinState> {
   final SessionRepository _repository;
+  StreamSubscription? _sub;
   WsJoinCubit(this._repository) : super(WsJoinState.initial());
 
   void subscribe() {
-    _repository.sessionNtf.addListener(listen);
-    listen();
+    _sub?.cancel();
+    _sub = _repository.sessionStream.listen(_listen);
   }
 
-  void listen() {
-    final session = _repository.sessionNtf.value;
+  void _listen(Session? session) {
     if (session case GameJoinedSession(:final gameOption)) {
       emit(WsJoinState.connected(gameOption.mainRoomId));
     }
@@ -30,7 +32,7 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 
   @override
   Future<void> close() {
-    _repository.sessionNtf.removeListener(listen);
+    _sub?.cancel();
     return super.close();
   }
 }

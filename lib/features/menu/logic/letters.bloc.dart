@@ -2,38 +2,33 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/core/network/ws_manager.dart';
-import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sha_red/sha_red.dart';
 
 part 'letters.event.dart';
 part 'letters.state.dart';
+part 'letters.bloc.freezed.dart';
 
 @injectable
 class LettersBloc extends Bloc<LettersEvent, LettersState> {
   final WsLettersRepository _lettersRepository;
-  final SessionRepository _sessionRepository;
-  final String _roomId;
-  StreamSubscription? _lettersSubscription;
-  LettersBloc(
-    this._lettersRepository,
-    this._sessionRepository,
-    @factoryParam this._roomId,
-  ) : super(const LettersState()) {
-    on<_StartedLE>(_onStarted);
+  StreamSubscription? _sub;
+  LettersBloc(this._lettersRepository) : super(const LettersState()) {
+    on<_JoinRoomLE>(_onStarted);
     on<_DeletePressedLE>(_onDeletePressed);
     on<_NewPressedLE>(_onNewPressed);
-    on<_OnUpdateLE>(_onUpdateLetters);
+    on<_OnLetterLE>(_onUpdateLetters);
   }
 
   FutureOr<void> _onStarted(
-    _StartedLE event,
+    _JoinRoomLE event,
     Emitter<LettersState> emit,
   ) async {
-    _lettersRepository.joinRoom(_roomId);
-    _lettersSubscription = _lettersRepository.letters.listen(
-      (letters) => add(_OnUpdateLE(letters)),
+    _lettersRepository.joinRoom(event.roomId, event.senderToken);
+    _sub = _lettersRepository.letters.listen(
+      (letters) => add(LettersEvent._onLetter(letters)),
     );
   }
 
@@ -41,11 +36,14 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
     _DeletePressedLE event,
     Emitter<LettersState> emit,
   ) async {
-    _lettersRepository.deleteLetter(_roomId, event.letterId);
+    _lettersRepository.deleteLetter(
+      sender: event.senderId,
+      letterId: event.letterId,
+    );
   }
 
   FutureOr<void> _onUpdateLetters(
-    _OnUpdateLE event,
+    _OnLetterLE event,
     Emitter<LettersState> emit,
   ) {
     emit(state.copyWith(letters: event.letters));
@@ -53,7 +51,7 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
 
   @override
   Future<void> close() {
-    _lettersSubscription?.cancel();
+    _sub?.cancel();
     return super.close();
   }
 
@@ -62,8 +60,13 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
     Emitter<LettersState> emit,
   ) async {
     _lettersRepository.newLetter(
-      _roomId,
-      CreateLetterDto(chatRoomId: 1, senderId: 0, content: event.message),
+      roomId: event.roomId,
+      sender: event.senderToken,
+      letter: CreateLetterDto(
+        chatRoomId: 1,
+        senderId: 0,
+        content: event.message,
+      ),
     );
   }
 }

@@ -4,23 +4,26 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:injectable/injectable.dart';
 
 import '../domain/auth_repository.dart';
 part 'auth_cubit.freezed.dart';
 
-@injectable
+@lazySingleton
 class AuthCubit extends Cubit<AuthState> with ChangeNotifier {
   final AuthRepository _authRepository;
-  AuthCubit(this._authRepository) : super(const AuthState.initial());
+  final SessionRepository _sessionRepository;
+  StreamSubscription? _sub;
+  AuthCubit(this._authRepository, this._sessionRepository)
+    : super(const AuthState.initial());
 
   void subscribe() {
-    _authRepository.sessionNtf.addListener(listen);
-    listen();
+    _sub?.cancel();
+    _sub = _sessionRepository.sessionStream.listen(_listen);
   }
 
-  void listen() {
-    final session = _authRepository.sessionNtf.value;
+  void _listen(Session? session) {
     if (session == null) {
       emit(const AuthState.logout());
       return;
@@ -47,7 +50,7 @@ class AuthCubit extends Cubit<AuthState> with ChangeNotifier {
 
   @override
   Future<void> close() async {
-    _authRepository.sessionNtf.removeListener(listen);
+    _sub?.cancel();
     return await super.close();
   }
 }

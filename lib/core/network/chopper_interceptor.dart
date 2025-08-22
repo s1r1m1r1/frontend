@@ -20,7 +20,7 @@ class BearerInterceptor implements Interceptor {
   FutureOr<Response<BodyType>> intercept<BodyType>(
     Chain<BodyType> chain,
   ) async {
-    final token = _repository.sessionNtf.value?.accessToken;
+    final token = _repository.accessToken;
     if (token == null) {
       _retryAfterRefreshToken(chain);
     }
@@ -37,7 +37,7 @@ class BearerInterceptor implements Interceptor {
   }
 
   FutureOr<Response<T>> _retryAfterRefreshToken<T>(Chain<T> chain) async {
-    final refresh = _repository.sessionNtf.value?.refreshToken;
+    final refresh = _repository.refreshToken;
     if (refresh == null) {
       throw DinedTokenApiException();
     }
@@ -57,7 +57,7 @@ class LoggerInterceptor implements Interceptor {
   ) async {
     debugPrint(
       '${green}LoggerInterceptor$reset: ${chain.request.method} ${chain.request.url}\n'
-      '$body:{chain.request.body}',
+      '$body:${chain.request.body}',
     );
     final response = await chain.proceed(chain.request);
     debugPrint(

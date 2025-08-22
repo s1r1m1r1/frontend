@@ -32,9 +32,9 @@ const Color chatBackgroundColor = Color.fromARGB(
   1,
 ); // A dark brown for the chat box
 
-class MenuPage extends StatelessWidget {
+class AdminMenuView extends StatelessWidget {
   final String roomId;
-  const MenuPage({super.key, required this.roomId});
+  const AdminMenuView({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context) {
@@ -50,133 +50,117 @@ class MenuPage extends StatelessWidget {
           },
         ),
 
-        BlocProvider(lazy: false, create: (_) => GetIt.I.get<LettersBloc>()),
-
-        // ..add(LettersEvent.joinRoom(roomId)
-        // ),
+        BlocProvider(
+          lazy: false,
+          create: (_) => GetIt.I.get<LettersBloc>(param1: roomId)
+            ..add(
+              LettersEvent.joinRoom(roomId: roomId, senderToken: 'senderToken'),
+            ),
+        ),
         BlocProvider(
           lazy: false,
           create: (_) => getIt<WsConnectionCubit>()..listenConnection(),
         ),
-        BlocProvider(lazy: false, create: (_) => getIt<SenderCubit>()),
       ],
-      child: BlocListener<WsConnectionCubit, WsConnectionStatus>(
-        listener: (context, status) {
-          switch (status) {
-            case WsConnectionStatus.init:
-            case WsConnectionStatus.connecting:
-            case WsConnectionStatus.reconnecting:
-              break;
-            case WsConnectionStatus.reconnected:
-            case WsConnectionStatus.connected:
-              break;
-            case WsConnectionStatus.disconnecting:
-            case WsConnectionStatus.disconnected:
-              break;
-          }
-        },
-        child: const MenuView(),
-      ),
+      child: const _AdminMenuView(),
     );
   }
 }
 
-class MenuView extends StatelessWidget {
-  const MenuView({super.key});
+class _AdminMenuView extends StatelessWidget {
+  const _AdminMenuView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: secondaryColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Bar
-            Container(
-              height: 50,
-              color: primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  // Placeholder for the top-left icon
-                  Container(width: 30, height: 30, color: accentColor),
-                  const Spacer(),
-                  BlocBuilder<ChatMemberBloc, ChatMemberState>(
-                    builder: (context, state) {
-                      switch (state) {
-                        case InitialState():
-                          return Text('-0-');
-                        case SuccessState():
-                          return Text('${state.memberIds.length}');
-                      }
-                    },
-                  ),
-                  const Spacer(),
-                  BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
-                    builder: (context, state) {
-                      return Text(
-                        state.name.toString(),
-                        style: TextStyle(fontSize: 8),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  // Top buttons
-                  _buildTopButton('КАРТА'),
-                  const SizedBox(width: 8),
-                  _buildTopButton('РЮКЗАК'),
-                  const SizedBox(width: 8),
-                  _buildTopButton('ПРОФЕССИЯ'),
-                ],
-              ),
+    return Container(
+      color: secondaryColor,
+      child: Column(
+        children: [
+          // Top Bar
+          Container(
+            height: 50,
+            color: primaryColor,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                // Placeholder for the top-left icon
+                Container(width: 30, height: 30, color: accentColor),
+                const Spacer(),
+                BlocBuilder<ChatMemberBloc, ChatMemberState>(
+                  builder: (context, state) {
+                    switch (state) {
+                      case InitialState():
+                        return Text('-0-');
+                      case SuccessState():
+                        return Text('${state.memberIds.length}');
+                    }
+                  },
+                ),
+                const Spacer(),
+                BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
+                  builder: (context, state) {
+                    return Text(
+                      state.name.toString(),
+                      style: TextStyle(fontSize: 8),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
+                // Top buttons
+                _buildTopButton('КАРТА'),
+                const SizedBox(width: 8),
+                _buildTopButton('РЮКЗАК'),
+                const SizedBox(width: 8),
+                _buildTopButton('ПРОФЕССИЯ'),
+              ],
             ),
-            // Main Content Area
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors
-                        .blueGrey[900], // Simulating the wooden background
-                    border: Border.all(color: accentColor, width: 2),
-                  ),
-                  child: Center(
-                    // Placeholder for the main game UI content
-                    child: Column(
-                      children: [
-                        Text(
-                          'Game UI Content',
-                          style: TextStyle(color: accentColor),
-                        ),
-                      ],
-                    ),
+          ),
+          // Main Content Area
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color:
+                      Colors.blueGrey[900], // Simulating the wooden background
+                  border: Border.all(color: accentColor, width: 2),
+                ),
+                child: Center(
+                  // Placeholder for the main game UI content
+                  child: Column(
+                    children: [
+                      Text(
+                        'Game UI Content',
+                        style: TextStyle(color: accentColor),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            // Middle Button Bar
-            Container(
-              height: 50,
-              color: primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildMiddleButton('В БОЙ', Colors.green),
-                  _buildMiddleButton(
-                    'ТОРГОВЛЯ',
-                    const Color.fromARGB(255, 95, 0, 52),
-                  ),
-                  _buildMiddleButton('БАНК', Colors.blue),
-                  _buildMiddleButton('НАСТРОЙКИ', Colors.grey),
-                ],
-              ),
+          ),
+          // Middle Button Bar
+          Container(
+            height: 50,
+            color: primaryColor,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildMiddleButton('В БОЙ', Colors.green),
+                _buildMiddleButton(
+                  'ТОРГОВЛЯ',
+                  const Color.fromARGB(255, 95, 0, 52),
+                ),
+                _buildMiddleButton('БАНК', Colors.blue),
+                _buildMiddleButton('НАСТРОЙКИ', Colors.grey),
+              ],
             ),
+          ),
 
-            // Bottom Chat Box
-            const _ChatView(),
-          ],
-        ),
+          // Bottom Chat Box
+          const _ChatView(),
+        ],
       ),
     );
   }
@@ -274,17 +258,21 @@ class _ChatViewState extends State<_ChatView> {
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
-                  final message = _controller.text;
-                  final sender = context.read<SenderCubit>().state.sender;
-                  if (sender?.accessToken == null) {
-                    debugPrint('TOKEN IS NULL');
+                  final token = context
+                      .read<SenderCubit>()
+                      .state
+                      .sender
+                      ?.accessToken;
+                  if (token == null) {
+                    debugPrint('NO token');
                     return;
                   }
+                  final message = _controller.text;
                   context.read<LettersBloc>().add(
                     LettersEvent.newPressed(
                       message: message,
                       roomId: 'main',
-                      senderToken: sender!.accessToken!,
+                      senderToken: token,
                     ),
                   );
                 },
@@ -340,13 +328,11 @@ class _ChatBody extends StatelessWidget {
                                     .sender
                                     ?.accessToken;
                                 if (token == null) {
-                                  debugPrint('NO token');
+                                  debugPrint('NO SENDER');
+                                  return;
                                 }
                                 context.read<LettersBloc>().add(
-                                  LettersEvent.deletePressed(
-                                    token!,
-                                    letter.id!,
-                                  ),
+                                  LettersEvent.deletePressed(token, letter.id!),
                                 );
                               },
                             )

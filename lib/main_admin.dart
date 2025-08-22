@@ -41,6 +41,6 @@ Future<void> main() async {
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
     }
   };
-  final router = GetIt.I.get<GoRouter>(instanceName: 'user');
+  final router = GetIt.I.get<GoRouter>(instanceName: 'admin');
   runApp(App(router: router));
 }

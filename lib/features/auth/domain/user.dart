@@ -13,6 +13,6 @@ abstract class User with _$User {
   }) = _User;
 
   factory User.fromDto(UserDto dto) {
-    return User(id: dto.userId, email: dto.email, role: Role.user);
+    return User(id: dto.userId, email: dto.email, role: dto.role);
   }
 }

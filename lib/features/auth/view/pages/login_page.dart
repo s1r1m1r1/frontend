@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/auth/logic/login.cubit.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/router/routes.dart';
+import '../../../../app/router/user_routes.dart';
 import '../../../../inject/get_it.dart';
 
 class LoginPage extends StatelessWidget {

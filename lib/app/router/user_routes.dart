@@ -6,14 +6,13 @@ import 'package:frontend/features/unit/view/crate_unit_page.dart';
 import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/admin/view/admin_page.dart';
 import '../../features/auth/view/pages/email_pending_page.dart';
 import '../../features/auth/view/pages/pending_page.dart';
 import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/unit/view/unit_page.dart';
 
-part 'routes.g.dart';
+part 'user_routes.g.dart';
 
 @TypedGoRoute<PendingRoute>(path: PendingRoute.path)
 class PendingRoute extends GoRouteData with _$PendingRoute {
@@ -76,15 +75,6 @@ class TodoListRoute extends GoRouteData with _$TodoListRoute {
 
   @override
   Widget build(_, _) => TodoListScreen();
-}
-
-@TypedGoRoute<AdminRoute>(path: AdminRoute.path)
-class AdminRoute extends GoRouteData with _$AdminRoute {
-  static const path = '/admin';
-  const AdminRoute();
-
-  @override
-  Widget build(_, _) => AdminPage();
 }
 
 @TypedGoRoute<MenuRoute>(path: MenuRoute.path)

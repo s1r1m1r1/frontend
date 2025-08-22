@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/routes.dart';
+import 'package:frontend/app/router/user_routes.dart';
 import 'package:frontend/features/auth/logic/auth_cubit.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
 import 'package:frontend/features/menu/logic/ws_join_cubit.dart';

@@ -18,6 +18,8 @@ abstract class WithTokenApi extends ChopperService {
     return _$WithTokenApi(client);
   }
 
+  //---------------------------------------------------------------------
+
   @GET(path: '/session')
   Future<Response<SessionDto>> getSession();
 

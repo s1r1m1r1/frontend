@@ -122,6 +122,7 @@ class WsManager {
                 break;
               // 4002
               case WsServerError.sessionExpired:
+                _authRepository.logOut();
                 break;
               // 4003
               case WsServerError.unauthorized:
@@ -181,16 +182,26 @@ class WsLettersRepository {
 
   Stream<List<LetterDto>> get letters => _lettersSubj.stream;
 
-  void newLetter(String roomId, CreateLetterDto letter) {
-    send?.call(ToServer.newLetter(roomId, letter).encoded());
+  void newLetter({
+    required String roomId,
+    required String sender,
+    required CreateLetterDto letter,
+  }) {
+    send?.call(
+      ToServer.newLetter(
+        room: roomId,
+        sender: sender,
+        letter: letter,
+      ).encoded(),
+    );
   }
 
-  void joinRoom(String roomId) {
-    send?.call(ToServer.joinLetters('main').encoded());
+  void joinRoom(String roomId, String token) {
+    send?.call(ToServer.joinLetters(room: 'main', token: token).encoded());
   }
 
-  void deleteLetter(String roomId, int letterId) {
-    final encoded = ToServer.deleteLetter(roomId, letterId).encoded();
+  void deleteLetter({required String sender, required int letterId}) {
+    final encoded = ToServer.deleteLetter(sender, letterId).encoded();
 
     send?.call(encoded);
   }

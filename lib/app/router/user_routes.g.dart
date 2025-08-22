@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'routes.dart';
+part of 'user_routes.dart';
 
 // **************************************************************************
 // GoRouterGenerator
@@ -14,7 +14,6 @@ List<RouteBase> get $appRoutes => [
   $wsConnectingRoute,
   $wsStoppedSessionRoute,
   $todoListRoute,
-  $adminRoute,
   $menuRoute,
   $createUnitRoute,
   $unitRoute,
@@ -175,29 +174,6 @@ mixin _$TodoListRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/todo-list');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
-RouteBase get $adminRoute =>
-    GoRouteData.$route(path: '/admin', factory: _$AdminRoute._fromState);
-
-mixin _$AdminRoute on GoRouteData {
-  static AdminRoute _fromState(GoRouterState state) => const AdminRoute();
-
-  @override
-  String get location => GoRouteData.$location('/admin');
 
   @override
   void go(BuildContext context) => context.go(location);

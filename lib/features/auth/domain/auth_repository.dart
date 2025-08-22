@@ -18,8 +18,6 @@ class AuthRepository {
   WsCallback? wsSend;
   AuthRepository(this._api, this._sessionRepository, this._protectedApi);
 
-  ValueNotifier<Session?> get sessionNtf => _sessionRepository.sessionNtf;
-
   void logOut() {
     _sessionRepository.clean();
   }
@@ -51,8 +49,7 @@ class AuthRepository {
   }
 
   Future<void> checkToken() async {
-    final session = sessionNtf.value;
-    final token = session?.accessToken;
+    final token = _sessionRepository.accessToken;
     if (token != null) {
       final response = await _protectedApi.getSession();
       final dto = response.body;
@@ -63,13 +60,13 @@ class AuthRepository {
 
       return;
     }
-    final refresh = session?.refreshToken;
+    final refresh = _sessionRepository.refreshToken;
     if (refresh != null) {}
     refreshToken();
   }
 
   Future<bool> refreshToken() async {
-    final refresh = sessionNtf.value?.refreshToken;
+    final refresh = _sessionRepository.refreshToken;
     if (refresh == null) {
       debugPrint('No refresh token available');
       return false;

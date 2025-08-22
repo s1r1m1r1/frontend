@@ -1,37 +1,19 @@
 part of 'letters.bloc.dart';
 
-sealed class LettersEvent extends Equatable {
-  const LettersEvent();
-  const factory LettersEvent.started() = _StartedLE;
-  const factory LettersEvent.newPressed(String message) = _NewPressedLE;
-  const factory LettersEvent.deletePressed(int letterId) = _DeletePressedLE;
+@freezed
+sealed class LettersEvent with _$LettersEvent {
+  const LettersEvent._();
+  const factory LettersEvent.joinRoom({
+    required String roomId,
+    required String senderToken,
+  }) = _JoinRoomLE;
+  const factory LettersEvent.newPressed({
+    required String roomId,
+    required String message,
+    required String senderToken,
+  }) = _NewPressedLE;
+  const factory LettersEvent.deletePressed(String senderId, int letterId) =
+      _DeletePressedLE;
+  const factory LettersEvent._onLetter(List<LetterDto> letters) = _OnLetterLE;
   // const factory LettersEvent.onUpdateLetters(List<LetterDto> letters) = _OnUpdateLE;
-
-  @override
-  List<Object?> get props => [];
-}
-
-class _StartedLE extends LettersEvent {
-  const _StartedLE();
-}
-
-class _NewPressedLE extends LettersEvent {
-  const _NewPressedLE(this.message);
-  final String message;
-  @override
-  List<Object> get props => [message];
-}
-
-class _DeletePressedLE extends LettersEvent {
-  const _DeletePressedLE(this.letterId);
-  final int letterId;
-  @override
-  List<Object> get props => [letterId];
-}
-
-class _OnUpdateLE extends LettersEvent {
-  const _OnUpdateLE(this.letters);
-  final List<LetterDto> letters;
-  @override
-  List<Object> get props => [letters];
 }
