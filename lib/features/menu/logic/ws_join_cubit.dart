@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/session.dart';
@@ -9,17 +11,17 @@ part 'ws_join_cubit.freezed.dart';
 @injectable
 class WsJoinCubit extends Cubit<WsJoinState> {
   final SessionRepository _repository;
+  StreamSubscription? _sub;
   WsJoinCubit(this._repository) : super(WsJoinState.initial());
 
   void subscribe() {
-    _repository.sessionNtf.addListener(listen);
-    listen();
+    _sub?.cancel();
+    _sub = _repository.sessionStream.listen(_listen);
   }
 
-  void listen() {
-    final session = _repository.sessionNtf.value;
-    if (session case GameJoinedSession(:final gameOption)) {
-      emit(WsJoinState.connected(gameOption.mainRoomId));
+  void _listen(Session? session) {
+    if (session case GameJoinedSession(:final gameOption, :final unit)) {
+      emit(WsJoinState.connected(gameOption.mainRoomId, unit.id));
     }
   }
 
@@ -30,7 +32,7 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 
   @override
   Future<void> close() {
-    _repository.sessionNtf.removeListener(listen);
+    _sub?.cancel();
     return super.close();
   }
 }
@@ -39,6 +41,7 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 sealed class WsJoinState with _$WsJoinState {
   const factory WsJoinState.initial() = InitialWsJoin;
   const factory WsJoinState.connecting() = ConnectingWsJoin;
-  const factory WsJoinState.connected(String roomId) = ConnectedWsJoin;
+  const factory WsJoinState.connected(int roomId, int senderId) =
+      ConnectedWsJoin;
   const factory WsJoinState.disconnected() = DisconnectedWsJoin;
 }

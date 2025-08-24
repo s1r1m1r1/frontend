@@ -1,18 +1,9 @@
 part of 'signup.bloc.dart';
 
-abstract class SignupEvent extends Equatable {
-  const SignupEvent();
-
-  @override
-  List<Object> get props => [];
-}
-
-class SignupButtonPressed extends SignupEvent {
-  final String email;
-  final String password;
-
-  const SignupButtonPressed({required this.email, required this.password});
-
-  @override
-  List<Object> get props => [email, password];
+@freezed
+abstract class SignupEvent with _$SignupEvent {
+  const factory SignupEvent.submitPressed({
+    required String email,
+    required String password,
+  }) = _SubmitPressedSE;
 }

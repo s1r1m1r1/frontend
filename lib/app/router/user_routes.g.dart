@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'routes.dart';
+part of 'user_routes.dart';
 
 // **************************************************************************
 // GoRouterGenerator
@@ -14,7 +14,6 @@ List<RouteBase> get $appRoutes => [
   $wsConnectingRoute,
   $wsStoppedSessionRoute,
   $todoListRoute,
-  $adminRoute,
   $menuRoute,
   $createUnitRoute,
   $unitRoute,
@@ -190,41 +189,25 @@ mixin _$TodoListRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
-RouteBase get $adminRoute =>
-    GoRouteData.$route(path: '/admin', factory: _$AdminRoute._fromState);
-
-mixin _$AdminRoute on GoRouteData {
-  static AdminRoute _fromState(GoRouterState state) => const AdminRoute();
-
-  @override
-  String get location => GoRouteData.$location('/admin');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
 RouteBase get $menuRoute =>
     GoRouteData.$route(path: '/menu', factory: _$MenuRoute._fromState);
 
 mixin _$MenuRoute on GoRouteData {
-  static MenuRoute _fromState(GoRouterState state) =>
-      MenuRoute(state.uri.queryParameters['room-id']!);
+  static MenuRoute _fromState(GoRouterState state) => MenuRoute(
+    roomId: int.parse(state.uri.queryParameters['room-id']!)!,
+    senderId: int.parse(state.uri.queryParameters['sender-id']!)!,
+  );
 
   MenuRoute get _self => this as MenuRoute;
 
   @override
-  String get location =>
-      GoRouteData.$location('/menu', queryParams: {'room-id': _self.roomId});
+  String get location => GoRouteData.$location(
+    '/menu',
+    queryParams: {
+      'room-id': _self.roomId.toString(),
+      'sender-id': _self.senderId.toString(),
+    },
+  );
 
   @override
   void go(BuildContext context) => context.go(location);

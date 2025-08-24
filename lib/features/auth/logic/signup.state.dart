@@ -1,26 +1,19 @@
 part of 'signup.bloc.dart';
 
-abstract class SignupState extends Equatable {
-  const SignupState();
-
-  @override
-  List<Object> get props => [];
+enum SignupError {
+  timeout,
+  incorrectEmail,
+  weakPassword,
+  alreadyExist,
+  unknown,
+  none,
 }
 
-class SignupInitial extends SignupState {}
-
-class SignupLoading extends SignupState {}
-
-class SignupSuccess extends SignupState {
-  final String message;
-  const SignupSuccess(this.message);
-  @override
-  List<Object> get props => [message];
-}
-
-class SignupFailure extends SignupState {
-  final String error;
-  const SignupFailure(this.error);
-  @override
-  List<Object> get props => [error];
+@freezed
+abstract class SignupState with _$SignupState {
+  const SignupState._();
+  const factory SignupState.initial() = SignupInitial;
+  const factory SignupState.loading() = SignupLoading;
+  const factory SignupState.success(String message) = SignupSuccess;
+  const factory SignupState.failure(SignupError error) = SignupFailure;
 }

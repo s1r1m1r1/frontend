@@ -3,34 +3,43 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:injectable/injectable.dart';
 
 import '../domain/auth_repository.dart';
 part 'auth_cubit.freezed.dart';
 
 @injectable
-class AuthCubit extends Cubit<AuthState> with ChangeNotifier {
+class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
-  AuthCubit(this._authRepository) : super(const AuthState.initial());
+  final SessionRepository _sessionRepository;
+  StreamSubscription? _sub;
+  AuthCubit(this._authRepository, this._sessionRepository)
+    : super(const AuthState.initial());
 
   void subscribe() {
-    _authRepository.sessionNtf.addListener(listen);
-    listen();
+    debugPrint('$red AuthCubit subscribe $reset');
+    _sub = _sessionRepository.sessionStream.listen(_listen);
   }
 
-  void listen() {
-    final session = _authRepository.sessionNtf.value;
+  void _listen(Session? session) {
+    debugPrint('$red AuthCubit _listen $reset');
     if (session == null) {
+      debugPrint('AuthCubit _listen null');
       emit(const AuthState.logout());
+
       return;
     }
+    debugPrint('AuthCubit _listen not null');
     emit(AuthState.authenticated(session: session));
-    notifyListeners();
   }
 
   Future<void> updateSession(Session session) async {
+    debugPrint('$red AuthCubit updateSession $reset');
     if (state case AuthenticatedAuthState(isUpdating: true)) return;
+    debugPrint('$red AuthCubit updateSession updated$reset');
     emit(AuthState.authenticated(session: session, isUpdating: true));
     try {
       await _authRepository.checkToken();
@@ -47,7 +56,7 @@ class AuthCubit extends Cubit<AuthState> with ChangeNotifier {
 
   @override
   Future<void> close() async {
-    _authRepository.sessionNtf.removeListener(listen);
+    _sub?.cancel();
     return await super.close();
   }
 }

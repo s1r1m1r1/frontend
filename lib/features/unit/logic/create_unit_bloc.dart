@@ -22,12 +22,18 @@ class CreateUnitBloc extends Bloc<CreateUnitEvent, CreateUnitState> {
     emit(state.copyWith(status: UnitStateStatus.initial));
   }
 
-  FutureOr<void> _onNameChanged(_NameChangedCUE event, Emitter<CreateUnitState> emit) {
+  FutureOr<void> _onNameChanged(
+    _NameChangedCUE event,
+    Emitter<CreateUnitState> emit,
+  ) {
     emit(state.copyWith(name: event.name));
     add(CreateUnitEvent.validate());
   }
 
-  FutureOr<void> _onIncrement(_IncrementStatCUE event, Emitter<CreateUnitState> emit) {
+  FutureOr<void> _onIncrement(
+    _IncrementStatCUE event,
+    Emitter<CreateUnitState> emit,
+  ) {
     emit(
       state.copyWith(
         vitality: event.type == StatType.vitality ? state.vitality + 1 : null,
@@ -39,7 +45,10 @@ class CreateUnitBloc extends Bloc<CreateUnitEvent, CreateUnitState> {
     add(CreateUnitEvent.validate());
   }
 
-  FutureOr<void> _onDecrement(_DecrementStatCUE event, Emitter<CreateUnitState> emit) {
+  FutureOr<void> _onDecrement(
+    _DecrementStatCUE event,
+    Emitter<CreateUnitState> emit,
+  ) {
     emit(
       state.copyWith(
         vitality: event.type == StatType.vitality ? state.vitality - 1 : null,
@@ -51,7 +60,10 @@ class CreateUnitBloc extends Bloc<CreateUnitEvent, CreateUnitState> {
     add(CreateUnitEvent.validate());
   }
 
-  FutureOr<void> _onValidate(_ValidateUnitCUE event, Emitter<CreateUnitState> emit) {
+  FutureOr<void> _onValidate(
+    _ValidateUnitCUE event,
+    Emitter<CreateUnitState> emit,
+  ) {
     if (state.freePoint == 0 && state.name.isNotEmpty) {
       emit(state.copyWith(status: UnitStateStatus.valid));
     } else {
@@ -59,9 +71,17 @@ class CreateUnitBloc extends Bloc<CreateUnitEvent, CreateUnitState> {
     }
   }
 
-  FutureOr<void> _onCreateUnit(_CreateUnitCUE event, Emitter<CreateUnitState> emit) async {
+  FutureOr<void> _onCreateUnit(
+    _CreateUnitCUE event,
+    Emitter<CreateUnitState> emit,
+  ) async {
     final success = await _unitRepository.createUnit(
-      CreateUnitDto(name: state.name, atk: state.atk, def: state.def, vitality: state.vitality),
+      CreateUnitDto(
+        name: state.name,
+        atk: state.atk,
+        def: state.def,
+        vitality: state.vitality,
+      ),
     );
     if (success) emit(state.copyWith(status: UnitStateStatus.created));
   }
@@ -74,8 +94,10 @@ abstract class CreateUnitEvent extends Equatable {
 
   const factory CreateUnitEvent.started() = _StartedCUE;
   const factory CreateUnitEvent.nameChanged(String value) = _NameChangedCUE;
-  const factory CreateUnitEvent.incrementStats(StatType type) = _IncrementStatCUE;
-  const factory CreateUnitEvent.decrementStats(StatType type) = _DecrementStatCUE;
+  const factory CreateUnitEvent.incrementStats(StatType type) =
+      _IncrementStatCUE;
+  const factory CreateUnitEvent.decrementStats(StatType type) =
+      _DecrementStatCUE;
   const factory CreateUnitEvent.validate() = _ValidateUnitCUE;
   const factory CreateUnitEvent.create() = _CreateUnitCUE;
 }
@@ -139,7 +161,14 @@ class CreateUnitState extends Equatable {
     this.freePoint = 10,
   });
 
-  CreateUnitState copyWith({int? atk, int? def, int? vitality, String? name, UnitStateStatus? status, int? freePoint}) {
+  CreateUnitState copyWith({
+    int? atk,
+    int? def,
+    int? vitality,
+    String? name,
+    UnitStateStatus? status,
+    int? freePoint,
+  }) {
     return CreateUnitState(
       name: name ?? this.name,
       atk: atk ?? this.atk,

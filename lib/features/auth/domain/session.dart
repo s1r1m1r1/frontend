@@ -10,13 +10,12 @@ part 'session.freezed.dart';
 sealed class Session with _$Session {
   const Session._();
 
-  @Implements<ISessionWithTokens>()
   const factory Session.pending({
     String? accessToken,
     required String refreshToken,
   }) = PendingSession;
 
-  @Implements<ISessionWithTokens>()
+  @Implements<ISessionUser>()
   const factory Session.welcome({
     String? accessToken,
     required String refreshToken,
@@ -24,7 +23,8 @@ sealed class Session with _$Session {
     required User user,
   }) = WelcomeSession;
 
-  @Implements<ISessionWithTokens>()
+  @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
   const factory Session.gameReady({
     required User user,
     required Unit unit,
@@ -32,7 +32,9 @@ sealed class Session with _$Session {
     required String refreshToken,
   }) = GameReadySession;
 
-  @Implements<ISessionWithTokens>()
+  @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
+  @Implements<ISessionWS>()
   const factory Session.gameJoined({
     required User user,
     required Unit unit,
@@ -41,7 +43,9 @@ sealed class Session with _$Session {
     required WsGameOption gameOption,
   }) = GameJoinedSession;
 
-  @Implements<ISessionWithTokens>()
+  @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
+  @Implements<ISessionWS>()
   const factory Session.gameFinished({
     required User user,
     required Unit unit,
@@ -69,7 +73,14 @@ sealed class Session with _$Session {
   }
 }
 
-abstract class ISessionWithTokens {
-  String? get accessToken;
-  String get refreshToken;
+sealed class ISessionUser implements Session {
+  User get user;
+}
+
+sealed class ISessionUnit implements Session {
+  Unit get unit;
+}
+
+sealed class ISessionWS implements Session {
+  WsGameOption get gameOption;
 }

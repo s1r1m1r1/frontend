@@ -1,7 +1,7 @@
 // lib/screens/signup_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/routes.dart';
+import 'package:frontend/app/router/user_routes.dart';
 import 'package:frontend/features/auth/logic/signup.bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -68,7 +68,7 @@ class _SignupViewState extends State<_SignupView> {
                   return ElevatedButton(
                     onPressed: () {
                       BlocProvider.of<SignupBloc>(context).add(
-                        SignupButtonPressed(
+                        SignupEvent.submitPressed(
                           email: _emailController.text,
                           password: _passwordController.text,
                         ),

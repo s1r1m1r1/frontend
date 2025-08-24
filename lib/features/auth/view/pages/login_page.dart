@@ -1,10 +1,11 @@
 // lib/screens/login_screen.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/auth/logic/login.cubit.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/router/routes.dart';
+import '../../../../app/router/user_routes.dart';
 import '../../../../inject/get_it.dart';
 
 class LoginPage extends StatelessWidget {
@@ -51,6 +52,40 @@ class _LoginViewState extends State<_LoginView> {
               },
               child: Column(
                 children: [
+                  // if(kDebugMode)
+                  SizedBox(
+                    height: 100,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: TextButton(
+                              onPressed: () {
+                                _usernameController.text = 'qq@qq.qq';
+                                _passwordController.text = '12qwAS';
+                                _login();
+                              },
+                              child: Text('qq'),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 100,
+                            child: TextButton(
+                              onPressed: () {
+                                _usernameController.text = 'ww@ww.ww';
+                                _passwordController.text = '12qwAS';
+                                _login();
+                              },
+                              child: Text('ww'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   TextField(
                     controller: _usernameController,
                     decoration: const InputDecoration(labelText: 'Username'),
@@ -68,12 +103,7 @@ class _LoginViewState extends State<_LoginView> {
                       }
                       return ElevatedButton(
                         onPressed: () {
-                          BlocProvider.of<LoginCubit>(
-                            context,
-                          ).loginButtonPressed(
-                            username: _usernameController.text,
-                            password: _passwordController.text,
-                          );
+                          _login();
                         },
                         child: const Text('Login'),
                       );
@@ -92,6 +122,13 @@ class _LoginViewState extends State<_LoginView> {
           ),
         ],
       ),
+    );
+  }
+
+  void _login() {
+    BlocProvider.of<LoginCubit>(context).loginButtonPressed(
+      username: _usernameController.text,
+      password: _passwordController.text,
     );
   }
 

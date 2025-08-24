@@ -7,7 +7,7 @@ class LogoutCubit extends Cubit<LogoutStatus> {
 
   void logout() {
     emit(LogoutStatus.loading);
-    _repository.logOut();
+    _repository.logout();
     emit(LogoutStatus.success);
   }
 }

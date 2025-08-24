@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/routes.dart';
+import 'package:frontend/app/router/user_routes.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/logic/auth_cubit.dart';
 import 'package:frontend/features/unit/logic/selected_unit.bloc.dart';
@@ -45,8 +45,11 @@ class _PendingView extends StatelessWidget {
                 UnitRoute().go(context);
               case GameReadySession():
                 WsConnectingRoute().go(context);
-              case GameJoinedSession(:final gameOption):
-                MenuRoute(gameOption.mainRoomId).go(context);
+              case GameJoinedSession(:final gameOption, :final unit):
+                MenuRoute(
+                  roomId: gameOption.mainRoomId,
+                  senderId: unit.id,
+                ).go(context);
               case GameFinishedSession():
                 break;
             }

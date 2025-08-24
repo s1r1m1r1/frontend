@@ -5,6 +5,7 @@ import 'package:frontend/app/app.dart';
 import 'package:frontend/app/app_bloc_observer.dart';
 import 'package:frontend/inject/inject.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 
@@ -40,6 +41,5 @@ Future<void> main() async {
       // FirebaseCrashlytics.instance.recordError(details.exception, details.stack);
     }
   };
-
-  runApp(const App());
+  runApp(App());
 }

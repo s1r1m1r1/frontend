@@ -77,7 +77,7 @@ as String,
 /// @nodoc
 
 
-class PendingSession extends Session implements ISessionWithTokens {
+class PendingSession extends Session {
   const PendingSession({this.accessToken, required this.refreshToken}): super._();
   
 
@@ -145,7 +145,7 @@ as String,
 /// @nodoc
 
 
-class WelcomeSession extends Session implements ISessionWithTokens {
+class WelcomeSession extends Session implements ISessionUser {
   const WelcomeSession({this.accessToken, required this.refreshToken, required this.user}): super._();
   
 
@@ -224,7 +224,7 @@ $UserCopyWith<$Res> get user {
 /// @nodoc
 
 
-class GameReadySession extends Session implements ISessionWithTokens {
+class GameReadySession extends Session implements ISessionUser, ISessionUnit {
   const GameReadySession({required this.user, required this.unit, this.accessToken, required this.refreshToken}): super._();
   
 
@@ -305,7 +305,7 @@ $UserCopyWith<$Res> get user {
 /// @nodoc
 
 
-class GameJoinedSession extends Session implements ISessionWithTokens {
+class GameJoinedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
   const GameJoinedSession({required this.user, required this.unit, this.accessToken, required this.refreshToken, required this.gameOption}): super._();
   
 
@@ -397,7 +397,7 @@ $WsGameOptionCopyWith<$Res> get gameOption {
 /// @nodoc
 
 
-class GameFinishedSession extends Session implements ISessionWithTokens {
+class GameFinishedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
   const GameFinishedSession({required this.user, required this.unit, this.accessToken, required this.refreshToken, required this.gameOption}): super._();
   
 

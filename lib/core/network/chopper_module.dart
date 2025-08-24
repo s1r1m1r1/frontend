@@ -1,8 +1,11 @@
 import 'package:chopper/chopper.dart';
+import 'package:frontend/core/network/authenticator.dart';
 import 'package:frontend/core/network/chopper_interceptor.dart';
 import 'package:frontend/core/network/json_converter.dart';
+import 'package:frontend/core/network/manual_token_api.dart';
 import 'package:frontend/core/network/with_token_api.dart';
 import 'package:frontend/core/network/registration_api.dart';
+import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
@@ -19,25 +22,31 @@ abstract class ChopperModule {
   ) {
     return ChopperClient(
       baseUrl: Uri.parse(appConfig.httpBaseUrl),
-
-      services: [
-        // The service to be generated
-        WithTokenApi.create(),
-        // RegistrationApi.create(),
-      ],
-      interceptors: [
-        BearerInterceptor(repository),
-        LoggerInterceptor(),
-        // LoggingInterceptor(),
-        // RegistrationInterceptor(),
-        // You can add a `HttpLoggingInterceptor` for more detailed logs
-        // HttpLoggingInterceptor(),
-      ],
+      services: [WithTokenApi.create()],
+      authenticator: TokenAuthenticator(repository),
+      interceptors: [BearerInterceptor(repository), LoggerInterceptor()],
       converter: JsonSerializableConverter({
         ListUnitDto: ListUnitDto.fromJsonFactory,
         UnitDto: UnitDto.fromJsonFactory,
         TodoDto: TodoDto.fromJsonFactory,
         SessionDto: SessionDto.fromJsonFactory,
+      }),
+    );
+  }
+
+  @Named('manualToken')
+  @lazySingleton
+  ChopperClient manualClient(AppConfig appConfig) {
+    return ChopperClient(
+      baseUrl: Uri.parse(appConfig.httpBaseUrl),
+      services: [ManualTokenApi.create()],
+      interceptors: [LoggerInterceptor()],
+      converter: JsonSerializableConverter({
+        ListUnitDto: ListUnitDto.fromJsonFactory,
+        UnitDto: UnitDto.fromJsonFactory,
+        TodoDto: TodoDto.fromJsonFactory,
+        SessionDto: SessionDto.fromJsonFactory,
+        FakeUserDto: FakeUserDto.fromJsonFactory,
       }),
     );
   }
@@ -48,19 +57,8 @@ abstract class ChopperModule {
     return ChopperClient(
       baseUrl: Uri.parse(appConfig.httpBaseUrl),
 
-      services: [
-        // The service to be generated
-        // ProtectedApiService2.create(),
-        RegistrationApi.create(),
-      ],
-      interceptors: [
-        LoggerInterceptor(),
-        // BearerInterceptor(repository),
-        // LoggingInterceptor(),
-        // RegistrationInterceptor(),
-        // You can add a `HttpLoggingInterceptor` for more detailed logs
-        // HttpLoggingInterceptor(),
-      ],
+      services: [RegistrationApi.create()],
+      interceptors: [LoggerInterceptor()],
       converter: JsonSerializableConverter({
         SessionDto: SessionDto.fromJsonFactory,
       }),
@@ -71,6 +69,10 @@ abstract class ChopperModule {
   @lazySingleton
   WithTokenApi protectedApiService(@Named('withToken') ChopperClient client) =>
       WithTokenApi.create(client);
+
+  @lazySingleton
+  ManualTokenApi manualApiService(@Named('manualToken') ChopperClient client) =>
+      ManualTokenApi.create(client);
 
   @lazySingleton
   RegistrationApi registrationApi(@Named('reg') ChopperClient client) =>

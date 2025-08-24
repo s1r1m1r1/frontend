@@ -3,7 +3,11 @@ part of 'letters.bloc.dart';
 enum LettersStatus { connected, disconnected }
 
 class LettersState extends Equatable {
-  const LettersState({this.updater = false, this.letters = const [], this.status = LettersStatus.disconnected});
+  const LettersState({
+    this.updater = false,
+    this.letters = const [],
+    this.status = LettersStatus.disconnected,
+  });
 
   final List<LetterDto> letters;
   final LettersStatus status;
@@ -13,6 +17,10 @@ class LettersState extends Equatable {
   List<Object?> get props => [updater, status, letters];
 
   LettersState copyWith({List<LetterDto>? letters, LettersStatus? status}) {
-    return LettersState(updater: !updater, letters: letters ?? this.letters, status: status ?? this.status);
+    return LettersState(
+      updater: !updater,
+      letters: letters ?? this.letters,
+      status: status ?? this.status,
+    );
   }
 }

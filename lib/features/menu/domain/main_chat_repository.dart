@@ -15,7 +15,6 @@ class MainChatRepository {
   Stream<List<OnlineMemberDto>> get onlineMembers => _onlineMembersSubj.stream;
   void setOnlineMembers(List<OnlineMemberDto> usersIds) =>
       _onlineMembersSubj.value = usersIds;
-
   @disposeMethod
   void dispose() {
     send = null;

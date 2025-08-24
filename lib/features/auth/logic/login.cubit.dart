@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:frontend/core/network/api_exception.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 
@@ -16,15 +19,24 @@ class LoginCubit extends Cubit<LoginState> {
     required String username,
     required String password,
   }) async {
-    emit(LoginLoading());
+    emit(const LoginState.loading());
     try {
-      final response = await _authRepository.login(username, password);
-      emit(LoginSuccess());
-    } catch (e) {
-      emit(LoginFailure(e.toString()));
+      await _authRepository
+          .login(username, password)
+          .timeout(Duration(seconds: 5));
+      emit(const LoginState.success());
+    } on TimeoutException {
+      emit(const LoginState.failure(LoginError.timeout));
+    } on WrongLoginApiException {
+      emit(const LoginState.failure(LoginError.wrongLogin));
+    } on Object catch (e, s) {
+      addError(e, s);
+      emit(LoginFailure(LoginError.unknown));
     }
   }
 }
+
+enum LoginError { timeout, wrongLogin, unknown, none }
 
 @freezed
 abstract class LoginState with _$LoginState {
@@ -32,5 +44,5 @@ abstract class LoginState with _$LoginState {
   const factory LoginState.initial() = LoginInitial;
   const factory LoginState.loading() = LoginLoading;
   const factory LoginState.success() = LoginSuccess;
-  const factory LoginState.failure(String error) = LoginFailure;
+  const factory LoginState.failure(LoginError error) = LoginFailure;
 }

@@ -110,10 +110,11 @@ String toString() {
 
 
 class ConnectedWsJoin implements WsJoinState {
-  const ConnectedWsJoin(this.roomId);
+  const ConnectedWsJoin(this.roomId, this.senderId);
   
 
- final  String roomId;
+ final  int roomId;
+ final  int senderId;
 
 /// Create a copy of WsJoinState
 /// with the given fields replaced by the non-null parameter values.
@@ -125,16 +126,16 @@ $ConnectedWsJoinCopyWith<ConnectedWsJoin> get copyWith => _$ConnectedWsJoinCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectedWsJoin&&(identical(other.roomId, roomId) || other.roomId == roomId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectedWsJoin&&(identical(other.roomId, roomId) || other.roomId == roomId)&&(identical(other.senderId, senderId) || other.senderId == senderId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,roomId);
+int get hashCode => Object.hash(runtimeType,roomId,senderId);
 
 @override
 String toString() {
-  return 'WsJoinState.connected(roomId: $roomId)';
+  return 'WsJoinState.connected(roomId: $roomId, senderId: $senderId)';
 }
 
 
@@ -145,7 +146,7 @@ abstract mixin class $ConnectedWsJoinCopyWith<$Res> implements $WsJoinStateCopyW
   factory $ConnectedWsJoinCopyWith(ConnectedWsJoin value, $Res Function(ConnectedWsJoin) _then) = _$ConnectedWsJoinCopyWithImpl;
 @useResult
 $Res call({
- String roomId
+ int roomId, int senderId
 });
 
 
@@ -162,10 +163,11 @@ class _$ConnectedWsJoinCopyWithImpl<$Res>
 
 /// Create a copy of WsJoinState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? roomId = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? roomId = null,Object? senderId = null,}) {
   return _then(ConnectedWsJoin(
 null == roomId ? _self.roomId : roomId // ignore: cast_nullable_to_non_nullable
-as String,
+as int,null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

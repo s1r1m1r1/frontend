@@ -1,32 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:frontend/features/auth/logic/auth_cubit.dart';
-import 'package:frontend/inject/get_it.dart';
+import 'package:frontend/app/router/get_go_router.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
-import 'router/build_router.dart';
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'OpenAPI Flutter App',
-//       theme: ThemeData(primarySwatch: Colors.blue),
-//       initialRoute: '/',
-//       routes: {
-//         '/': (context) => const HomeScreen(),
-//         '/login': (context) => const LoginScreen(),
-//         '/signup': (context) => const SignupScreen(),
-//         '/users': (context) => const UserListScreen(),
-//         '/todos': (context) => const TodoListScreen(),
-//       },
-//     );
-//   }
-// }
 //   O    IT'S APPLICATION BRO
 //  /|\
 //  / \
@@ -36,14 +14,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthCubit>(),
-      child: Builder(
-        builder: (context) {
-          return _AppView(buildRouter(context));
-        },
-      ),
-    );
+    return _AppView(getGoRouter);
   }
 }
 
