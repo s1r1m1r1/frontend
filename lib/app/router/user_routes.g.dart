@@ -193,14 +193,21 @@ RouteBase get $menuRoute =>
     GoRouteData.$route(path: '/menu', factory: _$MenuRoute._fromState);
 
 mixin _$MenuRoute on GoRouteData {
-  static MenuRoute _fromState(GoRouterState state) =>
-      MenuRoute(state.uri.queryParameters['room-id']!);
+  static MenuRoute _fromState(GoRouterState state) => MenuRoute(
+    roomId: int.parse(state.uri.queryParameters['room-id']!)!,
+    senderId: int.parse(state.uri.queryParameters['sender-id']!)!,
+  );
 
   MenuRoute get _self => this as MenuRoute;
 
   @override
-  String get location =>
-      GoRouteData.$location('/menu', queryParams: {'room-id': _self.roomId});
+  String get location => GoRouteData.$location(
+    '/menu',
+    queryParams: {
+      'room-id': _self.roomId.toString(),
+      'sender-id': _self.senderId.toString(),
+    },
+  );
 
   @override
   void go(BuildContext context) => context.go(location);

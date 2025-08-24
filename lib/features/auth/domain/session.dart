@@ -24,6 +24,7 @@ sealed class Session with _$Session {
   }) = WelcomeSession;
 
   @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
   const factory Session.gameReady({
     required User user,
     required Unit unit,
@@ -32,6 +33,7 @@ sealed class Session with _$Session {
   }) = GameReadySession;
 
   @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
   @Implements<ISessionWS>()
   const factory Session.gameJoined({
     required User user,
@@ -42,6 +44,7 @@ sealed class Session with _$Session {
   }) = GameJoinedSession;
 
   @Implements<ISessionUser>()
+  @Implements<ISessionUnit>()
   @Implements<ISessionWS>()
   const factory Session.gameFinished({
     required User user,
@@ -72,6 +75,10 @@ sealed class Session with _$Session {
 
 sealed class ISessionUser implements Session {
   User get user;
+}
+
+sealed class ISessionUnit implements Session {
+  Unit get unit;
 }
 
 sealed class ISessionWS implements Session {

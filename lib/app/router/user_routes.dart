@@ -80,11 +80,12 @@ class TodoListRoute extends GoRouteData with _$TodoListRoute {
 @TypedGoRoute<MenuRoute>(path: MenuRoute.path)
 class MenuRoute extends GoRouteData with _$MenuRoute {
   static const path = '/menu';
-  const MenuRoute(this.roomId);
-  final String roomId;
+  const MenuRoute({required this.roomId, required this.senderId});
+  final int roomId;
+  final int senderId;
 
   @override
-  Widget build(_, _) => MenuPage(roomId: roomId);
+  Widget build(_, _) => MenuPage(roomId: roomId, senderId: senderId);
 }
 
 @TypedGoRoute<CreateUnitRoute>(path: CreateUnitRoute.path)

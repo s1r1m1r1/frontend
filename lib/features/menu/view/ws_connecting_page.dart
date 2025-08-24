@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/router/user_routes.dart';
+import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/logic/auth_cubit.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
 import 'package:frontend/features/menu/logic/ws_join_cubit.dart';
@@ -30,7 +31,7 @@ class _WsConnectingView extends StatelessWidget {
     return BlocListener<WsConnectionCubit, WsConnectionStatus>(
       listener: (context, status) {
         switch (status) {
-          case WsConnectionStatus.init:
+          case WsConnectionStatus.initial:
           case WsConnectionStatus.connecting:
             break;
           case WsConnectionStatus.reconnecting:
@@ -49,8 +50,8 @@ class _WsConnectingView extends StatelessWidget {
             case InitialWsJoin():
             case ConnectingWsJoin():
               break;
-            case ConnectedWsJoin(:final roomId):
-              MenuRoute(roomId).go(context);
+            case ConnectedWsJoin(:final roomId, :final senderId):
+              MenuRoute(roomId: roomId, senderId: senderId).go(context);
               break;
             case DisconnectedWsJoin():
               break;

@@ -15,18 +15,24 @@ part 'letters.bloc.freezed.dart';
 class LettersBloc extends Bloc<LettersEvent, LettersState> {
   final WsLettersRepository _lettersRepository;
   StreamSubscription? _sub;
-  LettersBloc(this._lettersRepository) : super(const LettersState()) {
-    on<_JoinRoomLE>(_onStarted);
+  final int _roomId;
+  final int _senderId;
+  LettersBloc(
+    this._lettersRepository,
+    @factoryParam this._roomId,
+    @factoryParam this._senderId,
+  ) : super(const LettersState()) {
+    on<_JoinRoomLE>(_onJoinRoom);
     on<_DeletePressedLE>(_onDeletePressed);
     on<_NewPressedLE>(_onNewPressed);
     on<_OnLetterLE>(_onUpdateLetters);
   }
 
-  FutureOr<void> _onStarted(
+  FutureOr<void> _onJoinRoom(
     _JoinRoomLE event,
     Emitter<LettersState> emit,
   ) async {
-    _lettersRepository.joinRoom(event.roomId, event.senderToken);
+    _lettersRepository.joinRoom(_roomId);
     _sub = _lettersRepository.letters.listen(
       (letters) => add(LettersEvent._onLetter(letters)),
     );
@@ -36,10 +42,7 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
     _DeletePressedLE event,
     Emitter<LettersState> emit,
   ) async {
-    _lettersRepository.deleteLetter(
-      sender: event.senderId,
-      letterId: event.letterId,
-    );
+    _lettersRepository.deleteLetter(roomId: _roomId, letterId: event.letterId);
   }
 
   FutureOr<void> _onUpdateLetters(
@@ -60,11 +63,9 @@ class LettersBloc extends Bloc<LettersEvent, LettersState> {
     Emitter<LettersState> emit,
   ) async {
     _lettersRepository.newLetter(
-      roomId: event.roomId,
-      sender: event.senderToken,
-      letter: CreateLetterDto(
-        chatRoomId: 1,
-        senderId: 0,
+      CreateLetterDto(
+        roomId: _roomId,
+        senderId: _senderId,
         content: event.message,
       ),
     );

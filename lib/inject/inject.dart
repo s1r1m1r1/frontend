@@ -16,4 +16,3 @@ const platformApple = Environment('apple');
 const platformAndroid = Environment('android');
 const platformWeb = Environment('web');
 const platformProd = Environment('prod');
-const admin = Environment('admin');

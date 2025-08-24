@@ -34,7 +34,7 @@ class SelectedUnitBloc extends Bloc<SelectedUnitEvent, SelectedUnitState> {
 
       emit(SelectedUnitState.success(unit));
     } on Object catch (e, s) {
-      addError(e, s);
+      // addError(e, s);
       emit(SelectedUnitState.failure());
     }
   }

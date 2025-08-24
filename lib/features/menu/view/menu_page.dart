@@ -1,6 +1,7 @@
 // Assuming you have a theme with these colors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 import 'package:frontend/features/menu/logic/sender.cubit.dart';
@@ -9,36 +10,13 @@ import 'package:get_it/get_it.dart';
 
 import '../../../inject/get_it.dart';
 
-const Color primaryColor = Color(
-  0xFF1A237E,
-); // A dark blue for the header/buttons
-const Color secondaryColor = Color.fromARGB(
-  255,
-  0,
-  138,
-  67,
-); // A dark brown for the main area background
-const Color accentColor = Color.fromARGB(
-  255,
-  0,
-  235,
-  235,
-); // A gold/yellow for outlines and text
-const Color buttonColor = Color(0xFF2C3E50); // A deep blue/grey for buttons
-const Color chatBackgroundColor = Color.fromARGB(
-  255,
-  135,
-  21,
-  1,
-); // A dark brown for the chat box
-
 class MenuPage extends StatelessWidget {
-  final String roomId;
-  const MenuPage({super.key, required this.roomId});
+  final int roomId;
+  final int senderId;
+  const MenuPage({super.key, required this.roomId, required this.senderId});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('MENU PAGE BUILD');
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -49,8 +27,14 @@ class MenuPage extends StatelessWidget {
             return bloc;
           },
         ),
+        BlocProvider(create: (_) => getIt<SenderCubit>()..subscribe()),
 
-        BlocProvider(lazy: false, create: (_) => GetIt.I.get<LettersBloc>()),
+        BlocProvider(
+          lazy: false,
+          create: (_) =>
+              GetIt.I.get<LettersBloc>(param1: roomId, param2: senderId)
+                ..add(LettersEvent.joinRoom()),
+        ),
 
         // ..add(LettersEvent.joinRoom(roomId)
         // ),
@@ -58,12 +42,11 @@ class MenuPage extends StatelessWidget {
           lazy: false,
           create: (_) => getIt<WsConnectionCubit>()..listenConnection(),
         ),
-        BlocProvider(lazy: false, create: (_) => getIt<SenderCubit>()),
       ],
       child: BlocListener<WsConnectionCubit, WsConnectionStatus>(
         listener: (context, status) {
           switch (status) {
-            case WsConnectionStatus.init:
+            case WsConnectionStatus.initial:
             case WsConnectionStatus.connecting:
             case WsConnectionStatus.reconnecting:
               break;
@@ -275,17 +258,9 @@ class _ChatViewState extends State<_ChatView> {
               ElevatedButton(
                 onPressed: () {
                   final message = _controller.text;
-                  final sender = context.read<SenderCubit>().state.sender;
-                  if (sender?.accessToken == null) {
-                    debugPrint('TOKEN IS NULL');
-                    return;
-                  }
+
                   context.read<LettersBloc>().add(
-                    LettersEvent.newPressed(
-                      message: message,
-                      roomId: 'main',
-                      senderToken: sender!.accessToken!,
-                    ),
+                    LettersEvent.newPressed(message),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -318,42 +293,41 @@ class _ChatBody extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: BlocBuilder<LettersBloc, LettersState>(
-              builder: (context, state) {
-                if (state.letters.isEmpty) {
-                  return const Center(child: Text('No letters'));
-                }
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    final letter = state.letters[index];
-                    return ListTile(
-                      // selected: letter.senderId == ,
-                      title: Text(letter.content),
-                      subtitle: Text('From: ${letter.senderId}'),
-                      trailing: (letter.id != null)
-                          ? IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                final token = context
-                                    .read<SenderCubit>()
-                                    .state
-                                    .sender
-                                    ?.accessToken;
-                                if (token == null) {
-                                  debugPrint('NO token');
-                                }
-                                context.read<LettersBloc>().add(
-                                  LettersEvent.deletePressed(
-                                    token!,
-                                    letter.id!,
-                                  ),
-                                );
-                              },
-                            )
-                          : null,
+            child: BlocBuilder<SenderCubit, SenderState>(
+              builder: (context, senderSt) {
+                return BlocBuilder<LettersBloc, LettersState>(
+                  builder: (context, state) {
+                    if (state.letters.isEmpty) {
+                      return const Center(child: Text('No letters'));
+                    }
+                    return Material(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          final letter = state.letters[index];
+                          final own = letter.senderId == senderSt.senderId;
+                          return ListTile(
+                            selectedColor: Colors.white,
+                            tileColor: Colors.black,
+                            selectedTileColor: Colors.blue[900],
+                            selected: own,
+                            title: Text(letter.content),
+                            subtitle: Text('From: ${letter.senderId}'),
+                            trailing: own
+                                ? IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      context.read<LettersBloc>().add(
+                                        LettersEvent.deletePressed(letter.id),
+                                      );
+                                    },
+                                  )
+                                : null,
+                          );
+                        },
+                        itemCount: state.letters.length,
+                      ),
                     );
                   },
-                  itemCount: state.letters.length,
                 );
               },
             ),
@@ -393,3 +367,26 @@ class _ChatBody extends StatelessWidget {
     );
   }
 }
+
+const Color primaryColor = Color(
+  0xFF1A237E,
+); // A dark blue for the header/buttons
+const Color secondaryColor = Color.fromARGB(
+  255,
+  0,
+  138,
+  67,
+); // A dark brown for the main area background
+const Color accentColor = Color.fromARGB(
+  255,
+  0,
+  235,
+  235,
+); // A gold/yellow for outlines and text
+const Color buttonColor = Color(0xFF2C3E50); // A deep blue/grey for buttons
+const Color chatBackgroundColor = Color.fromARGB(
+  255,
+  135,
+  21,
+  1,
+); // A dark brown for the chat box

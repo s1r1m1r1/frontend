@@ -1,38 +1,27 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:injectable/injectable.dart';
-part 'sender.state.dart';
 part 'sender.cubit.freezed.dart';
 
-abstract class SenderCubit extends Cubit<SenderState> {
-  SenderCubit(super.state);
-  void changed(ISessionWS sender) => emit(SenderState.selected(sender));
-}
-
-@Named('admin')
-@Injectable(as: SenderCubit)
-class AdminSenderCubit extends SenderCubit {
-  AdminSenderCubit() : super(SenderState.initial());
-}
-
-@Named('user')
-@Injectable(as: SenderCubit)
-class UserSenderCubit extends SenderCubit {
+@injectable
+class SenderCubit extends Cubit<SenderState> {
   final SessionRepository _sessionRepository;
+  SenderCubit(this._sessionRepository) : super(SenderState(null));
   StreamSubscription? _sub;
-  UserSenderCubit(this._sessionRepository) : super(SenderState.initial());
 
   void subscribe() {
     _sub?.cancel();
-    _sub = _sessionRepository.sessionStream.listen((session) {
-      if (session is ISessionWS) {
-        changed(session);
-      }
-    });
+    _sub = _sessionRepository.sessionStream.listen(_listen);
+  }
+
+  void _listen(Session? session) {
+    if (session is ISessionUnit) {
+      emit(SenderState(session.unit.id));
+    }
   }
 
   @override
@@ -40,4 +29,9 @@ class UserSenderCubit extends SenderCubit {
     _sub?.cancel();
     return super.close();
   }
+}
+
+@freezed
+abstract class SenderState with _$SenderState {
+  const factory SenderState(int? senderId) = _SenderState;
 }

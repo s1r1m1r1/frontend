@@ -1,9 +1,11 @@
 import 'package:chopper/chopper.dart';
+import 'package:frontend/core/network/authenticator.dart';
 import 'package:frontend/core/network/chopper_interceptor.dart';
 import 'package:frontend/core/network/json_converter.dart';
 import 'package:frontend/core/network/manual_token_api.dart';
 import 'package:frontend/core/network/with_token_api.dart';
 import 'package:frontend/core/network/registration_api.dart';
+import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:frontend/features/auth/domain/session_repository.dart';
 import 'package:frontend/inject/app_config.dart';
 import 'package:injectable/injectable.dart';
@@ -21,6 +23,7 @@ abstract class ChopperModule {
     return ChopperClient(
       baseUrl: Uri.parse(appConfig.httpBaseUrl),
       services: [WithTokenApi.create()],
+      authenticator: TokenAuthenticator(repository),
       interceptors: [BearerInterceptor(repository), LoggerInterceptor()],
       converter: JsonSerializableConverter({
         ListUnitDto: ListUnitDto.fromJsonFactory,

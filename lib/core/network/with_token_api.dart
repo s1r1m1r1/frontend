@@ -3,13 +3,6 @@ import 'package:chopper/chopper.dart';
 import 'package:sha_red/sha_red.dart';
 part 'with_token_api.chopper.dart';
 
-// Import your DTOs here
-// import 'package:sha_red/sha_red.dart'; // Adjust as needed
-// import 'package:your_project/dtos/session_dto.dart';
-// import 'package:your_project/dtos/unit_dto.dart';
-// import 'package:your_project/dtos/todo_dto.dart';
-
-// This is the abstract class that chopper_generator will use.
 @ChopperApi(baseUrl: '')
 abstract class WithTokenApi extends ChopperService {
   // A helper method to create an instance of the generated service class

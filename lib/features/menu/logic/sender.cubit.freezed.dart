@@ -14,106 +14,38 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SenderState {
 
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SenderState);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SenderState()';
-}
-
-
-}
-
-/// @nodoc
-class $SenderStateCopyWith<$Res>  {
-$SenderStateCopyWith(SenderState _, $Res Function(SenderState) __);
-}
-
-
-
-/// @nodoc
-
-
-class Initial_SenderS extends SenderState {
-  const Initial_SenderS(): super._();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Initial_SenderS);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SenderState.initial()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class Selected_SenderS extends SenderState {
-  const Selected_SenderS(this.sender): super._();
-  
-
- final  ISessionWS sender;
-
+ int? get senderId;
 /// Create a copy of SenderState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$Selected_SenderSCopyWith<Selected_SenderS> get copyWith => _$Selected_SenderSCopyWithImpl<Selected_SenderS>(this, _$identity);
+$SenderStateCopyWith<SenderState> get copyWith => _$SenderStateCopyWithImpl<SenderState>(this as SenderState, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Selected_SenderS&&(identical(other.sender, sender) || other.sender == sender));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SenderState&&(identical(other.senderId, senderId) || other.senderId == senderId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,sender);
+int get hashCode => Object.hash(runtimeType,senderId);
 
 @override
 String toString() {
-  return 'SenderState.selected(sender: $sender)';
+  return 'SenderState(senderId: $senderId)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $Selected_SenderSCopyWith<$Res> implements $SenderStateCopyWith<$Res> {
-  factory $Selected_SenderSCopyWith(Selected_SenderS value, $Res Function(Selected_SenderS) _then) = _$Selected_SenderSCopyWithImpl;
+abstract mixin class $SenderStateCopyWith<$Res>  {
+  factory $SenderStateCopyWith(SenderState value, $Res Function(SenderState) _then) = _$SenderStateCopyWithImpl;
 @useResult
 $Res call({
- ISessionWS sender
+ int? senderId
 });
 
 
@@ -121,19 +53,86 @@ $Res call({
 
 }
 /// @nodoc
-class _$Selected_SenderSCopyWithImpl<$Res>
-    implements $Selected_SenderSCopyWith<$Res> {
-  _$Selected_SenderSCopyWithImpl(this._self, this._then);
+class _$SenderStateCopyWithImpl<$Res>
+    implements $SenderStateCopyWith<$Res> {
+  _$SenderStateCopyWithImpl(this._self, this._then);
 
-  final Selected_SenderS _self;
-  final $Res Function(Selected_SenderS) _then;
+  final SenderState _self;
+  final $Res Function(SenderState) _then;
 
 /// Create a copy of SenderState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? sender = null,}) {
-  return _then(Selected_SenderS(
-null == sender ? _self.sender : sender // ignore: cast_nullable_to_non_nullable
-as ISessionWS,
+@pragma('vm:prefer-inline') @override $Res call({Object? senderId = freezed,}) {
+  return _then(_self.copyWith(
+senderId: freezed == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+}
+
+
+
+/// @nodoc
+
+
+class _SenderState implements SenderState {
+  const _SenderState(this.senderId);
+  
+
+@override final  int? senderId;
+
+/// Create a copy of SenderState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SenderStateCopyWith<_SenderState> get copyWith => __$SenderStateCopyWithImpl<_SenderState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SenderState&&(identical(other.senderId, senderId) || other.senderId == senderId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,senderId);
+
+@override
+String toString() {
+  return 'SenderState(senderId: $senderId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SenderStateCopyWith<$Res> implements $SenderStateCopyWith<$Res> {
+  factory _$SenderStateCopyWith(_SenderState value, $Res Function(_SenderState) _then) = __$SenderStateCopyWithImpl;
+@override @useResult
+$Res call({
+ int? senderId
+});
+
+
+
+
+}
+/// @nodoc
+class __$SenderStateCopyWithImpl<$Res>
+    implements _$SenderStateCopyWith<$Res> {
+  __$SenderStateCopyWithImpl(this._self, this._then);
+
+  final _SenderState _self;
+  final $Res Function(_SenderState) _then;
+
+/// Create a copy of SenderState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? senderId = freezed,}) {
+  return _then(_SenderState(
+freezed == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

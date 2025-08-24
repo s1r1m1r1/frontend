@@ -20,8 +20,8 @@ class WsJoinCubit extends Cubit<WsJoinState> {
   }
 
   void _listen(Session? session) {
-    if (session case GameJoinedSession(:final gameOption)) {
-      emit(WsJoinState.connected(gameOption.mainRoomId));
+    if (session case GameJoinedSession(:final gameOption, :final unit)) {
+      emit(WsJoinState.connected(gameOption.mainRoomId, unit.id));
     }
   }
 
@@ -41,6 +41,7 @@ class WsJoinCubit extends Cubit<WsJoinState> {
 sealed class WsJoinState with _$WsJoinState {
   const factory WsJoinState.initial() = InitialWsJoin;
   const factory WsJoinState.connecting() = ConnectingWsJoin;
-  const factory WsJoinState.connected(String roomId) = ConnectedWsJoin;
+  const factory WsJoinState.connected(int roomId, int senderId) =
+      ConnectedWsJoin;
   const factory WsJoinState.disconnected() = DisconnectedWsJoin;
 }

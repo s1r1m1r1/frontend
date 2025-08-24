@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WsGameOption {
 
- String get mainRoomId;
+ int get mainRoomId;
 /// Create a copy of WsGameOption
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $WsGameOptionCopyWith<$Res>  {
   factory $WsGameOptionCopyWith(WsGameOption value, $Res Function(WsGameOption) _then) = _$WsGameOptionCopyWithImpl;
 @useResult
 $Res call({
- String mainRoomId
+ int mainRoomId
 });
 
 
@@ -65,7 +65,7 @@ class _$WsGameOptionCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? mainRoomId = null,}) {
   return _then(_self.copyWith(
 mainRoomId: null == mainRoomId ? _self.mainRoomId : mainRoomId // ignore: cast_nullable_to_non_nullable
-as String,
+as int,
   ));
 }
 
@@ -80,7 +80,7 @@ class _WsSettings implements WsGameOption {
   const _WsSettings({required this.mainRoomId});
   
 
-@override final  String mainRoomId;
+@override final  int mainRoomId;
 
 /// Create a copy of WsGameOption
 /// with the given fields replaced by the non-null parameter values.
@@ -112,7 +112,7 @@ abstract mixin class _$WsSettingsCopyWith<$Res> implements $WsGameOptionCopyWith
   factory _$WsSettingsCopyWith(_WsSettings value, $Res Function(_WsSettings) _then) = __$WsSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- String mainRoomId
+ int mainRoomId
 });
 
 
@@ -132,7 +132,7 @@ class __$WsSettingsCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? mainRoomId = null,}) {
   return _then(_WsSettings(
 mainRoomId: null == mainRoomId ? _self.mainRoomId : mainRoomId // ignore: cast_nullable_to_non_nullable
-as String,
+as int,
   ));
 }
 

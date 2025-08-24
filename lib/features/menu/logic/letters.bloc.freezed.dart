@@ -46,80 +46,42 @@ $LettersEventCopyWith(LettersEvent _, $Res Function(LettersEvent) __);
 
 
 class _JoinRoomLE extends LettersEvent {
-  const _JoinRoomLE({required this.roomId, required this.senderToken}): super._();
+  const _JoinRoomLE(): super._();
   
 
- final  String roomId;
- final  String senderToken;
 
-/// Create a copy of LettersEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$JoinRoomLECopyWith<_JoinRoomLE> get copyWith => __$JoinRoomLECopyWithImpl<_JoinRoomLE>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JoinRoomLE&&(identical(other.roomId, roomId) || other.roomId == roomId)&&(identical(other.senderToken, senderToken) || other.senderToken == senderToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JoinRoomLE);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,roomId,senderToken);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'LettersEvent.joinRoom(roomId: $roomId, senderToken: $senderToken)';
+  return 'LettersEvent.joinRoom()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class _$JoinRoomLECopyWith<$Res> implements $LettersEventCopyWith<$Res> {
-  factory _$JoinRoomLECopyWith(_JoinRoomLE value, $Res Function(_JoinRoomLE) _then) = __$JoinRoomLECopyWithImpl;
-@useResult
-$Res call({
- String roomId, String senderToken
-});
 
 
-
-
-}
-/// @nodoc
-class __$JoinRoomLECopyWithImpl<$Res>
-    implements _$JoinRoomLECopyWith<$Res> {
-  __$JoinRoomLECopyWithImpl(this._self, this._then);
-
-  final _JoinRoomLE _self;
-  final $Res Function(_JoinRoomLE) _then;
-
-/// Create a copy of LettersEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? roomId = null,Object? senderToken = null,}) {
-  return _then(_JoinRoomLE(
-roomId: null == roomId ? _self.roomId : roomId // ignore: cast_nullable_to_non_nullable
-as String,senderToken: null == senderToken ? _self.senderToken : senderToken // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
 
 /// @nodoc
 
 
 class _NewPressedLE extends LettersEvent {
-  const _NewPressedLE({required this.roomId, required this.message, required this.senderToken}): super._();
+  const _NewPressedLE(this.message): super._();
   
 
- final  String roomId;
  final  String message;
- final  String senderToken;
 
 /// Create a copy of LettersEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -131,16 +93,16 @@ _$NewPressedLECopyWith<_NewPressedLE> get copyWith => __$NewPressedLECopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewPressedLE&&(identical(other.roomId, roomId) || other.roomId == roomId)&&(identical(other.message, message) || other.message == message)&&(identical(other.senderToken, senderToken) || other.senderToken == senderToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewPressedLE&&(identical(other.message, message) || other.message == message));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,roomId,message,senderToken);
+int get hashCode => Object.hash(runtimeType,message);
 
 @override
 String toString() {
-  return 'LettersEvent.newPressed(roomId: $roomId, message: $message, senderToken: $senderToken)';
+  return 'LettersEvent.newPressed(message: $message)';
 }
 
 
@@ -151,7 +113,7 @@ abstract mixin class _$NewPressedLECopyWith<$Res> implements $LettersEventCopyWi
   factory _$NewPressedLECopyWith(_NewPressedLE value, $Res Function(_NewPressedLE) _then) = __$NewPressedLECopyWithImpl;
 @useResult
 $Res call({
- String roomId, String message, String senderToken
+ String message
 });
 
 
@@ -168,11 +130,9 @@ class __$NewPressedLECopyWithImpl<$Res>
 
 /// Create a copy of LettersEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? roomId = null,Object? message = null,Object? senderToken = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
   return _then(_NewPressedLE(
-roomId: null == roomId ? _self.roomId : roomId // ignore: cast_nullable_to_non_nullable
-as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,senderToken: null == senderToken ? _self.senderToken : senderToken // ignore: cast_nullable_to_non_nullable
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -184,10 +144,9 @@ as String,
 
 
 class _DeletePressedLE extends LettersEvent {
-  const _DeletePressedLE(this.senderId, this.letterId): super._();
+  const _DeletePressedLE(this.letterId): super._();
   
 
- final  String senderId;
  final  int letterId;
 
 /// Create a copy of LettersEvent
@@ -200,16 +159,16 @@ _$DeletePressedLECopyWith<_DeletePressedLE> get copyWith => __$DeletePressedLECo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeletePressedLE&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.letterId, letterId) || other.letterId == letterId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeletePressedLE&&(identical(other.letterId, letterId) || other.letterId == letterId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,senderId,letterId);
+int get hashCode => Object.hash(runtimeType,letterId);
 
 @override
 String toString() {
-  return 'LettersEvent.deletePressed(senderId: $senderId, letterId: $letterId)';
+  return 'LettersEvent.deletePressed(letterId: $letterId)';
 }
 
 
@@ -220,7 +179,7 @@ abstract mixin class _$DeletePressedLECopyWith<$Res> implements $LettersEventCop
   factory _$DeletePressedLECopyWith(_DeletePressedLE value, $Res Function(_DeletePressedLE) _then) = __$DeletePressedLECopyWithImpl;
 @useResult
 $Res call({
- String senderId, int letterId
+ int letterId
 });
 
 
@@ -237,10 +196,9 @@ class __$DeletePressedLECopyWithImpl<$Res>
 
 /// Create a copy of LettersEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? senderId = null,Object? letterId = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? letterId = null,}) {
   return _then(_DeletePressedLE(
-null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
-as String,null == letterId ? _self.letterId : letterId // ignore: cast_nullable_to_non_nullable
+null == letterId ? _self.letterId : letterId // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

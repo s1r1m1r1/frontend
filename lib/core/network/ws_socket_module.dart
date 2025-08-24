@@ -6,6 +6,7 @@ import '../../inject/app_config.dart';
 
 @module
 abstract class WsSocketModule {
-  @lazySingleton
-  WebSocket ws(AppConfig appConfig, AuthRepository auth) => WebSocket(Uri.parse(appConfig.webSocketBaseUrl));
+  @injectable
+  WebSocket ws(AppConfig appConfig, AuthRepository auth) =>
+      WebSocket(Uri.parse(appConfig.webSocketBaseUrl));
 }

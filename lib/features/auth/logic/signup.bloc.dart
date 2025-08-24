@@ -1,26 +1,37 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 
 part 'signup.event.dart';
 part 'signup.state.dart';
+part 'signup.bloc.freezed.dart';
 
 @injectable
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final AuthRepository _authRepository;
 
   SignupBloc(this._authRepository) : super(SignupInitial()) {
-    on<SignupButtonPressed>(_onSignupButtonPressed);
+    on<_SubmitPressedSE>(_onSignupButtonPressed);
   }
 
-  void _onSignupButtonPressed(SignupButtonPressed event, Emitter<SignupState> emit) async {
-    emit(SignupLoading());
+  void _onSignupButtonPressed(
+    _SubmitPressedSE event,
+    Emitter<SignupState> emit,
+  ) async {
+    emit(SignupState.loading());
     try {
-      await _authRepository.signup(event.email, event.password);
-      emit(const SignupSuccess('Signup successful! Please log in.'));
+      await _authRepository
+          .signup(event.email, event.password)
+          .timeout(Duration(seconds: 5));
+      emit(const SignupState.success('Signup successful! Please log in.'));
+    } on TimeoutException {
+      emit(SignupFailure(SignupError.timeout));
     } catch (e) {
-      emit(SignupFailure(e.toString()));
+      emit(SignupFailure(SignupError.unknown));
     }
   }
 }

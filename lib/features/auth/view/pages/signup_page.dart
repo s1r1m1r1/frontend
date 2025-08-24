@@ -68,7 +68,7 @@ class _SignupViewState extends State<_SignupView> {
                   return ElevatedButton(
                     onPressed: () {
                       BlocProvider.of<SignupBloc>(context).add(
-                        SignupButtonPressed(
+                        SignupEvent.submitPressed(
                           email: _emailController.text,
                           password: _passwordController.text,
                         ),

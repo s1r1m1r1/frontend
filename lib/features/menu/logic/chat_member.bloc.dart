@@ -1,16 +1,11 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:frontend/core/network/ws_manager.dart';
-import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sha_red/sha_red.dart';
-import 'package:web_socket_client/web_socket_client.dart';
 
 import '../domain/main_chat_repository.dart';
 
@@ -30,7 +25,8 @@ class ChatMemberBloc extends Bloc<ChatMemberEvent, ChatMemberState> {
 
   //-----------------
 
-  ChatMemberBloc(this._mainChatRepository) : super(const ChatMemberState.initial()) {
+  ChatMemberBloc(this._mainChatRepository)
+    : super(const ChatMemberState.initial()) {
     on<StartedEvent>(_onStarted);
     on<JoinMainEvent>(_onJoinMain);
     on<MembersUpdatedEvent>(_onMembersUpdated);
@@ -42,18 +38,27 @@ class ChatMemberBloc extends Bloc<ChatMemberEvent, ChatMemberState> {
     return super.close();
   }
 
-  FutureOr<void> _onStarted(StartedEvent event, Emitter<ChatMemberState> emit) async {
+  FutureOr<void> _onStarted(
+    StartedEvent event,
+    Emitter<ChatMemberState> emit,
+  ) async {
     debugPrint('chat member started');
     _sub = _mainChatRepository.onlineMembers.listen((memberIds) {
       add(ChatMemberEvent.membersUpdated(memberIds));
     });
   }
 
-  FutureOr<void> _onMembersUpdated(MembersUpdatedEvent event, Emitter<ChatMemberState> emit) async {
+  FutureOr<void> _onMembersUpdated(
+    MembersUpdatedEvent event,
+    Emitter<ChatMemberState> emit,
+  ) async {
     emit(ChatMemberState.success(event.memberIds));
   }
 
-  FutureOr<void> _onJoinMain(JoinMainEvent event, Emitter<ChatMemberState> emit) async {
+  FutureOr<void> _onJoinMain(
+    JoinMainEvent event,
+    Emitter<ChatMemberState> emit,
+  ) async {
     // _connectSub = _ws.connection.listen((state) {
     //   debugPrint('chat member state ${state.runtimeType} ');
     //   if (state is Connected) {

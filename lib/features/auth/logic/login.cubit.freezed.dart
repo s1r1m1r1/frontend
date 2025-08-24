@@ -145,7 +145,7 @@ class LoginFailure extends LoginState {
   const LoginFailure(this.error): super._();
   
 
- final  String error;
+ final  LoginError error;
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
@@ -177,7 +177,7 @@ abstract mixin class $LoginFailureCopyWith<$Res> implements $LoginStateCopyWith<
   factory $LoginFailureCopyWith(LoginFailure value, $Res Function(LoginFailure) _then) = _$LoginFailureCopyWithImpl;
 @useResult
 $Res call({
- String error
+ LoginError error
 });
 
 
@@ -197,7 +197,7 @@ class _$LoginFailureCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
   return _then(LoginFailure(
 null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String,
+as LoginError,
   ));
 }
 

@@ -3,5 +3,5 @@ part 'ws_game_option.freezed.dart';
 
 @freezed
 abstract class WsGameOption with _$WsGameOption {
-  const factory WsGameOption({required String mainRoomId}) = _WsSettings;
+  const factory WsGameOption({required int mainRoomId}) = _WsSettings;
 }

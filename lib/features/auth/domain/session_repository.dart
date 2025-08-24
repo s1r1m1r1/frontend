@@ -16,19 +16,38 @@ import 'ws_game_option.dart';
 const _tokenKey = '__tokenK__';
 const _refreshTokenK = '__refreshTokenK__';
 
-// abstract class SessionRepository {
-//   WsCallback? wsSend;
-//   abstract BehaviourSubject<Session?> sessionSbj;
-// }
+abstract class SessionRepository {
+  WsCallback? wsSend;
+  Future<void> init();
+  void wsJoin();
+  void wsJoinedSession(
+    int mainRoomId,
+    UserDto user,
+    UnitDto unit, {
+    TokensDto? tokens,
+  });
+  void wsSessionFinished();
+  String? get getAccessToken;
+  String? get getRefreshToken;
+  Stream<Session?> get sessionStream;
+  Session? get session;
+  Future<void> updateTokens(TokensDto tokens);
+  FutureOr<void> clean();
+  void setSession(Session session);
+  void onTokenExpired();
+  void onRefreshTokenExpired();
+}
 
-@lazySingleton
-class SessionRepository {
+@LazySingleton(as: SessionRepository)
+class SessionRepositoryImpl implements SessionRepository {
   final DbClient _db;
-  SessionRepository(this._db) {
+  SessionRepositoryImpl(this._db) {
     init();
   }
+  @override
   WsCallback? wsSend;
 
+  @override
   Future<void> init() async {
     try {
       final token = await _db.getKeyValue(_tokenKey);
@@ -40,18 +59,25 @@ class SessionRepository {
         refreshToken: refreshToken,
       );
       _sessionSbj.value = pendingSession;
+      debugPrint('ON INIT ${_sessionSbj.value}');
     } catch (e) {
       debugPrint(e.toString());
     }
     // _sessionManager.addListener(_onChangeSessionStatus);
   }
 
-  final _sessionSbj = BehaviorSubject<Session?>.seeded(null);
-  String? get accessToken => _sessionSbj.value?.accessToken;
-  String? get refreshToken => _sessionSbj.value?.accessToken;
+  late final _sessionSbj = BehaviorSubject<Session?>.seeded(null);
+
+  @override
+  String? get getAccessToken => _sessionSbj.value?.accessToken;
+  @override
+  String? get getRefreshToken => _sessionSbj.value?.refreshToken;
+  @override
   Stream<Session?> get sessionStream => _sessionSbj.stream;
+  @override
   Session? get session => _sessionSbj.value;
 
+  @override
   void onTokenExpired() {
     debugPrint('$red onTokenExpired $reset');
     unawaited(_db.deleteKeyValue(_tokenKey));
@@ -61,11 +87,14 @@ class SessionRepository {
     }
   }
 
+  @override
   void onRefreshTokenExpired() {
+    debugPrint('$red onRefreshTokenExpired $reset');
     unawaited(_db.deleteKeyValue(_refreshTokenK));
     _sessionSbj.value = null;
   }
 
+  @override
   Future<void> updateTokens(TokensDto tokens) async {
     debugPrint(
       'Set t: ${tokens.accessToken} ,r: refresh ${tokens.refreshToken}',
@@ -78,12 +107,14 @@ class SessionRepository {
     );
   }
 
+  @override
   void clean() {
     unawaited(_db.deleteKeyValue(_tokenKey));
     unawaited(_db.deleteKeyValue(_refreshTokenK));
     _sessionSbj.value = null;
   }
 
+  @override
   void wsJoin() {
     final token = _sessionSbj.value?.accessToken;
     if (token != null) {
@@ -92,15 +123,15 @@ class SessionRepository {
       return;
     }
     final refresh = _sessionSbj.value?.refreshToken;
-    if (refresh != null) {
-      final encoded = ToServer.withRefresh(refresh).encoded();
-      wsSend?.call(encoded);
+    if (refresh == null) {
+      onRefreshTokenExpired();
       return;
     }
   }
 
+  @override
   void wsJoinedSession(
-    String mainRoomId,
+    int mainRoomId,
     UserDto user,
     UnitDto unit, {
     TokensDto? tokens,
@@ -116,10 +147,9 @@ class SessionRepository {
     );
   }
 
+  @override
   void wsSessionFinished() {
     final session = _sessionSbj.value;
-    debugPrint('$magenta wsSessionFinished $reset');
-    debugPrint('$session');
     if (session is GameJoinedSession) {
       final newSession = Session.gameFinished(
         user: session.user,
@@ -134,6 +164,7 @@ class SessionRepository {
     }
   }
 
+  @override
   void setSession(Session session) async {
     _sessionSbj.value = session;
     unawaited(_db.saveKeyValue(_refreshTokenK, session.refreshToken));
