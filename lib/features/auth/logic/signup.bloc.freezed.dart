@@ -241,10 +241,10 @@ String toString() {
 
 
 class SignupSuccess extends SignupState {
-  const SignupSuccess(this.message): super._();
+  const SignupSuccess(this.session): super._();
   
 
- final  String message;
+ final  Session session;
 
 /// Create a copy of SignupState
 /// with the given fields replaced by the non-null parameter values.
@@ -256,16 +256,16 @@ $SignupSuccessCopyWith<SignupSuccess> get copyWith => _$SignupSuccessCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignupSuccess&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignupSuccess&&(identical(other.session, session) || other.session == session));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,session);
 
 @override
 String toString() {
-  return 'SignupState.success(message: $message)';
+  return 'SignupState.success(session: $session)';
 }
 
 
@@ -276,11 +276,11 @@ abstract mixin class $SignupSuccessCopyWith<$Res> implements $SignupStateCopyWit
   factory $SignupSuccessCopyWith(SignupSuccess value, $Res Function(SignupSuccess) _then) = _$SignupSuccessCopyWithImpl;
 @useResult
 $Res call({
- String message
+ Session session
 });
 
 
-
+$SessionCopyWith<$Res> get session;
 
 }
 /// @nodoc
@@ -293,14 +293,23 @@ class _$SignupSuccessCopyWithImpl<$Res>
 
 /// Create a copy of SignupState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? session = null,}) {
   return _then(SignupSuccess(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
+as Session,
   ));
 }
 
-
+/// Create a copy of SignupState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SessionCopyWith<$Res> get session {
+  
+  return $SessionCopyWith<$Res>(_self.session, (value) {
+    return _then(_self.copyWith(session: value));
+  });
+}
 }
 
 /// @nodoc

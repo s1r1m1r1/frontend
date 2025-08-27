@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/user_routes.dart';
 import 'package:frontend/core/network/ws_manager.dart';
-import 'package:frontend/features/auth/logic/auth_cubit.dart';
+import 'package:frontend/features/auth/logic/session.bloc.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
-import 'package:frontend/features/menu/logic/ws_join_cubit.dart';
 import 'package:frontend/inject/get_it.dart';
 
 class WsConnectingPage extends StatelessWidget {
@@ -17,8 +15,7 @@ class WsConnectingPage extends StatelessWidget {
         BlocProvider(
           create: (_) => getIt<WsConnectionCubit>()..listenConnection(),
         ),
-        BlocProvider(create: (_) => getIt<WsJoinCubit>()..subscribe()),
-        BlocProvider(create: (_) => getIt<AuthCubit>()..subscribe()),
+        BlocProvider.value(value: getIt<SessionBloc>()),
       ],
       child: _WsConnectingView(),
     );
@@ -38,60 +35,36 @@ class _WsConnectingView extends StatelessWidget {
           case WsConnectionStatus.reconnected:
             break;
           case WsConnectionStatus.connected:
-            context.read<WsJoinCubit>().wsJoin();
+            final token = context
+                .read<SessionBloc>()
+                .state
+                .session
+                ?.accessToken;
+            if (token != null) {
+              context.read<SessionBloc>().add(SessionEvent.joinWs(token));
+            }
           case WsConnectionStatus.disconnecting:
           case WsConnectionStatus.disconnected:
             break;
         }
       },
-      child: BlocListener<WsJoinCubit, WsJoinState>(
-        listener: (context, state) {
-          switch (state) {
-            case InitialWsJoin():
-            case ConnectingWsJoin():
-              break;
-            case ConnectedWsJoin(:final roomId, :final senderId):
-              MenuRoute(roomId: roomId, senderId: senderId).go(context);
-              break;
-            case DisconnectedWsJoin():
-              break;
-          }
-        },
-        child: Scaffold(
-          body: Column(
-            children: [
-              Spacer(),
-              BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
-                builder: (context, state) {
-                  return Center(child: Text('... ${state.name}'));
-                },
-              ),
-              BlocBuilder<WsJoinCubit, WsJoinState>(
-                builder: (context, state) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('... $state'),
-                        TextButton(
-                          child: Text('press'),
-                          onPressed: () {
-                            context.read<WsJoinCubit>().wsJoin();
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  return Center(child: Text('... $state'));
-                },
-              ),
-              Spacer(),
-            ],
-          ),
+      child: Scaffold(
+        body: Column(
+          children: [
+            Spacer(),
+            BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
+              builder: (context, state) {
+                return Center(child: Text('... ${state.name}'));
+              },
+            ),
+
+            BlocBuilder<SessionBloc, SessionState>(
+              builder: (context, state) {
+                return Center(child: Text('... $state'));
+              },
+            ),
+            Spacer(),
+          ],
         ),
       ),
     );

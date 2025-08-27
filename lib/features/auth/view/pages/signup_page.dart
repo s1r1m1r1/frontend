@@ -44,7 +44,7 @@ class _SignupViewState extends State<_SignupView> {
               );
             }
             if (state is SignupSuccess) {
-              GoRouter.of(context).pushReplacement(UnitRoute.path);
+              PendingRoute($extra: state.session).go(context);
             }
           },
           child: Column(

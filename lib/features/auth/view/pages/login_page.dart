@@ -1,5 +1,4 @@
 // lib/screens/login_screen.dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/auth/logic/login.cubit.dart';
@@ -47,7 +46,7 @@ class _LoginViewState extends State<_LoginView> {
                   );
                 }
                 if (state is LoginSuccess) {
-                  PendingRoute().go(context);
+                  PendingRoute($extra: state.session).go(context);
                 }
               },
               child: Column(

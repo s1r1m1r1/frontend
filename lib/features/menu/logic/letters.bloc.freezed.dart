@@ -45,6 +45,38 @@ $LettersEventCopyWith(LettersEvent _, $Res Function(LettersEvent) __);
 /// @nodoc
 
 
+class _SubscribedLE extends LettersEvent {
+  const _SubscribedLE(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubscribedLE);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LettersEvent.subscribed()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _JoinRoomLE extends LettersEvent {
   const _JoinRoomLE(): super._();
   
@@ -200,78 +232,6 @@ class __$DeletePressedLECopyWithImpl<$Res>
   return _then(_DeletePressedLE(
 null == letterId ? _self.letterId : letterId // ignore: cast_nullable_to_non_nullable
 as int,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class _OnLetterLE extends LettersEvent {
-  const _OnLetterLE(final  List<LetterDto> letters): _letters = letters,super._();
-  
-
- final  List<LetterDto> _letters;
- List<LetterDto> get letters {
-  if (_letters is EqualUnmodifiableListView) return _letters;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_letters);
-}
-
-
-/// Create a copy of LettersEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$OnLetterLECopyWith<_OnLetterLE> get copyWith => __$OnLetterLECopyWithImpl<_OnLetterLE>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnLetterLE&&const DeepCollectionEquality().equals(other._letters, _letters));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_letters));
-
-@override
-String toString() {
-  return 'LettersEvent._onLetter(letters: $letters)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$OnLetterLECopyWith<$Res> implements $LettersEventCopyWith<$Res> {
-  factory _$OnLetterLECopyWith(_OnLetterLE value, $Res Function(_OnLetterLE) _then) = __$OnLetterLECopyWithImpl;
-@useResult
-$Res call({
- List<LetterDto> letters
-});
-
-
-
-
-}
-/// @nodoc
-class __$OnLetterLECopyWithImpl<$Res>
-    implements _$OnLetterLECopyWith<$Res> {
-  __$OnLetterLECopyWithImpl(this._self, this._then);
-
-  final _OnLetterLE _self;
-  final $Res Function(_OnLetterLE) _then;
-
-/// Create a copy of LettersEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? letters = null,}) {
-  return _then(_OnLetterLE(
-null == letters ? _self._letters : letters // ignore: cast_nullable_to_non_nullable
-as List<LetterDto>,
   ));
 }
 

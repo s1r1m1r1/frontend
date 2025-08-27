@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/core/network/ws_manager.dart';
+import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/logic/session.bloc.dart';
 import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
-import 'package:frontend/features/menu/logic/sender.cubit.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -19,20 +20,15 @@ class MenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          lazy: false,
-          create: (_) {
-            final bloc = getIt<ChatMemberBloc>();
-            bloc.add(const ChatMemberEvent.started());
-            return bloc;
-          },
+        BlocProvider.value(
+          value: getIt<ChatMemberBloc>()..add(ChatMemberEvent.subscribe()),
         ),
-        BlocProvider(create: (_) => getIt<SenderCubit>()..subscribe()),
 
         BlocProvider(
           lazy: false,
           create: (_) =>
               GetIt.I.get<LettersBloc>(param1: roomId, param2: senderId)
+                ..add(LettersEvent.subscribed())
                 ..add(LettersEvent.joinRoom()),
         ),
 
@@ -293,8 +289,14 @@ class _ChatBody extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: BlocBuilder<SenderCubit, SenderState>(
-              builder: (context, senderSt) {
+            child: BlocBuilder<SessionBloc, SessionState>(
+              builder: (context, sessionState) {
+                final int senderId;
+                if (sessionState.session case ISessionUnit(:final unit)) {
+                  senderId = unit.id;
+                } else {
+                  senderId = -1;
+                }
                 return BlocBuilder<LettersBloc, LettersState>(
                   builder: (context, state) {
                     if (state.letters.isEmpty) {
@@ -304,7 +306,7 @@ class _ChatBody extends StatelessWidget {
                       child: ListView.builder(
                         itemBuilder: (context, index) {
                           final letter = state.letters[index];
-                          final own = letter.senderId == senderSt.senderId;
+                          final own = letter.senderId == senderId;
                           return ListTile(
                             selectedColor: Colors.white,
                             tileColor: Colors.black,

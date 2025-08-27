@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/features/auth/domain/auth_repository.dart';
 import 'package:injectable/injectable.dart';
+
+import '../domain/session.dart';
 
 part 'signup.event.dart';
 part 'signup.state.dart';
@@ -24,10 +25,10 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   ) async {
     emit(SignupState.loading());
     try {
-      await _authRepository
+      final session = await _authRepository
           .signup(event.email, event.password)
           .timeout(Duration(seconds: 5));
-      emit(const SignupState.success('Signup successful! Please log in.'));
+      emit(SignupState.success(session));
     } on TimeoutException {
       emit(SignupFailure(SignupError.timeout));
     } catch (e) {

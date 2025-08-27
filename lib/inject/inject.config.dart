@@ -18,20 +18,19 @@ import 'package:frontend/core/network/manual_token_api.dart' as _i164;
 import 'package:frontend/core/network/registration_api.dart' as _i199;
 import 'package:frontend/core/network/with_token_api.dart' as _i1054;
 import 'package:frontend/core/network/ws_manager.dart' as _i684;
+import 'package:frontend/core/network/ws_repository.dart' as _i848;
 import 'package:frontend/core/network/ws_socket_module.dart' as _i558;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
 import 'package:frontend/features/auth/domain/session_repository.dart' as _i166;
-import 'package:frontend/features/auth/logic/auth_cubit.dart' as _i233;
-import 'package:frontend/features/auth/logic/auth_notifier.dart' as _i328;
 import 'package:frontend/features/auth/logic/login.cubit.dart' as _i132;
+import 'package:frontend/features/auth/logic/session.bloc.dart' as _i23;
 import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
+import 'package:frontend/features/menu/domain/arena_repository.dart' as _i325;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
 import 'package:frontend/features/menu/logic/letters.bloc.dart' as _i64;
-import 'package:frontend/features/menu/logic/sender.cubit.dart' as _i583;
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart' as _i827;
-import 'package:frontend/features/menu/logic/ws_join_cubit.dart' as _i165;
 import 'package:frontend/features/todo/domain/todo_repository.dart' as _i739;
 import 'package:frontend/features/todo/view/bloc/todo_bloc.dart' as _i955;
 import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
@@ -63,51 +62,44 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i346.MainChatRepository(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i684.WsLettersRepository>(
-      () => _i684.WsLettersRepository(),
-      dispose: (i) => i.dispose(),
-    );
+    gh.lazySingleton<_i325.ArenaRepository>(() => _i325.ArenaRepository());
+    gh.lazySingleton<_i848.WsRepository>(() => _i848.WsRepository());
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
     );
+    gh.lazySingleton<_i684.WsManager>(
+      () => _i684.WsManager(gh<_i848.WsRepository>()),
+      dispose: (i) => i.dispose(),
+    );
+    gh.lazySingleton<_i326.ChatMemberBloc>(
+      () => _i326.ChatMemberBloc(gh<_i848.WsRepository>()),
+    );
     gh.factoryParam<_i64.LettersBloc, int, int>(
       (_roomId, _senderId) =>
-          _i64.LettersBloc(gh<_i684.WsLettersRepository>(), _roomId, _senderId),
+          _i64.LettersBloc(gh<_i848.WsRepository>(), _roomId, _senderId),
     );
     gh.lazySingleton<_i166.SessionRepository>(
-      () => _i166.SessionRepositoryImpl(gh<_i522.DbClient>()),
+      () => _i166.SessionRepository(gh<_i522.DbClient>()),
     );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
     );
-    gh.factory<_i326.ChatMemberBloc>(
-      () => _i326.ChatMemberBloc(gh<_i346.MainChatRepository>()),
-    );
-    gh.factory<_i165.WsJoinCubit>(
-      () => _i165.WsJoinCubit(gh<_i166.SessionRepository>()),
+    gh.factory<_i827.WsConnectionCubit>(
+      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
     );
     gh.lazySingleton<_i31.ChopperClient>(
       () => chopperModule.regClient(gh<_i716.AppConfig>()),
       instanceName: 'reg',
     );
-    gh.factory<_i583.SenderCubit>(
-      () => _i583.SenderCubit(gh<_i166.SessionRepository>()),
-    );
-    gh.lazySingleton<_i328.AuthNotifier>(
-      () => _i328.AuthNotifier(gh<_i166.SessionRepository>()),
+    gh.lazySingleton<_i31.ChopperClient>(
+      () => chopperModule.chopperClient(gh<_i716.AppConfig>()),
+      instanceName: 'withToken',
     );
     gh.lazySingleton<_i31.ChopperClient>(
       () => chopperModule.manualClient(gh<_i716.AppConfig>()),
       instanceName: 'manualToken',
-    );
-    gh.lazySingleton<_i31.ChopperClient>(
-      () => chopperModule.chopperClient(
-        gh<_i166.SessionRepository>(),
-        gh<_i716.AppConfig>(),
-      ),
-      instanceName: 'withToken',
     );
     gh.lazySingleton<_i199.RegistrationApi>(
       () => chopperModule.registrationApi(
@@ -138,42 +130,30 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
     );
     gh.lazySingleton<_i887.AuthRepository>(
-      () => _i887.AuthRepositoryImpl(
+      () => _i887.AuthRepository(
         gh<_i199.RegistrationApi>(),
-        gh<_i166.SessionRepository>(),
         gh<_i1054.WithTokenApi>(),
       ),
     );
     gh.factory<_i712.CreateUnitBloc>(
       () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
     );
-    gh.factory<_i233.AuthCubit>(
-      () => _i233.AuthCubit(
-        gh<_i887.AuthRepository>(),
-        gh<_i166.SessionRepository>(),
-      ),
-    );
     gh.factory<_i948.WebSocket>(
       () =>
           wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
     );
-    gh.lazySingleton<_i684.WsManager>(
-      () => _i684.WsManager(
-        gh<_i684.WsLettersRepository>(),
-        gh<_i166.SessionRepository>(),
+    gh.lazySingleton<_i23.SessionBloc>(
+      () => _i23.SessionBloc(
         gh<_i887.AuthRepository>(),
-        gh<_i346.MainChatRepository>(),
+        gh<_i166.SessionRepository>(),
+        gh<_i848.WsRepository>(),
       ),
-      dispose: (i) => i.dispose(),
-    );
-    gh.factory<_i132.LoginCubit>(
-      () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
     );
     gh.factory<_i415.SignupBloc>(
       () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
     );
-    gh.factory<_i827.WsConnectionCubit>(
-      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
+    gh.factory<_i132.LoginCubit>(
+      () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
     );
     return this;
   }

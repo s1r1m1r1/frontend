@@ -48,6 +48,7 @@ dependencies:
   listen_it: ^5.0.0
   chopper: ^8.3.0
   http: ^1.5.0
+  event_bus: ^2.0.1
 
 # dependency_overrides:
 #   sha_red:
