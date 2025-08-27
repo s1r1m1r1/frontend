@@ -110,33 +110,76 @@ String toString() {
 
 
 class LoginSuccess extends LoginState {
-  const LoginSuccess(): super._();
+  const LoginSuccess(this.session): super._();
   
 
+ final  Session session;
 
-
+/// Create a copy of LoginState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoginSuccessCopyWith<LoginSuccess> get copyWith => _$LoginSuccessCopyWithImpl<LoginSuccess>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess&&(identical(other.session, session) || other.session == session));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,session);
 
 @override
 String toString() {
-  return 'LoginState.success()';
+  return 'LoginState.success(session: $session)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $LoginSuccessCopyWith<$Res> implements $LoginStateCopyWith<$Res> {
+  factory $LoginSuccessCopyWith(LoginSuccess value, $Res Function(LoginSuccess) _then) = _$LoginSuccessCopyWithImpl;
+@useResult
+$Res call({
+ Session session
+});
 
 
+$SessionCopyWith<$Res> get session;
+
+}
+/// @nodoc
+class _$LoginSuccessCopyWithImpl<$Res>
+    implements $LoginSuccessCopyWith<$Res> {
+  _$LoginSuccessCopyWithImpl(this._self, this._then);
+
+  final LoginSuccess _self;
+  final $Res Function(LoginSuccess) _then;
+
+/// Create a copy of LoginState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? session = null,}) {
+  return _then(LoginSuccess(
+null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
+as Session,
+  ));
+}
+
+/// Create a copy of LoginState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SessionCopyWith<$Res> get session {
+  
+  return $SessionCopyWith<$Res>(_self.session, (value) {
+    return _then(_self.copyWith(session: value));
+  });
+}
+}
 
 /// @nodoc
 

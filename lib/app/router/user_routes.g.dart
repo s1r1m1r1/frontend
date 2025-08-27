@@ -23,23 +23,28 @@ RouteBase get $pendingRoute =>
     GoRouteData.$route(path: '/pending', factory: _$PendingRoute._fromState);
 
 mixin _$PendingRoute on GoRouteData {
-  static PendingRoute _fromState(GoRouterState state) => const PendingRoute();
+  static PendingRoute _fromState(GoRouterState state) =>
+      PendingRoute($extra: state.extra as Session?);
+
+  PendingRoute get _self => this as PendingRoute;
 
   @override
   String get location => GoRouteData.$location('/pending');
 
   @override
-  void go(BuildContext context) => context.go(location);
+  void go(BuildContext context) => context.go(location, extra: _self.$extra);
 
   @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+  Future<T?> push<T>(BuildContext context) =>
+      context.push<T>(location, extra: _self.$extra);
 
   @override
   void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
+      context.pushReplacement(location, extra: _self.$extra);
 
   @override
-  void replace(BuildContext context) => context.replace(location);
+  void replace(BuildContext context) =>
+      context.replace(location, extra: _self.$extra);
 }
 
 RouteBase get $emailPendingRoute => GoRouteData.$route(

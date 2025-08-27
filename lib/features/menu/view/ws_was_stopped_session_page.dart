@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/auth/logic/auth_cubit.dart';
-import 'package:frontend/features/auth/logic/logout_cubit.dart';
 import 'package:frontend/inject/get_it.dart';
 
 class WsStoppedSessionPage extends StatelessWidget {
@@ -9,10 +7,7 @@ class WsStoppedSessionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<LogoutCubit>(),
-      child: _WsStoppedSessionView(),
-    );
+    return _WsStoppedSessionView();
   }
 }
 
@@ -34,7 +29,7 @@ class _WsStoppedSessionView extends StatelessWidget {
               TextButton(
                 child: const Text('Re-login'),
                 onPressed: () {
-                  context.read<LogoutCubit>().logout();
+                  // context.read<LogoutCubit>().logout();
                 },
               ),
               Spacer(),

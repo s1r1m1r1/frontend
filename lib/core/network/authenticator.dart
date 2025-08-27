@@ -4,17 +4,18 @@ import 'dart:io';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
-import 'package:frontend/features/auth/domain/auth_repository.dart';
-import 'package:frontend/features/auth/domain/session_repository.dart';
-import 'package:frontend/inject/get_it.dart';
+import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../inject/get_it.dart';
 
 const retryCountHeader = 'Retry-Count';
 
 class TokenAuthenticator implements Authenticator {
-  final SessionRepository _repository;
   Completer<String?>? _completer;
 
-  TokenAuthenticator(this._repository);
+  TokenAuthenticator();
+
   static final n = '$magenta TokenAuthenticator$reset';
 
   @override
@@ -62,22 +63,7 @@ class TokenAuthenticator implements Authenticator {
 
     completer = Completer<String?>();
     _completer = completer;
-    getIt<AuthRepository>()
-        .updateTokensOnRefresh()
-        .then((success) {
-          if (success) {
-            completer?.complete(_repository.getAccessToken);
-          } else {
-            completer?.completeError(
-              'Failed to refresh token',
-              StackTrace.current,
-            );
-          }
-        })
-        .onError((error, stackTrace) {
-          completer?.completeError(error ?? 'Refresh token error', stackTrace);
-        });
-
+    getIt<SessionBloc>().add(SessionEvent.updateTokensOnRefresh(completer));
     return completer.future;
   }
 

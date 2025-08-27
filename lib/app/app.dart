@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:frontend/app/router/get_go_router.dart';
+import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
@@ -14,7 +17,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _AppView(getGoRouter);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(
+          value: GetIt.I.get<SessionBloc>()..add(SessionEvent.subscribeWs()),
+        ),
+        // BlocProvider(create: (_) => SubjectBloc()),
+      ],
+      child: _AppView(getGoRouter),
+    );
   }
 }
 

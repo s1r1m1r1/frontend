@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
@@ -17,10 +18,11 @@ part 'user_routes.g.dart';
 @TypedGoRoute<PendingRoute>(path: PendingRoute.path)
 class PendingRoute extends GoRouteData with _$PendingRoute {
   static const path = '/pending';
-  const PendingRoute();
+  const PendingRoute({this.$extra});
+  final Session? $extra;
 
   @override
-  Widget build(_, _) => PendingPage();
+  Widget build(_, _) => PendingPage(session: $extra);
 }
 
 @TypedGoRoute<EmailPendingRoute>(path: EmailPendingRoute.path)
