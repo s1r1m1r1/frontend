@@ -1,12 +1,15 @@
 // Assuming you have a theme with these colors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/app/router/user_routes.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
 import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
+import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../inject/get_it.dart';
@@ -127,6 +130,16 @@ class MenuView extends StatelessWidget {
                           'Game UI Content',
                           style: TextStyle(color: accentColor),
                         ),
+                        Consumer<BroadcastInfoNotifier>(
+                          builder: (context, ntf, _) {
+                            return TextButton(
+                              child: Text(ntf.value.joinedBroads.toString()),
+                              onPressed: () {
+                                ntf.fetchBroads();
+                              },
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -141,13 +154,14 @@ class MenuView extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildMiddleButton('В БОЙ', Colors.green),
+                  _buildMiddleButton('В БОЙ', Colors.green, context),
                   _buildMiddleButton(
                     'ТОРГОВЛЯ',
                     const Color.fromARGB(255, 95, 0, 52),
+                    context,
                   ),
-                  _buildMiddleButton('БАНК', Colors.blue),
-                  _buildMiddleButton('НАСТРОЙКИ', Colors.grey),
+                  _buildMiddleButton('БАНК', Colors.blue, context),
+                  _buildMiddleButton('НАСТРОЙКИ', Colors.grey, context),
                 ],
               ),
             ),
@@ -172,9 +186,11 @@ class MenuView extends StatelessWidget {
     );
   }
 
-  Widget _buildMiddleButton(String text, Color color) {
+  Widget _buildMiddleButton(String text, Color color, BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        ArenaRoute().push(context);
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
@@ -212,7 +228,7 @@ class _ChatViewState extends State<_ChatView> {
   Widget build(BuildContext context) {
     return Container(
       color: chatBackgroundColor,
-      height: 200,
+      height: 400,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [

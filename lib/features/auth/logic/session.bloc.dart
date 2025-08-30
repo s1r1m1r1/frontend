@@ -40,7 +40,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   ) async {
     final token = await _sessionRepository.readAccessToken();
     final refresh = await _sessionRepository.readRefreshToken();
-    if (refresh == null) {
+    if (refresh == null || token == null) {
       emit(SessionState.logout);
       return;
     }
@@ -59,19 +59,18 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
           case AuthErrorTC(:final error):
             switch (error) {
               case WsAuthError.expiredToken:
-                _sessionRepository.deleteAccessToken();
-                emit(
-                  state.copyWith(
-                    session: state.session?.copyWith(accessToken: null),
-                  ),
+                final refresh = state.session?.refreshToken;
+                if (refresh == null) emit(SessionState.logout);
+                final session = await _authRepository.fetchRefreshToken(
+                  refresh!,
                 );
-                final completer = Completer<String?>();
-                add(SessionEvent.updateTokensOnRefresh(completer));
-                completer.future.then((token) {
-                  if (token != null) {
-                    add(SessionEvent.joinWs(token));
-                  }
-                });
+                if (session != null) {
+                  _sessionRepository.putAccessToken(session.accessToken);
+                  _sessionRepository.putRefreshToken(session.accessToken);
+                  emit(state.copyWith(session: session));
+                  add(SessionEvent.joinWs(session.accessToken));
+                }
+
               // unexpected
               case WsAuthError.unknown:
                 break;
@@ -119,16 +118,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     );
     try {
       final token = event.session.accessToken;
-      if (token == null) {
-        final refresh = event.session.refreshToken;
-        final session = await _authRepository.updateTokensOnRefresh(refresh);
-        if (session == null) {
-          emit(SessionState.logout);
-          return;
-        }
-        emit(SessionState.has(session));
-        return;
-      }
       final session = await _authRepository.checkToken(token);
       if (session == null) {
         emit(SessionState.logout);
@@ -169,7 +158,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     }
     try {
       final session = await _authRepository
-          .updateTokensOnRefresh(refresh)
+          .fetchRefreshToken(refresh)
           .timeout(Duration(seconds: 5));
       if (session != null) {
         event.completer.complete(session.accessToken);

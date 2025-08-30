@@ -64,6 +64,8 @@ class WsManager {
           final decoded = jsonDecode(rawData);
 
           final freezed = ToClient.fromJson(decoded as Json);
+
+          debugPrint('$green [WsManager] MESSAGE $freezed $reset');
           _wsRepository.toClient(freezed);
         } catch (e) {
           debugPrint('$green [WsManager] error $e $reset');

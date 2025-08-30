@@ -52,7 +52,7 @@ class AuthRepository {
     return null;
   }
 
-  Future<Session?> updateTokensOnRefresh(String refreshToken) async {
+  Future<Session?> fetchRefreshToken(String refreshToken) async {
     final resp = await _api.refresh(RefreshTokenDto(refreshToken));
     final dto = resp.body;
     if (resp.statusCode == 401 || dto == null) {

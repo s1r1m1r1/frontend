@@ -10,6 +10,7 @@ List<RouteBase> get $appRoutes => [
   $pendingRoute,
   $emailPendingRoute,
   $loginRoute,
+  $arenaRoute,
   $signupRoute,
   $wsConnectingRoute,
   $wsStoppedSessionRoute,
@@ -81,6 +82,29 @@ mixin _$LoginRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/login');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $arenaRoute =>
+    GoRouteData.$route(path: '/arena', factory: _$ArenaRoute._fromState);
+
+mixin _$ArenaRoute on GoRouteData {
+  static ArenaRoute _fromState(GoRouterState state) => const ArenaRoute();
+
+  @override
+  String get location => GoRouteData.$location('/arena');
 
   @override
   void go(BuildContext context) => context.go(location);

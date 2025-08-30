@@ -11,15 +11,14 @@ sealed class Session with _$Session {
   const Session._();
 
   const factory Session.pending({
-    String? accessToken,
+    required String accessToken,
     required String refreshToken,
   }) = PendingSession;
 
   @Implements<ISessionUser>()
   const factory Session.welcome({
-    String? accessToken,
+    required String accessToken,
     required String refreshToken,
-
     required User user,
   }) = WelcomeSession;
 
@@ -28,7 +27,7 @@ sealed class Session with _$Session {
   const factory Session.gameReady({
     required User user,
     required Unit unit,
-    String? accessToken,
+    required String accessToken,
     required String refreshToken,
   }) = GameReadySession;
 
@@ -38,7 +37,7 @@ sealed class Session with _$Session {
   const factory Session.gameJoined({
     required User user,
     required Unit unit,
-    String? accessToken,
+    required String accessToken,
     required String refreshToken,
     required WsGameOption gameOption,
   }) = GameJoinedSession;
@@ -49,7 +48,7 @@ sealed class Session with _$Session {
   const factory Session.gameFinished({
     required User user,
     required Unit unit,
-    String? accessToken,
+    required String accessToken,
     required String refreshToken,
     required WsGameOption gameOption,
   }) = GameFinishedSession;
