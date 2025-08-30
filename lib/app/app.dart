@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:frontend/app/router/get_go_router.dart';
 import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
+import 'package:frontend/inject/get_it.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -17,14 +20,24 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiProvider(
       providers: [
-        BlocProvider.value(
-          value: GetIt.I.get<SessionBloc>()..add(SessionEvent.subscribeWs()),
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (_) => getIt<BroadcastInfoNotifier>()..subscribe(),
         ),
-        // BlocProvider(create: (_) => SubjectBloc()),
+        MultiBlocProvider(
+          providers: [
+            // all singleton notifiers create here , as injectable
+            BlocProvider.value(
+              value: GetIt.I.get<SessionBloc>()
+                ..add(SessionEvent.subscribeWs()),
+            ),
+            // BlocProvider(create: (_) => SubjectBloc()),
+          ],
+          child: _AppView(getGoRouter),
+        ),
       ],
-      child: _AppView(getGoRouter),
     );
   }
 }

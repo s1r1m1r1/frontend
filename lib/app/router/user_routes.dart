@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
+import 'package:frontend/features/menu/view/arena_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
@@ -41,6 +42,15 @@ class LoginRoute extends GoRouteData with _$LoginRoute {
 
   @override
   Widget build(_, _) => LoginPage();
+}
+
+@TypedGoRoute<ArenaRoute>(path: ArenaRoute.path)
+class ArenaRoute extends GoRouteData with _$ArenaRoute {
+  static const path = '/arena';
+  const ArenaRoute();
+
+  @override
+  Widget build(_, _) => ArenaPage();
 }
 
 @TypedGoRoute<SignupRoute>(path: SignupRoute.path)

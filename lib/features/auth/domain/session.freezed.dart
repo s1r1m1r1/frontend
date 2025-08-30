@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Session {
 
- String? get accessToken; String get refreshToken;
+ String get accessToken; String get refreshToken;
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $SessionCopyWith<$Res>  {
   factory $SessionCopyWith(Session value, $Res Function(Session) _then) = _$SessionCopyWithImpl;
 @useResult
 $Res call({
- String? accessToken, String refreshToken
+ String accessToken, String refreshToken
 });
 
 
@@ -62,10 +62,10 @@ class _$SessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = freezed,Object? refreshToken = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(_self.copyWith(
-accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -78,10 +78,10 @@ as String,
 
 
 class PendingSession extends Session {
-  const PendingSession({this.accessToken, required this.refreshToken}): super._();
+  const PendingSession({required this.accessToken, required this.refreshToken}): super._();
   
 
-@override final  String? accessToken;
+@override final  String accessToken;
 @override final  String refreshToken;
 
 /// Create a copy of Session
@@ -114,7 +114,7 @@ abstract mixin class $PendingSessionCopyWith<$Res> implements $SessionCopyWith<$
   factory $PendingSessionCopyWith(PendingSession value, $Res Function(PendingSession) _then) = _$PendingSessionCopyWithImpl;
 @override @useResult
 $Res call({
- String? accessToken, String refreshToken
+ String accessToken, String refreshToken
 });
 
 
@@ -131,10 +131,10 @@ class _$PendingSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = freezed,Object? refreshToken = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(PendingSession(
-accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -146,10 +146,10 @@ as String,
 
 
 class WelcomeSession extends Session implements ISessionUser {
-  const WelcomeSession({this.accessToken, required this.refreshToken, required this.user}): super._();
+  const WelcomeSession({required this.accessToken, required this.refreshToken, required this.user}): super._();
   
 
-@override final  String? accessToken;
+@override final  String accessToken;
 @override final  String refreshToken;
  final  User user;
 
@@ -183,7 +183,7 @@ abstract mixin class $WelcomeSessionCopyWith<$Res> implements $SessionCopyWith<$
   factory $WelcomeSessionCopyWith(WelcomeSession value, $Res Function(WelcomeSession) _then) = _$WelcomeSessionCopyWithImpl;
 @override @useResult
 $Res call({
- String? accessToken, String refreshToken, User user
+ String accessToken, String refreshToken, User user
 });
 
 
@@ -200,10 +200,10 @@ class _$WelcomeSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = freezed,Object? refreshToken = null,Object? user = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? user = null,}) {
   return _then(WelcomeSession(
-accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,
   ));
@@ -225,12 +225,12 @@ $UserCopyWith<$Res> get user {
 
 
 class GameReadySession extends Session implements ISessionUser, ISessionUnit {
-  const GameReadySession({required this.user, required this.unit, this.accessToken, required this.refreshToken}): super._();
+  const GameReadySession({required this.user, required this.unit, required this.accessToken, required this.refreshToken}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String? accessToken;
+@override final  String accessToken;
 @override final  String refreshToken;
 
 /// Create a copy of Session
@@ -263,7 +263,7 @@ abstract mixin class $GameReadySessionCopyWith<$Res> implements $SessionCopyWith
   factory $GameReadySessionCopyWith(GameReadySession value, $Res Function(GameReadySession) _then) = _$GameReadySessionCopyWithImpl;
 @override @useResult
 $Res call({
- User user, Unit unit, String? accessToken, String refreshToken
+ User user, Unit unit, String accessToken, String refreshToken
 });
 
 
@@ -280,12 +280,12 @@ class _$GameReadySessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = freezed,Object? refreshToken = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(GameReadySession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -306,12 +306,12 @@ $UserCopyWith<$Res> get user {
 
 
 class GameJoinedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
-  const GameJoinedSession({required this.user, required this.unit, this.accessToken, required this.refreshToken, required this.gameOption}): super._();
+  const GameJoinedSession({required this.user, required this.unit, required this.accessToken, required this.refreshToken, required this.gameOption}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String? accessToken;
+@override final  String accessToken;
 @override final  String refreshToken;
  final  WsGameOption gameOption;
 
@@ -345,7 +345,7 @@ abstract mixin class $GameJoinedSessionCopyWith<$Res> implements $SessionCopyWit
   factory $GameJoinedSessionCopyWith(GameJoinedSession value, $Res Function(GameJoinedSession) _then) = _$GameJoinedSessionCopyWithImpl;
 @override @useResult
 $Res call({
- User user, Unit unit, String? accessToken, String refreshToken, WsGameOption gameOption
+ User user, Unit unit, String accessToken, String refreshToken, WsGameOption gameOption
 });
 
 
@@ -362,12 +362,12 @@ class _$GameJoinedSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = freezed,Object? refreshToken = null,Object? gameOption = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,Object? gameOption = null,}) {
   return _then(GameJoinedSession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
 as WsGameOption,
   ));
@@ -398,12 +398,12 @@ $WsGameOptionCopyWith<$Res> get gameOption {
 
 
 class GameFinishedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
-  const GameFinishedSession({required this.user, required this.unit, this.accessToken, required this.refreshToken, required this.gameOption}): super._();
+  const GameFinishedSession({required this.user, required this.unit, required this.accessToken, required this.refreshToken, required this.gameOption}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String? accessToken;
+@override final  String accessToken;
 @override final  String refreshToken;
  final  WsGameOption gameOption;
 
@@ -437,7 +437,7 @@ abstract mixin class $GameFinishedSessionCopyWith<$Res> implements $SessionCopyW
   factory $GameFinishedSessionCopyWith(GameFinishedSession value, $Res Function(GameFinishedSession) _then) = _$GameFinishedSessionCopyWithImpl;
 @override @useResult
 $Res call({
- User user, Unit unit, String? accessToken, String refreshToken, WsGameOption gameOption
+ User user, Unit unit, String accessToken, String refreshToken, WsGameOption gameOption
 });
 
 
@@ -454,12 +454,12 @@ class _$GameFinishedSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = freezed,Object? refreshToken = null,Object? gameOption = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,Object? gameOption = null,}) {
   return _then(GameFinishedSession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: freezed == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String?,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
 as WsGameOption,
   ));

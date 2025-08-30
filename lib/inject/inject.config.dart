@@ -28,7 +28,11 @@ import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
 import 'package:frontend/features/menu/domain/arena_repository.dart' as _i325;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
+import 'package:frontend/features/menu/logic/arena_board_notifier.dart'
+    as _i969;
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
+import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart'
+    as _i871;
 import 'package:frontend/features/menu/logic/letters.bloc.dart' as _i64;
 import 'package:frontend/features/menu/logic/ws_connection_cubit.dart' as _i827;
 import 'package:frontend/features/todo/domain/todo_repository.dart' as _i739;
@@ -57,16 +61,22 @@ extension GetItInjectableX on _i174.GetIt {
     final chopperModule = _$ChopperModule();
     final wsSocketModule = _$WsSocketModule();
     gh.factory<_i990.UserBloc>(() => _i990.UserBloc());
+    gh.lazySingleton<_i848.WsRepository>(() => _i848.WsRepository());
     gh.lazySingleton<_i522.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i346.MainChatRepository>(
       () => _i346.MainChatRepository(),
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i325.ArenaRepository>(() => _i325.ArenaRepository());
-    gh.lazySingleton<_i848.WsRepository>(() => _i848.WsRepository());
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
+    );
+    gh.factory<_i969.ArenaBoardNotifier>(
+      () => _i969.ArenaBoardNotifier(gh<_i848.WsRepository>()),
+    );
+    gh.factory<_i871.BroadcastInfoNotifier>(
+      () => _i871.BroadcastInfoNotifier(gh<_i848.WsRepository>()),
     );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(gh<_i848.WsRepository>()),
