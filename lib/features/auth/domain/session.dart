@@ -10,26 +10,15 @@ part 'session.freezed.dart';
 sealed class Session with _$Session {
   const Session._();
 
-  const factory Session.pending({
-    required String accessToken,
-    required String refreshToken,
-  }) = PendingSession;
+  const factory Session.pending() = PendingSession;
 
   @Implements<ISessionUser>()
-  const factory Session.welcome({
-    required String accessToken,
-    required String refreshToken,
-    required User user,
-  }) = WelcomeSession;
+  const factory Session.welcome({required User user}) = WelcomeSession;
 
   @Implements<ISessionUser>()
   @Implements<ISessionUnit>()
-  const factory Session.gameReady({
-    required User user,
-    required Unit unit,
-    required String accessToken,
-    required String refreshToken,
-  }) = GameReadySession;
+  const factory Session.gameReady({required User user, required Unit unit}) =
+      GameReadySession;
 
   @Implements<ISessionUser>()
   @Implements<ISessionUnit>()
@@ -37,8 +26,6 @@ sealed class Session with _$Session {
   const factory Session.gameJoined({
     required User user,
     required Unit unit,
-    required String accessToken,
-    required String refreshToken,
     required WsGameOption gameOption,
   }) = GameJoinedSession;
 
@@ -48,27 +35,16 @@ sealed class Session with _$Session {
   const factory Session.gameFinished({
     required User user,
     required Unit unit,
-    required String accessToken,
-    required String refreshToken,
     required WsGameOption gameOption,
   }) = GameFinishedSession;
 
   factory Session.fromDto(SessionDto dto) {
     final user = User.fromDto(dto.user);
     if (dto.unit != null) {
-      return Session.gameReady(
-        user: user,
-        unit: Unit.fromDto(dto.unit!),
-        accessToken: dto.tokens.accessToken,
-        refreshToken: dto.tokens.refreshToken,
-      );
+      return Session.gameReady(user: user, unit: Unit.fromDto(dto.unit!));
     }
 
-    return WelcomeSession(
-      accessToken: dto.tokens.accessToken,
-      refreshToken: dto.tokens.refreshToken,
-      user: user,
-    );
+    return WelcomeSession(user: user);
   }
 }
 

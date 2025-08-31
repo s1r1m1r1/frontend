@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/user_routes.dart';
+import 'package:frontend/app/router/routes.dart';
 import 'package:frontend/features/auth/domain/session.dart';
-import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:frontend/features/auth/logic/session_notifier.dart';
 import 'package:frontend/features/unit/logic/selected_unit.bloc.dart';
 import 'package:frontend/inject/get_it.dart';
+import 'package:provider/provider.dart';
 
 class PendingPage extends StatelessWidget {
   final Session? session;
@@ -14,11 +15,13 @@ class PendingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    // debugPrint('PendingPage build');
+    return MultiProvider(
       providers: [
-        BlocProvider.value(
-          value: getIt<SessionBloc>()..add(SessionEvent.setSession(session)),
+        ChangeNotifierProvider.value(
+          value: getIt<SessionNotifier>()..readSession(),
         ),
+
         BlocProvider(
           create: (_) =>
               getIt<SelectedUnitBloc>()..add(SelectedUnitEvent.load()),
@@ -35,16 +38,22 @@ class _PendingView extends StatefulWidget {
 }
 
 class _PendingViewState extends State<_PendingView> {
+  late SessionNotifier _ntf;
   @override
   void initState() {
     super.initState();
-    final bloc = context.read<SessionBloc>();
-    _sub = bloc.stream.listen(_onState);
-    _onState(bloc.state);
+    _ntf = context.read<SessionNotifier>();
+    _ntf.addListener(_onState);
   }
 
   StreamSubscription? _sub;
-  void _onState(SessionState state) {
+  void _onState() {
+    final state = _ntf.value;
+    if (state.status == SessionStateStatus.expired) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        LoginRoute().go(context);
+      });
+    }
     switch (state.session) {
       case null:
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -63,6 +72,7 @@ class _PendingViewState extends State<_PendingView> {
           WsConnectingRoute().go(context);
         });
       case GameJoinedSession(:final gameOption, :final unit):
+        debugPrint('GAME READY go ws');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           MenuRoute(
             roomId: gameOption.mainRoomId,
@@ -77,7 +87,7 @@ class _PendingViewState extends State<_PendingView> {
 
   @override
   void dispose() {
-    _sub?.cancel();
+    _ntf.removeListener(_onState);
     super.dispose();
   }
 
@@ -90,11 +100,12 @@ class _PendingViewState extends State<_PendingView> {
           SizedBox(height: 40),
           Text('Pending Page'),
           Spacer(),
-          BlocBuilder<SessionBloc, SessionState>(
-            builder: (context, state) {
-              return Center(child: Text(state.toString()));
+          Consumer<SessionNotifier>(
+            builder: (context, ntf, _) {
+              return Center(child: Text(ntf.value.toString()));
             },
           ),
+
           SizedBox(height: 32),
           BlocBuilder<SelectedUnitBloc, SelectedUnitState>(
             builder: (context, state) {

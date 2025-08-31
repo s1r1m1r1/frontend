@@ -1,10 +1,12 @@
 // Assuming you have a theme with these colors
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/user_routes.dart';
+import 'package:frontend/app/router/routes.dart';
 import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/logic/session.bloc.dart';
+import 'package:frontend/features/auth/logic/session_notifier.dart';
 import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
 import 'package:frontend/features/menu/logic/letters.bloc.dart';
 import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
@@ -21,8 +23,9 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: getIt<SessionNotifier>()),
         BlocProvider.value(
           value: getIt<ChatMemberBloc>()..add(ChatMemberEvent.subscribe()),
         ),
@@ -305,10 +308,10 @@ class _ChatBody extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: BlocBuilder<SessionBloc, SessionState>(
-              builder: (context, sessionState) {
+            child: Consumer<SessionNotifier>(
+              builder: (context, ntf, _) {
                 final int senderId;
-                if (sessionState.session case ISessionUnit(:final unit)) {
+                if (ntf.value.session case ISessionUnit(:final unit)) {
                   senderId = unit.id;
                 } else {
                   senderId = -1;

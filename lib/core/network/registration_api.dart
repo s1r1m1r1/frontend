@@ -18,14 +18,14 @@ abstract class RegistrationApi extends ChopperService {
   }
 
   @POST(path: '/users/signup')
-  Future<Response<SessionDto>> signup(@Body() EmailCredentialDto dto);
+  Future<Response<TokensDto>> signup(@Body() EmailCredentialDto dto);
 
   @POST(path: '/users/login')
-  Future<Response<SessionDto>> login(@Body() EmailCredentialDto dto);
+  Future<Response<TokensDto>> login(@Body() EmailCredentialDto dto);
 
   @POST(path: '/users/refresh')
   // For the refresh token, we can pass the DTO directly in the body
   // and set the content type using a header if needed, but Chopper
   // handles JSON encoding by default with the JsonConverter.
-  Future<Response<SessionDto>> refresh(@Body() RefreshTokenDto dto);
+  Future<Response<TokensDto>> refresh(@Body() RefreshTokenDto dto);
 }

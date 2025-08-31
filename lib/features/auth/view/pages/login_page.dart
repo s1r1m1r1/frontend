@@ -1,10 +1,11 @@
 // lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/features/auth/logic/login.cubit.dart';
+import 'package:frontend/app/logger/log_colors.dart';
+import 'package:frontend/features/auth/logic/login_notifier.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-import '../../../../app/router/user_routes.dart';
+import '../../../../app/router/routes.dart';
 import '../../../../inject/get_it.dart';
 
 class LoginPage extends StatelessWidget {
@@ -12,8 +13,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<LoginCubit>(),
+    return ChangeNotifierProvider(
+      lazy: false,
+      create: (_) => getIt<LoginNotifier>(),
       child: _LoginView(),
     );
   }
@@ -30,6 +32,40 @@ class _LoginViewState extends State<_LoginView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  late LoginNotifier _loginNtf;
+
+  @override
+  void initState() {
+    super.initState();
+    _loginNtf = context.read<LoginNotifier>();
+    debugPrint('$red ADD LISTEN  ${_loginNtf.value} $reset');
+    _loginNtf.addListener(_listenNotifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _listenNotifier();
+    });
+  }
+
+  void _listenNotifier() {
+    debugPrint('$red on LISTEN ${_loginNtf.value.runtimeType} $reset');
+    if (_loginNtf.value is LoginFailure) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login Failed: ')));
+    }
+    if (_loginNtf.value is LoginSuccess) {
+      PendingRoute().go(context);
+    }
+  }
+
+  @override
+  void dispose() {
+    _loginNtf.removeListener(_listenNotifier);
+    _usernameController.dispose();
+    _passwordController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,85 +74,75 @@ class _LoginViewState extends State<_LoginView> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: BlocListener<LoginCubit, LoginState>(
-              listener: (context, state) {
-                if (state is LoginFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Login Failed: ${state.error}')),
-                  );
-                }
-                if (state is LoginSuccess) {
-                  PendingRoute($extra: state.session).go(context);
-                }
-              },
-              child: Column(
-                children: [
-                  // if(kDebugMode)
-                  SizedBox(
-                    height: 100,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 100,
-                            child: TextButton(
-                              onPressed: () {
-                                _usernameController.text = 'qq@qq.qq';
-                                _passwordController.text = '12qwAS';
-                                _login();
-                              },
-                              child: Text('qq'),
-                            ),
+            child: Column(
+              children: [
+                // if(kDebugMode)
+                SizedBox(
+                  height: 100,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: TextButton(
+                            onPressed: () async {
+                              _usernameController.text = 'qq@qq.qq';
+                              _passwordController.text = '12qwAS';
+                              debugPrint('$red on Pressed 1 $reset');
+                              await _login();
+                            },
+                            child: Text('qq'),
                           ),
-                          SizedBox(
-                            width: 100,
-                            child: TextButton(
-                              onPressed: () {
-                                _usernameController.text = 'ww@ww.ww';
-                                _passwordController.text = '12qwAS';
-                                _login();
-                              },
-                              child: Text('ww'),
-                            ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: TextButton(
+                            onPressed: () async {
+                              _usernameController.text = 'ww@ww.ww';
+                              _passwordController.text = '12qwAS';
+                              debugPrint('$red on Pressed 1 $reset');
+                              await _login();
+                            },
+                            child: Text('ww'),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  TextField(
-                    controller: _usernameController,
-                    decoration: const InputDecoration(labelText: 'Username'),
-                  ),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 20),
-                  BlocBuilder<LoginCubit, LoginState>(
-                    builder: (context, state) {
-                      if (state is LoginLoading) {
-                        return const CircularProgressIndicator();
-                      }
-                      return ElevatedButton(
-                        onPressed: () {
-                          _login();
-                        },
-                        child: const Text('Login'),
-                      );
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      GoRouter.of(context).pushReplacement(SignupRoute.path);
-                      // Navigator.of(context).pushNamed('/signup');
-                    },
-                    child: const Text('Don\'t have an account? Sign Up'),
-                  ),
-                ],
-              ),
+                ),
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(labelText: 'Username'),
+                ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
+                Consumer<LoginNotifier>(
+                  builder: (context, ntf, _) {
+                    if (ntf.value is LoginLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return ElevatedButton(
+                      onPressed: () {
+                        _login();
+                      },
+                      child: const Text('Login'),
+                    );
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    GoRouter.of(context).pushReplacement(SignupRoute.path);
+                    // Navigator.of(context).pushNamed('/signup');
+                  },
+                  child: const Text('Don\'t have an account? Sign Up'),
+                ),
+              ],
             ),
           ),
         ],
@@ -124,17 +150,15 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  void _login() {
-    BlocProvider.of<LoginCubit>(context).loginButtonPressed(
-      username: _usernameController.text,
-      password: _passwordController.text,
-    );
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Future<void> _login() async {
+    debugPrint('$red on Pressed $reset');
+    await _loginNtf
+        .loginButtonPressed(
+          username: _usernameController.text,
+          password: _passwordController.text,
+        )
+        .onError((e, s) {
+          debugPrint('$red on Pressed ERROR {$e} $reset');
+        });
   }
 }

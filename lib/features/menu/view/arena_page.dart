@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/menu/logic/arena_board_notifier.dart';
 import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
 import 'package:frontend/inject/get_it.dart';
@@ -42,7 +41,6 @@ class _ArenaBoardViewState extends State<ArenaBoardView> {
   @override
   void initState() {
     super.initState();
-    debugPrint('$magenta initState ArenaPage $reset\n ');
     _broadInfoNotifier = context.read<BroadcastInfoNotifier>();
     _broadInfoNotifier.addListener(_listenBroads);
     _listenBroads();
@@ -57,7 +55,6 @@ class _ArenaBoardViewState extends State<ArenaBoardView> {
   void _listenBroads() {
     final broads = _broadInfoNotifier.value.joinedBroads;
     final hasArena = broads.any((i) => i.family == BroadcastFamily.arena);
-    debugPrint('$magenta listen ARENA $reset \n\n\n');
     if (!hasArena) {
       context.read<ArenaBoardNotifier>().joinArena();
     }

@@ -2,16 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chopper/chopper.dart';
-import 'package:frontend/features/auth/logic/session.bloc.dart';
-
-import '../../inject/get_it.dart';
+import 'package:frontend/features/auth/domain/token_repository.dart';
+import 'package:injectable/injectable.dart';
 
 const retryCountHeader = 'Retry-Count';
 
+@injectable
 class TokenAuthenticator implements Authenticator {
-  Completer<String?>? _completer;
-
-  TokenAuthenticator();
+  final TokenRepository _tokenRepository;
+  const TokenAuthenticator(this._tokenRepository);
 
   @override
   FutureOr<Request?> authenticate(
@@ -42,16 +41,9 @@ class TokenAuthenticator implements Authenticator {
     return null;
   }
 
-  Future<String?> _refreshToken() {
-    var completer = _completer;
-    if (completer != null && !completer.isCompleted) {
-      return completer.future;
-    }
-
-    completer = Completer<String?>();
-    _completer = completer;
-    getIt<SessionBloc>().add(SessionEvent.updateTokensOnRefresh(completer));
-    return completer.future;
+  Future<String?> _refreshToken() async {
+    final tokens = await _tokenRepository.fetchAndUpdateRefresh();
+    return tokens?.token;
   }
 
   @override

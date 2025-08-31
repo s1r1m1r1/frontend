@@ -13,8 +13,10 @@ class AuthRepository {
   final RegistrationApi _api;
   final WithTokenApi _protectedApi;
   AuthRepository(this._api, this._protectedApi);
-
-  Future<Session> login(String email, String password) async {
+  Future<({String access, String refresh})> login(
+    String email,
+    String password,
+  ) async {
     debugPrint('login');
     final resp = await _api.login(
       EmailCredentialDto(email: email, password: password),
@@ -24,12 +26,13 @@ class AuthRepository {
     }
     final dto = resp.body;
     if (dto == null) throw const EmptyBodyApiException();
-
-    final session = Session.fromDto(dto);
-    return session;
+    return (access: dto.accessToken, refresh: dto.refreshToken);
   }
 
-  Future<Session> signup(String email, String password) async {
+  Future<({String access, String refresh})> signup(
+    String email,
+    String password,
+  ) async {
     final resp = await _api.signup(
       EmailCredentialDto(email: email, password: password),
     );
@@ -38,8 +41,7 @@ class AuthRepository {
     }
     final dto = resp.body;
     if (dto == null) throw const EmptyBodyApiException();
-    final newSession = Session.fromDto(dto);
-    return newSession;
+    return (access: dto.accessToken, refresh: dto.refreshToken);
   }
 
   Future<Session?> checkToken(String token) async {
@@ -52,7 +54,9 @@ class AuthRepository {
     return null;
   }
 
-  Future<Session?> fetchRefreshToken(String refreshToken) async {
+  Future<({String token, String refresh})?> fetchRefreshToken(
+    String refreshToken,
+  ) async {
     final resp = await _api.refresh(RefreshTokenDto(refreshToken));
     final dto = resp.body;
     if (resp.statusCode == 401 || dto == null) {
@@ -60,8 +64,7 @@ class AuthRepository {
       return null;
     }
 
-    final newSession = Session.fromDto(dto);
-    return newSession;
+    return (token: dto.accessToken, refresh: dto.refreshToken);
   }
 
   //---------  session  ------------------------------------------------------------------------------------------
