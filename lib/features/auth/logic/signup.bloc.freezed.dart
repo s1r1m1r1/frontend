@@ -241,76 +241,33 @@ String toString() {
 
 
 class SignupSuccess extends SignupState {
-  const SignupSuccess(this.session): super._();
+  const SignupSuccess(): super._();
   
 
- final  Session session;
 
-/// Create a copy of SignupState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SignupSuccessCopyWith<SignupSuccess> get copyWith => _$SignupSuccessCopyWithImpl<SignupSuccess>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignupSuccess&&(identical(other.session, session) || other.session == session));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignupSuccess);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,session);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'SignupState.success(session: $session)';
+  return 'SignupState.success()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $SignupSuccessCopyWith<$Res> implements $SignupStateCopyWith<$Res> {
-  factory $SignupSuccessCopyWith(SignupSuccess value, $Res Function(SignupSuccess) _then) = _$SignupSuccessCopyWithImpl;
-@useResult
-$Res call({
- Session session
-});
 
 
-$SessionCopyWith<$Res> get session;
-
-}
-/// @nodoc
-class _$SignupSuccessCopyWithImpl<$Res>
-    implements $SignupSuccessCopyWith<$Res> {
-  _$SignupSuccessCopyWithImpl(this._self, this._then);
-
-  final SignupSuccess _self;
-  final $Res Function(SignupSuccess) _then;
-
-/// Create a copy of SignupState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? session = null,}) {
-  return _then(SignupSuccess(
-null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
-as Session,
-  ));
-}
-
-/// Create a copy of SignupState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$SessionCopyWith<$Res> get session {
-  
-  return $SessionCopyWith<$Res>(_self.session, (value) {
-    return _then(_self.copyWith(session: value));
-  });
-}
-}
 
 /// @nodoc
 

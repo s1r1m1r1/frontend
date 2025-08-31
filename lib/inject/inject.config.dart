@@ -13,18 +13,19 @@ import 'package:chopper/chopper.dart' as _i31;
 import 'package:frontend/bloc/user/user_bloc.dart' as _i990;
 import 'package:frontend/core/db/db_client.dart' as _i522;
 import 'package:frontend/core/db/db_modulte.dart' as _i939;
+import 'package:frontend/core/network/authenticator.dart' as _i372;
 import 'package:frontend/core/network/chopper_module.dart' as _i1007;
-import 'package:frontend/core/network/manual_token_api.dart' as _i164;
 import 'package:frontend/core/network/registration_api.dart' as _i199;
 import 'package:frontend/core/network/with_token_api.dart' as _i1054;
 import 'package:frontend/core/network/ws_manager.dart' as _i684;
 import 'package:frontend/core/network/ws_repository.dart' as _i848;
 import 'package:frontend/core/network/ws_socket_module.dart' as _i558;
 import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
-import 'package:frontend/features/auth/domain/session_repository.dart' as _i166;
-import 'package:frontend/features/auth/logic/login.cubit.dart' as _i132;
-import 'package:frontend/features/auth/logic/session.bloc.dart' as _i23;
+import 'package:frontend/features/auth/domain/token_repository.dart' as _i960;
+import 'package:frontend/features/auth/logic/login_notifier.dart' as _i34;
+import 'package:frontend/features/auth/logic/session_notifier.dart' as _i943;
 import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
+import 'package:frontend/features/auth/logic/token_notifier.dart' as _i1036;
 import 'package:frontend/features/menu/domain/arena_repository.dart' as _i325;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
@@ -89,9 +90,6 @@ extension GetItInjectableX on _i174.GetIt {
       (_roomId, _senderId) =>
           _i64.LettersBloc(gh<_i848.WsRepository>(), _roomId, _senderId),
     );
-    gh.lazySingleton<_i166.SessionRepository>(
-      () => _i166.SessionRepository(gh<_i522.DbClient>()),
-    );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
@@ -103,27 +101,33 @@ extension GetItInjectableX on _i174.GetIt {
       () => chopperModule.regClient(gh<_i716.AppConfig>()),
       instanceName: 'reg',
     );
-    gh.lazySingleton<_i31.ChopperClient>(
-      () => chopperModule.chopperClient(gh<_i716.AppConfig>()),
-      instanceName: 'withToken',
-    );
-    gh.lazySingleton<_i31.ChopperClient>(
-      () => chopperModule.manualClient(gh<_i716.AppConfig>()),
-      instanceName: 'manualToken',
-    );
     gh.lazySingleton<_i199.RegistrationApi>(
       () => chopperModule.registrationApi(
         gh<_i31.ChopperClient>(instanceName: 'reg'),
       ),
     );
+    gh.lazySingleton<_i960.TokenRepository>(
+      () => _i960.TokenRepository(
+        gh<_i522.DbClient>(),
+        gh<_i199.RegistrationApi>(),
+      ),
+    );
+    gh.factory<_i1036.TokenNotifier>(
+      () => _i1036.TokenNotifier(gh<_i960.TokenRepository>()),
+    );
+    gh.factory<_i372.TokenAuthenticator>(
+      () => _i372.TokenAuthenticator(gh<_i960.TokenRepository>()),
+    );
+    gh.lazySingleton<_i31.ChopperClient>(
+      () => chopperModule.chopperClient(
+        gh<_i372.TokenAuthenticator>(),
+        gh<_i716.AppConfig>(),
+      ),
+      instanceName: 'withToken',
+    );
     gh.lazySingleton<_i1054.WithTokenApi>(
       () => chopperModule.protectedApiService(
         gh<_i31.ChopperClient>(instanceName: 'withToken'),
-      ),
-    );
-    gh.lazySingleton<_i164.ManualTokenApi>(
-      () => chopperModule.manualApiService(
-        gh<_i31.ChopperClient>(instanceName: 'manualToken'),
       ),
     );
     gh.lazySingleton<_i739.TodoRepository>(
@@ -152,18 +156,24 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           wsSocketModule.ws(gh<_i716.AppConfig>(), gh<_i887.AuthRepository>()),
     );
-    gh.lazySingleton<_i23.SessionBloc>(
-      () => _i23.SessionBloc(
+    gh.lazySingleton<_i943.SessionNotifier>(
+      () => _i943.SessionNotifier(
         gh<_i887.AuthRepository>(),
-        gh<_i166.SessionRepository>(),
+        gh<_i960.TokenRepository>(),
         gh<_i848.WsRepository>(),
       ),
     );
     gh.factory<_i415.SignupBloc>(
-      () => _i415.SignupBloc(gh<_i887.AuthRepository>()),
+      () => _i415.SignupBloc(
+        gh<_i887.AuthRepository>(),
+        gh<_i960.TokenRepository>(),
+      ),
     );
-    gh.factory<_i132.LoginCubit>(
-      () => _i132.LoginCubit(gh<_i887.AuthRepository>()),
+    gh.factory<_i34.LoginNotifier>(
+      () => _i34.LoginNotifier(
+        gh<_i887.AuthRepository>(),
+        gh<_i960.TokenRepository>(),
+      ),
     );
     return this;
   }

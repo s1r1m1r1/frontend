@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/view/pages/login_page.dart';
 import 'package:frontend/features/menu/view/arena_page.dart';
+import 'package:frontend/features/menu/view/game_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
@@ -14,16 +14,15 @@ import '../../features/auth/view/pages/signup_page.dart';
 import '../../features/menu/view/menu_page.dart';
 import '../../features/unit/view/unit_page.dart';
 
-part 'user_routes.g.dart';
+part 'routes.g.dart';
 
 @TypedGoRoute<PendingRoute>(path: PendingRoute.path)
 class PendingRoute extends GoRouteData with _$PendingRoute {
   static const path = '/pending';
-  const PendingRoute({this.$extra});
-  final Session? $extra;
+  const PendingRoute();
 
   @override
-  Widget build(_, _) => PendingPage(session: $extra);
+  Widget build(_, _) => PendingPage();
 }
 
 @TypedGoRoute<EmailPendingRoute>(path: EmailPendingRoute.path)
@@ -51,6 +50,15 @@ class ArenaRoute extends GoRouteData with _$ArenaRoute {
 
   @override
   Widget build(_, _) => ArenaPage();
+}
+
+@TypedGoRoute<GameRoute>(path: GameRoute.path)
+class GameRoute extends GoRouteData with _$GameRoute {
+  static const path = '/game';
+  const GameRoute();
+
+  @override
+  Widget build(_, _) => GamePage();
 }
 
 @TypedGoRoute<SignupRoute>(path: SignupRoute.path)

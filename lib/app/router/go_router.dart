@@ -1,7 +1,7 @@
-import 'package:frontend/app/router/user_routes.dart';
+import 'package:frontend/app/router/routes.dart';
 import 'package:go_router/go_router.dart';
 
-GoRouter get getGoRouter {
+GoRouter goRouter() {
   return GoRouter(
     debugLogDiagnostics: true,
     routes: $appRoutes,

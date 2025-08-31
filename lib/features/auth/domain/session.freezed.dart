@@ -14,62 +14,30 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Session {
 
- String get accessToken; String get refreshToken;
-/// Create a copy of Session
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SessionCopyWith<Session> get copyWith => _$SessionCopyWithImpl<Session>(this as Session, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Session&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Session);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'Session(accessToken: $accessToken, refreshToken: $refreshToken)';
+  return 'Session()';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $SessionCopyWith<$Res>  {
-  factory $SessionCopyWith(Session value, $Res Function(Session) _then) = _$SessionCopyWithImpl;
-@useResult
-$Res call({
- String accessToken, String refreshToken
-});
-
-
-
-
-}
-/// @nodoc
-class _$SessionCopyWithImpl<$Res>
-    implements $SessionCopyWith<$Res> {
-  _$SessionCopyWithImpl(this._self, this._then);
-
-  final Session _self;
-  final $Res Function(Session) _then;
-
-/// Create a copy of Session
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
-  return _then(_self.copyWith(
-accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
+class $SessionCopyWith<$Res>  {
+$SessionCopyWith(Session _, $Res Function(Session) __);
 }
 
 
@@ -78,84 +46,46 @@ as String,
 
 
 class PendingSession extends Session {
-  const PendingSession({required this.accessToken, required this.refreshToken}): super._();
+  const PendingSession(): super._();
   
 
-@override final  String accessToken;
-@override final  String refreshToken;
 
-/// Create a copy of Session
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$PendingSessionCopyWith<PendingSession> get copyWith => _$PendingSessionCopyWithImpl<PendingSession>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PendingSession&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PendingSession);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'Session.pending(accessToken: $accessToken, refreshToken: $refreshToken)';
+  return 'Session.pending()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $PendingSessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
-  factory $PendingSessionCopyWith(PendingSession value, $Res Function(PendingSession) _then) = _$PendingSessionCopyWithImpl;
-@override @useResult
-$Res call({
- String accessToken, String refreshToken
-});
 
 
-
-
-}
-/// @nodoc
-class _$PendingSessionCopyWithImpl<$Res>
-    implements $PendingSessionCopyWith<$Res> {
-  _$PendingSessionCopyWithImpl(this._self, this._then);
-
-  final PendingSession _self;
-  final $Res Function(PendingSession) _then;
-
-/// Create a copy of Session
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
-  return _then(PendingSession(
-accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
 
 /// @nodoc
 
 
 class WelcomeSession extends Session implements ISessionUser {
-  const WelcomeSession({required this.accessToken, required this.refreshToken, required this.user}): super._();
+  const WelcomeSession({required this.user}): super._();
   
 
-@override final  String accessToken;
-@override final  String refreshToken;
  final  User user;
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $WelcomeSessionCopyWith<WelcomeSession> get copyWith => _$WelcomeSessionCopyWithImpl<WelcomeSession>(this, _$identity);
 
@@ -163,16 +93,16 @@ $WelcomeSessionCopyWith<WelcomeSession> get copyWith => _$WelcomeSessionCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WelcomeSession&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WelcomeSession&&(identical(other.user, user) || other.user == user));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,user);
+int get hashCode => Object.hash(runtimeType,user);
 
 @override
 String toString() {
-  return 'Session.welcome(accessToken: $accessToken, refreshToken: $refreshToken, user: $user)';
+  return 'Session.welcome(user: $user)';
 }
 
 
@@ -181,9 +111,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $WelcomeSessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
   factory $WelcomeSessionCopyWith(WelcomeSession value, $Res Function(WelcomeSession) _then) = _$WelcomeSessionCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
- String accessToken, String refreshToken, User user
+ User user
 });
 
 
@@ -200,11 +130,9 @@ class _$WelcomeSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? user = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? user = null,}) {
   return _then(WelcomeSession(
-accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,
   ));
 }
@@ -225,17 +153,15 @@ $UserCopyWith<$Res> get user {
 
 
 class GameReadySession extends Session implements ISessionUser, ISessionUnit {
-  const GameReadySession({required this.user, required this.unit, required this.accessToken, required this.refreshToken}): super._();
+  const GameReadySession({required this.user, required this.unit}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String accessToken;
-@override final  String refreshToken;
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $GameReadySessionCopyWith<GameReadySession> get copyWith => _$GameReadySessionCopyWithImpl<GameReadySession>(this, _$identity);
 
@@ -243,16 +169,16 @@ $GameReadySessionCopyWith<GameReadySession> get copyWith => _$GameReadySessionCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameReadySession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameReadySession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,unit,accessToken,refreshToken);
+int get hashCode => Object.hash(runtimeType,user,unit);
 
 @override
 String toString() {
-  return 'Session.gameReady(user: $user, unit: $unit, accessToken: $accessToken, refreshToken: $refreshToken)';
+  return 'Session.gameReady(user: $user, unit: $unit)';
 }
 
 
@@ -261,9 +187,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $GameReadySessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
   factory $GameReadySessionCopyWith(GameReadySession value, $Res Function(GameReadySession) _then) = _$GameReadySessionCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
- User user, Unit unit, String accessToken, String refreshToken
+ User user, Unit unit
 });
 
 
@@ -280,13 +206,11 @@ class _$GameReadySessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,}) {
   return _then(GameReadySession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,
+as Unit,
   ));
 }
 
@@ -306,18 +230,16 @@ $UserCopyWith<$Res> get user {
 
 
 class GameJoinedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
-  const GameJoinedSession({required this.user, required this.unit, required this.accessToken, required this.refreshToken, required this.gameOption}): super._();
+  const GameJoinedSession({required this.user, required this.unit, required this.gameOption}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String accessToken;
-@override final  String refreshToken;
  final  WsGameOption gameOption;
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $GameJoinedSessionCopyWith<GameJoinedSession> get copyWith => _$GameJoinedSessionCopyWithImpl<GameJoinedSession>(this, _$identity);
 
@@ -325,16 +247,16 @@ $GameJoinedSessionCopyWith<GameJoinedSession> get copyWith => _$GameJoinedSessio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameJoinedSession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.gameOption, gameOption) || other.gameOption == gameOption));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameJoinedSession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.gameOption, gameOption) || other.gameOption == gameOption));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,unit,accessToken,refreshToken,gameOption);
+int get hashCode => Object.hash(runtimeType,user,unit,gameOption);
 
 @override
 String toString() {
-  return 'Session.gameJoined(user: $user, unit: $unit, accessToken: $accessToken, refreshToken: $refreshToken, gameOption: $gameOption)';
+  return 'Session.gameJoined(user: $user, unit: $unit, gameOption: $gameOption)';
 }
 
 
@@ -343,9 +265,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $GameJoinedSessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
   factory $GameJoinedSessionCopyWith(GameJoinedSession value, $Res Function(GameJoinedSession) _then) = _$GameJoinedSessionCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
- User user, Unit unit, String accessToken, String refreshToken, WsGameOption gameOption
+ User user, Unit unit, WsGameOption gameOption
 });
 
 
@@ -362,13 +284,11 @@ class _$GameJoinedSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,Object? gameOption = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? gameOption = null,}) {
   return _then(GameJoinedSession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
+as Unit,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
 as WsGameOption,
   ));
 }
@@ -398,18 +318,16 @@ $WsGameOptionCopyWith<$Res> get gameOption {
 
 
 class GameFinishedSession extends Session implements ISessionUser, ISessionUnit, ISessionWS {
-  const GameFinishedSession({required this.user, required this.unit, required this.accessToken, required this.refreshToken, required this.gameOption}): super._();
+  const GameFinishedSession({required this.user, required this.unit, required this.gameOption}): super._();
   
 
  final  User user;
  final  Unit unit;
-@override final  String accessToken;
-@override final  String refreshToken;
  final  WsGameOption gameOption;
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $GameFinishedSessionCopyWith<GameFinishedSession> get copyWith => _$GameFinishedSessionCopyWithImpl<GameFinishedSession>(this, _$identity);
 
@@ -417,16 +335,16 @@ $GameFinishedSessionCopyWith<GameFinishedSession> get copyWith => _$GameFinished
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameFinishedSession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.gameOption, gameOption) || other.gameOption == gameOption));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameFinishedSession&&(identical(other.user, user) || other.user == user)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.gameOption, gameOption) || other.gameOption == gameOption));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,unit,accessToken,refreshToken,gameOption);
+int get hashCode => Object.hash(runtimeType,user,unit,gameOption);
 
 @override
 String toString() {
-  return 'Session.gameFinished(user: $user, unit: $unit, accessToken: $accessToken, refreshToken: $refreshToken, gameOption: $gameOption)';
+  return 'Session.gameFinished(user: $user, unit: $unit, gameOption: $gameOption)';
 }
 
 
@@ -435,9 +353,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $GameFinishedSessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
   factory $GameFinishedSessionCopyWith(GameFinishedSession value, $Res Function(GameFinishedSession) _then) = _$GameFinishedSessionCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
- User user, Unit unit, String accessToken, String refreshToken, WsGameOption gameOption
+ User user, Unit unit, WsGameOption gameOption
 });
 
 
@@ -454,13 +372,11 @@ class _$GameFinishedSessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? accessToken = null,Object? refreshToken = null,Object? gameOption = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? user = null,Object? unit = null,Object? gameOption = null,}) {
   return _then(GameFinishedSession(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
+as Unit,gameOption: null == gameOption ? _self.gameOption : gameOption // ignore: cast_nullable_to_non_nullable
 as WsGameOption,
   ));
 }

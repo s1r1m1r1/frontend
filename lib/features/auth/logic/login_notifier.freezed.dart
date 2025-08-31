@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'login.cubit.dart';
+part of 'login_notifier.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,11 +12,17 @@ part of 'login.cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$LoginState {
+mixin _$LoginState implements DiagnosticableTreeMixin {
 
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'LoginState'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -28,7 +34,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'LoginState()';
 }
 
@@ -45,7 +51,7 @@ $LoginStateCopyWith(LoginState _, $Res Function(LoginState) __);
 /// @nodoc
 
 
-class LoginInitial extends LoginState {
+class LoginInitial extends LoginState with DiagnosticableTreeMixin {
   const LoginInitial(): super._();
   
 
@@ -53,6 +59,12 @@ class LoginInitial extends LoginState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'LoginState.initial'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -64,7 +76,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'LoginState.initial()';
 }
 
@@ -77,7 +89,7 @@ String toString() {
 /// @nodoc
 
 
-class LoginLoading extends LoginState {
+class LoginLoading extends LoginState with DiagnosticableTreeMixin {
   const LoginLoading(): super._();
   
 
@@ -85,6 +97,12 @@ class LoginLoading extends LoginState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'LoginState.loading'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -96,7 +114,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'LoginState.loading()';
 }
 
@@ -109,82 +127,45 @@ String toString() {
 /// @nodoc
 
 
-class LoginSuccess extends LoginState {
-  const LoginSuccess(this.session): super._();
+class LoginSuccess extends LoginState with DiagnosticableTreeMixin {
+  const LoginSuccess(): super._();
   
 
- final  Session session;
-
-/// Create a copy of LoginState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$LoginSuccessCopyWith<LoginSuccess> get copyWith => _$LoginSuccessCopyWithImpl<LoginSuccess>(this, _$identity);
 
 
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'LoginState.success'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess&&(identical(other.session, session) || other.session == session));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,session);
+int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
-  return 'LoginState.success(session: $session)';
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'LoginState.success()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $LoginSuccessCopyWith<$Res> implements $LoginStateCopyWith<$Res> {
-  factory $LoginSuccessCopyWith(LoginSuccess value, $Res Function(LoginSuccess) _then) = _$LoginSuccessCopyWithImpl;
-@useResult
-$Res call({
- Session session
-});
 
 
-$SessionCopyWith<$Res> get session;
-
-}
-/// @nodoc
-class _$LoginSuccessCopyWithImpl<$Res>
-    implements $LoginSuccessCopyWith<$Res> {
-  _$LoginSuccessCopyWithImpl(this._self, this._then);
-
-  final LoginSuccess _self;
-  final $Res Function(LoginSuccess) _then;
-
-/// Create a copy of LoginState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? session = null,}) {
-  return _then(LoginSuccess(
-null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
-as Session,
-  ));
-}
-
-/// Create a copy of LoginState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$SessionCopyWith<$Res> get session {
-  
-  return $SessionCopyWith<$Res>(_self.session, (value) {
-    return _then(_self.copyWith(session: value));
-  });
-}
-}
 
 /// @nodoc
 
 
-class LoginFailure extends LoginState {
+class LoginFailure extends LoginState with DiagnosticableTreeMixin {
   const LoginFailure(this.error): super._();
   
 
@@ -197,6 +178,12 @@ class LoginFailure extends LoginState {
 $LoginFailureCopyWith<LoginFailure> get copyWith => _$LoginFailureCopyWithImpl<LoginFailure>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'LoginState.failure'))
+    ..add(DiagnosticsProperty('error', error));
+}
 
 @override
 bool operator ==(Object other) {
@@ -208,7 +195,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,error);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'LoginState.failure(error: $error)';
 }
 

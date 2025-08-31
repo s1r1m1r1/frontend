@@ -19,26 +19,26 @@ final class _$RegistrationApi extends RegistrationApi {
   final Type definitionType = RegistrationApi;
 
   @override
-  Future<Response<SessionDto>> signup(EmailCredentialDto dto) {
+  Future<Response<TokensDto>> signup(EmailCredentialDto dto) {
     final Uri $url = Uri.parse('/users/signup');
     final $body = dto;
     final Request $request = Request('POST', $url, client.baseUrl, body: $body);
-    return client.send<SessionDto, SessionDto>($request);
+    return client.send<TokensDto, TokensDto>($request);
   }
 
   @override
-  Future<Response<SessionDto>> login(EmailCredentialDto dto) {
+  Future<Response<TokensDto>> login(EmailCredentialDto dto) {
     final Uri $url = Uri.parse('/users/login');
     final $body = dto;
     final Request $request = Request('POST', $url, client.baseUrl, body: $body);
-    return client.send<SessionDto, SessionDto>($request);
+    return client.send<TokensDto, TokensDto>($request);
   }
 
   @override
-  Future<Response<SessionDto>> refresh(RefreshTokenDto dto) {
+  Future<Response<TokensDto>> refresh(RefreshTokenDto dto) {
     final Uri $url = Uri.parse('/users/refresh');
     final $body = dto;
     final Request $request = Request('POST', $url, client.baseUrl, body: $body);
-    return client.send<SessionDto, SessionDto>($request);
+    return client.send<TokensDto, TokensDto>($request);
   }
 }

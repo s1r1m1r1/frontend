@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_routes.dart';
+part of 'routes.dart';
 
 // **************************************************************************
 // GoRouterGenerator
@@ -11,6 +11,7 @@ List<RouteBase> get $appRoutes => [
   $emailPendingRoute,
   $loginRoute,
   $arenaRoute,
+  $gameRoute,
   $signupRoute,
   $wsConnectingRoute,
   $wsStoppedSessionRoute,
@@ -24,28 +25,23 @@ RouteBase get $pendingRoute =>
     GoRouteData.$route(path: '/pending', factory: _$PendingRoute._fromState);
 
 mixin _$PendingRoute on GoRouteData {
-  static PendingRoute _fromState(GoRouterState state) =>
-      PendingRoute($extra: state.extra as Session?);
-
-  PendingRoute get _self => this as PendingRoute;
+  static PendingRoute _fromState(GoRouterState state) => const PendingRoute();
 
   @override
   String get location => GoRouteData.$location('/pending');
 
   @override
-  void go(BuildContext context) => context.go(location, extra: _self.$extra);
+  void go(BuildContext context) => context.go(location);
 
   @override
-  Future<T?> push<T>(BuildContext context) =>
-      context.push<T>(location, extra: _self.$extra);
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
   @override
   void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location, extra: _self.$extra);
+      context.pushReplacement(location);
 
   @override
-  void replace(BuildContext context) =>
-      context.replace(location, extra: _self.$extra);
+  void replace(BuildContext context) => context.replace(location);
 }
 
 RouteBase get $emailPendingRoute => GoRouteData.$route(
@@ -105,6 +101,29 @@ mixin _$ArenaRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/arena');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $gameRoute =>
+    GoRouteData.$route(path: '/game', factory: _$GameRoute._fromState);
+
+mixin _$GameRoute on GoRouteData {
+  static GameRoute _fromState(GoRouterState state) => const GameRoute();
+
+  @override
+  String get location => GoRouteData.$location('/game');
 
   @override
   void go(BuildContext context) => context.go(location);

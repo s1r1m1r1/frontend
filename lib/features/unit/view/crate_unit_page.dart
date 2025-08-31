@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/app/router/user_routes.dart';
+import 'package:frontend/app/router/routes.dart';
 import 'package:frontend/features/unit/logic/create_unit_bloc.dart';
 
 import '../../../inject/get_it.dart';

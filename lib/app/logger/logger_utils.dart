@@ -20,12 +20,12 @@ void watchRecords(LogRecord rec) {
 
 extension LevelExt on Level {
   String get color => switch (this) {
-        Level.ALL => '${cyan}ALL$reset',
-        Level.FINE || Level.FINER || Level.FINEST => '${cyan}F$reset',
-        Level.INFO => '${green}I$reset',
-        Level.WARNING => '${red}W$reset',
-        Level.SEVERE || Level.SHOUT => '${red}S$reset',
-        Level.CONFIG => '${yellow}Config$reset',
-        Level.OFF || _ => '',
-      };
+    Level.ALL => '${cyan}ALL$reset',
+    Level.FINE || Level.FINER || Level.FINEST => '${cyan}F$reset',
+    Level.INFO => '${green}I$reset',
+    Level.WARNING => '${red}W$reset',
+    Level.SEVERE || Level.SHOUT => '${red}S$reset',
+    Level.CONFIG => '${yellow}Config$reset',
+    Level.OFF || _ => '',
+  };
 }
