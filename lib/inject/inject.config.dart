@@ -10,10 +10,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:chopper/chopper.dart' as _i31;
-import 'package:frontend/bloc/user/user_bloc.dart' as _i990;
 import 'package:frontend/core/db/db_client.dart' as _i522;
-import 'package:frontend/core/db/db_modulte.dart' as _i939;
+import 'package:frontend/core/db/db_module.dart' as _i940;
 import 'package:frontend/core/network/authenticator.dart' as _i372;
+import 'package:frontend/core/network/chopper_interceptor.dart' as _i177;
 import 'package:frontend/core/network/chopper_module.dart' as _i1007;
 import 'package:frontend/core/network/registration_api.dart' as _i199;
 import 'package:frontend/core/network/with_token_api.dart' as _i1054;
@@ -24,24 +24,26 @@ import 'package:frontend/features/auth/domain/auth_repository.dart' as _i887;
 import 'package:frontend/features/auth/domain/token_repository.dart' as _i960;
 import 'package:frontend/features/auth/logic/login_notifier.dart' as _i34;
 import 'package:frontend/features/auth/logic/session_notifier.dart' as _i943;
-import 'package:frontend/features/auth/logic/signup.bloc.dart' as _i415;
+import 'package:frontend/features/auth/logic/signup_notifier.dart' as _i368;
 import 'package:frontend/features/auth/logic/token_notifier.dart' as _i1036;
 import 'package:frontend/features/menu/domain/arena_repository.dart' as _i325;
 import 'package:frontend/features/menu/domain/main_chat_repository.dart'
     as _i346;
 import 'package:frontend/features/menu/logic/arena_board_notifier.dart'
     as _i969;
-import 'package:frontend/features/menu/logic/chat_member.bloc.dart' as _i326;
+import 'package:frontend/features/menu/logic/chat_member_notifier.dart'
+    as _i993;
 import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart'
     as _i871;
-import 'package:frontend/features/menu/logic/letters.bloc.dart' as _i64;
-import 'package:frontend/features/menu/logic/ws_connection_cubit.dart' as _i827;
-import 'package:frontend/features/todo/domain/todo_repository.dart' as _i739;
-import 'package:frontend/features/todo/view/bloc/todo_bloc.dart' as _i955;
+import 'package:frontend/features/menu/logic/letters_notifier.dart' as _i696;
+import 'package:frontend/features/menu/logic/ws_connection_notifier.dart'
+    as _i869;
 import 'package:frontend/features/unit/domain/unit_repository.dart' as _i92;
-import 'package:frontend/features/unit/logic/create_unit_bloc.dart' as _i712;
-import 'package:frontend/features/unit/logic/selected_unit.bloc.dart' as _i557;
-import 'package:frontend/features/unit/logic/unit_bloc.dart' as _i199;
+import 'package:frontend/features/unit/logic/create_unit_notifier.dart'
+    as _i538;
+import 'package:frontend/features/unit/logic/selected_unit_notifier.dart'
+    as _i206;
+import 'package:frontend/features/unit/logic/unit_notifier.dart' as _i388;
 import 'package:frontend/inject/app_config.dart' as _i716;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -61,7 +63,6 @@ extension GetItInjectableX on _i174.GetIt {
     final appConfigModule = _$AppConfigModule();
     final chopperModule = _$ChopperModule();
     final wsSocketModule = _$WsSocketModule();
-    gh.factory<_i990.UserBloc>(() => _i990.UserBloc());
     gh.lazySingleton<_i848.WsRepository>(() => _i848.WsRepository());
     gh.lazySingleton<_i522.DbClient>(() => dbClientModule.dbClient);
     gh.lazySingleton<_i346.MainChatRepository>(
@@ -73,29 +74,29 @@ extension GetItInjectableX on _i174.GetIt {
       () => appConfigModule.appConfigDev,
       registerFor: {_dev},
     );
-    gh.factory<_i969.ArenaBoardNotifier>(
-      () => _i969.ArenaBoardNotifier(gh<_i848.WsRepository>()),
-    );
     gh.factory<_i871.BroadcastInfoNotifier>(
       () => _i871.BroadcastInfoNotifier(gh<_i848.WsRepository>()),
+    );
+    gh.factory<_i969.ArenaBoardNotifier>(
+      () => _i969.ArenaBoardNotifier(gh<_i848.WsRepository>()),
     );
     gh.lazySingleton<_i684.WsManager>(
       () => _i684.WsManager(gh<_i848.WsRepository>()),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i326.ChatMemberBloc>(
-      () => _i326.ChatMemberBloc(gh<_i848.WsRepository>()),
+    gh.lazySingleton<_i993.ChatMemberNotifier>(
+      () => _i993.ChatMemberNotifier(gh<_i848.WsRepository>()),
     );
-    gh.factoryParam<_i64.LettersBloc, int, int>(
+    gh.factoryParam<_i696.LettersNotifier, int, int>(
       (_roomId, _senderId) =>
-          _i64.LettersBloc(gh<_i848.WsRepository>(), _roomId, _senderId),
+          _i696.LettersNotifier(gh<_i848.WsRepository>(), _roomId, _senderId),
     );
     gh.lazySingleton<_i716.AppConfig>(
       () => appConfigModule.appConfigProd,
       registerFor: {_prod},
     );
-    gh.factory<_i827.WsConnectionCubit>(
-      () => _i827.WsConnectionCubit(gh<_i684.WsManager>()),
+    gh.factory<_i869.WsConnectionNotifier>(
+      () => _i869.WsConnectionNotifier(gh<_i684.WsManager>()),
     );
     gh.lazySingleton<_i31.ChopperClient>(
       () => chopperModule.regClient(gh<_i716.AppConfig>()),
@@ -112,6 +113,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i199.RegistrationApi>(),
       ),
     );
+    gh.factory<_i177.BearerInterceptor>(
+      () => _i177.BearerInterceptor(gh<_i960.TokenRepository>()),
+    );
     gh.factory<_i1036.TokenNotifier>(
       () => _i1036.TokenNotifier(gh<_i960.TokenRepository>()),
     );
@@ -121,6 +125,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i31.ChopperClient>(
       () => chopperModule.chopperClient(
         gh<_i372.TokenAuthenticator>(),
+        gh<_i177.BearerInterceptor>(),
         gh<_i716.AppConfig>(),
       ),
       instanceName: 'withToken',
@@ -130,18 +135,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i31.ChopperClient>(instanceName: 'withToken'),
       ),
     );
-    gh.lazySingleton<_i739.TodoRepository>(
-      () => _i739.TodoRepositoryImpl(gh<_i1054.WithTokenApi>()),
-    );
     gh.lazySingleton<_i92.UnitRepository>(
       () => _i92.UnitRepository(gh<_i1054.WithTokenApi>()),
     );
-    gh.factory<_i199.UnitBloc>(() => _i199.UnitBloc(gh<_i92.UnitRepository>()));
-    gh.factory<_i557.SelectedUnitBloc>(
-      () => _i557.SelectedUnitBloc(gh<_i92.UnitRepository>()),
+    gh.factory<_i206.SelectedUnitNotifier>(
+      () => _i206.SelectedUnitNotifier(gh<_i92.UnitRepository>()),
     );
-    gh.factory<_i955.TodoBloc>(
-      () => _i955.TodoBloc(gh<_i739.TodoRepository>()),
+    gh.factory<_i388.UnitNotifier>(
+      () => _i388.UnitNotifier(gh<_i92.UnitRepository>()),
     );
     gh.lazySingleton<_i887.AuthRepository>(
       () => _i887.AuthRepository(
@@ -149,8 +150,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1054.WithTokenApi>(),
       ),
     );
-    gh.factory<_i712.CreateUnitBloc>(
-      () => _i712.CreateUnitBloc(gh<_i92.UnitRepository>()),
+    gh.factory<_i538.CreateUnitNotifier>(
+      () => _i538.CreateUnitNotifier(gh<_i92.UnitRepository>()),
     );
     gh.factory<_i948.WebSocket>(
       () =>
@@ -163,8 +164,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i848.WsRepository>(),
       ),
     );
-    gh.factory<_i415.SignupBloc>(
-      () => _i415.SignupBloc(
+    gh.factory<_i368.SignupNotifier>(
+      () => _i368.SignupNotifier(
         gh<_i887.AuthRepository>(),
         gh<_i960.TokenRepository>(),
       ),
@@ -179,7 +180,7 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$DbClientModule extends _i939.DbClientModule {}
+class _$DbClientModule extends _i940.DbClientModule {}
 
 class _$AppConfigModule extends _i716.AppConfigModule {}
 

@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/core/network/ws_repository.dart';
+import 'package:frontend/core/notifier/log_notifier.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:sha_red/sha_red.dart';
 part 'arena_board_notifier.freezed.dart';
 
 @injectable
-class ArenaBoardNotifier extends ValueNotifier<ArenaBoardState> {
+class ArenaBoardNotifier extends LogNotifier<ArenaBoardState> {
   final WsRepository _wsRepository;
   ArenaBoardNotifier(this._wsRepository) : super(ArenaBoardState(edicts: []));
   StreamSubscription? _sub;

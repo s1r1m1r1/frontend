@@ -5,24 +5,19 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/app/logger/log_colors.dart';
 import 'package:frontend/features/auth/domain/token_repository.dart';
-import 'package:frontend/inject/get_it.dart';
+import 'package:injectable/injectable.dart';
 
-import '../../features/auth/logic/session.bloc.dart';
-
-// Import your logger colors if needed
-// import '../../app/logger/log_colors.dart';
-
+@injectable
 class BearerInterceptor implements Interceptor {
-  TokenRepository? _repository;
-  TokenRepository get repository => _repository ??= getIt<TokenRepository>();
+  final TokenRepository _repository;
 
-  BearerInterceptor();
+  const BearerInterceptor(this._repository);
 
   @override
   FutureOr<Response<BodyType>> intercept<BodyType>(
     Chain<BodyType> chain,
   ) async {
-    final token = repository.accessNtf.value;
+    final token = _repository.accessNtf.value;
 
     final request = applyHeader(
       chain.request,

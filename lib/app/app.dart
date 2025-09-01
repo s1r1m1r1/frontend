@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:frontend/app/router/go_router.dart';
-import 'package:frontend/features/auth/logic/session.bloc.dart';
 import 'package:frontend/features/auth/logic/session_notifier.dart';
 import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
 import 'package:frontend/inject/get_it.dart';

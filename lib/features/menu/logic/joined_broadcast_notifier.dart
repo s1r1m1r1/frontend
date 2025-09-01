@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/core/notifier/log_notifier.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sha_red/sha_red.dart';
@@ -10,7 +11,7 @@ import '../../../core/network/ws_repository.dart';
 part 'joined_broadcast_notifier.freezed.dart';
 
 @injectable
-class BroadcastInfoNotifier extends ValueNotifier<JoinedBroadcastState> {
+class BroadcastInfoNotifier extends LogNotifier<JoinedBroadcastState> {
   final WsRepository _wsRepository;
   BroadcastInfoNotifier(this._wsRepository) : super(JoinedBroadcastState([]));
 

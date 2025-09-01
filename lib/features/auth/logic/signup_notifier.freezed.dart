@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'signup.bloc.dart';
+part of 'signup_notifier.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -11,137 +11,6 @@ part of 'signup.bloc.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-/// @nodoc
-mixin _$SignupEvent {
-
- String get email; String get password;
-/// Create a copy of SignupEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SignupEventCopyWith<SignupEvent> get copyWith => _$SignupEventCopyWithImpl<SignupEvent>(this as SignupEvent, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SignupEvent&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,email,password);
-
-@override
-String toString() {
-  return 'SignupEvent(email: $email, password: $password)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $SignupEventCopyWith<$Res>  {
-  factory $SignupEventCopyWith(SignupEvent value, $Res Function(SignupEvent) _then) = _$SignupEventCopyWithImpl;
-@useResult
-$Res call({
- String email, String password
-});
-
-
-
-
-}
-/// @nodoc
-class _$SignupEventCopyWithImpl<$Res>
-    implements $SignupEventCopyWith<$Res> {
-  _$SignupEventCopyWithImpl(this._self, this._then);
-
-  final SignupEvent _self;
-  final $Res Function(SignupEvent) _then;
-
-/// Create a copy of SignupEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,}) {
-  return _then(_self.copyWith(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-}
-
-
-
-/// @nodoc
-
-
-class _SubmitPressedSE implements SignupEvent {
-  const _SubmitPressedSE({required this.email, required this.password});
-  
-
-@override final  String email;
-@override final  String password;
-
-/// Create a copy of SignupEvent
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$SubmitPressedSECopyWith<_SubmitPressedSE> get copyWith => __$SubmitPressedSECopyWithImpl<_SubmitPressedSE>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubmitPressedSE&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,email,password);
-
-@override
-String toString() {
-  return 'SignupEvent.submitPressed(email: $email, password: $password)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$SubmitPressedSECopyWith<$Res> implements $SignupEventCopyWith<$Res> {
-  factory _$SubmitPressedSECopyWith(_SubmitPressedSE value, $Res Function(_SubmitPressedSE) _then) = __$SubmitPressedSECopyWithImpl;
-@override @useResult
-$Res call({
- String email, String password
-});
-
-
-
-
-}
-/// @nodoc
-class __$SubmitPressedSECopyWithImpl<$Res>
-    implements _$SubmitPressedSECopyWith<$Res> {
-  __$SubmitPressedSECopyWithImpl(this._self, this._then);
-
-  final _SubmitPressedSE _self;
-  final $Res Function(_SubmitPressedSE) _then;
-
-/// Create a copy of SignupEvent
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,}) {
-  return _then(_SubmitPressedSE(
-email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
 /// @nodoc
 mixin _$SignupState {
 
