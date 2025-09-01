@@ -1,4 +1,6 @@
 import 'package:frontend/app/router/routes.dart';
+import 'package:frontend/features/auth/logic/session_notifier.dart';
+import 'package:frontend/inject/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 GoRouter goRouter() {
@@ -6,7 +8,7 @@ GoRouter goRouter() {
     debugLogDiagnostics: true,
     routes: $appRoutes,
     initialLocation: PendingRoute.path,
-    // refreshListenable: getIt<AuthNotifier>()..subscribe(),
+    refreshListenable: getIt<SessionNotifier>(),
     redirect: (context, state) {
       final path = state.uri.path;
       // final value = getIt<AuthNotifier>().value;

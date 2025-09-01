@@ -15,7 +15,6 @@ List<RouteBase> get $appRoutes => [
   $signupRoute,
   $wsConnectingRoute,
   $wsStoppedSessionRoute,
-  $todoListRoute,
   $menuRoute,
   $createUnitRoute,
   $unitRoute,
@@ -199,29 +198,6 @@ mixin _$WsStoppedSessionRoute on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/ws-stopped-session');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
-RouteBase get $todoListRoute =>
-    GoRouteData.$route(path: '/todo-list', factory: _$TodoListRoute._fromState);
-
-mixin _$TodoListRoute on GoRouteData {
-  static TodoListRoute _fromState(GoRouterState state) => const TodoListRoute();
-
-  @override
-  String get location => GoRouteData.$location('/todo-list');
 
   @override
   void go(BuildContext context) => context.go(location);

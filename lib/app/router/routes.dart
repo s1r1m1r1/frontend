@@ -5,7 +5,6 @@ import 'package:frontend/features/menu/view/game_page.dart';
 import 'package:frontend/features/menu/view/ws_connecting_page.dart';
 import 'package:frontend/features/menu/view/ws_was_stopped_session_page.dart';
 import 'package:frontend/features/unit/view/crate_unit_page.dart';
-import 'package:frontend/features/todo/view/page/todo_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/view/pages/email_pending_page.dart';
@@ -86,15 +85,6 @@ class WsStoppedSessionRoute extends GoRouteData with _$WsStoppedSessionRoute {
 
   @override
   Widget build(_, _) => WsStoppedSessionPage();
-}
-
-@TypedGoRoute<TodoListRoute>(path: TodoListRoute.path)
-class TodoListRoute extends GoRouteData with _$TodoListRoute {
-  static const path = '/todo-list';
-  const TodoListRoute();
-
-  @override
-  Widget build(_, _) => TodoListScreen();
 }
 
 @TypedGoRoute<MenuRoute>(path: MenuRoute.path)

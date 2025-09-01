@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/router/routes.dart';
 import 'package:frontend/features/auth/domain/session.dart';
 import 'package:frontend/features/auth/logic/session_notifier.dart';
-import 'package:frontend/features/unit/logic/selected_unit.bloc.dart';
+import 'package:frontend/features/unit/logic/selected_unit_notifier.dart';
 import 'package:frontend/inject/get_it.dart';
 import 'package:provider/provider.dart';
 
@@ -21,10 +20,8 @@ class PendingPage extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: getIt<SessionNotifier>()..readSession(),
         ),
-
-        BlocProvider(
-          create: (_) =>
-              getIt<SelectedUnitBloc>()..add(SelectedUnitEvent.load()),
+        ChangeNotifierProvider(
+          create: (_) => getIt<SelectedUnitNotifier>()..load(),
         ),
       ],
       child: _PendingView(),
@@ -107,9 +104,9 @@ class _PendingViewState extends State<_PendingView> {
           ),
 
           SizedBox(height: 32),
-          BlocBuilder<SelectedUnitBloc, SelectedUnitState>(
-            builder: (context, state) {
-              return Center(child: Text('unitId: //${state.unitId}'));
+          Consumer<SelectedUnitNotifier>(
+            builder: (context, ntf, _) {
+              return Center(child: Text('unitId: //${ntf.value.unitId}'));
             },
           ),
           SizedBox(height: 32),

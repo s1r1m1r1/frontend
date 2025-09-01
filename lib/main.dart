@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/app.dart';
-import 'package:frontend/app/app_bloc_observer.dart';
 import 'package:frontend/core/notifier/log_notifier.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
@@ -15,7 +13,6 @@ import 'inject/inject.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configInjector(getIt, env: prod.name);
-  Bloc.observer = MyBlocObserver();
   LogNotifier.observer = AppValueNotifierObserver();
   hierarchicalLoggingEnabled = true;
   Logger.root.onRecord.listen(watchRecords);

@@ -1,16 +1,12 @@
 // Assuming you have a theme with these colors
-import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/app/router/routes.dart';
-import 'package:frontend/core/network/ws_manager.dart';
 import 'package:frontend/features/auth/domain/session.dart';
-import 'package:frontend/features/auth/logic/session.bloc.dart';
 import 'package:frontend/features/auth/logic/session_notifier.dart';
 import 'package:frontend/features/menu/logic/joined_broadcast_notifier.dart';
-import 'package:frontend/features/menu/logic/letters.bloc.dart';
-import 'package:frontend/features/menu/logic/chat_member.bloc.dart';
-import 'package:frontend/features/menu/logic/ws_connection_cubit.dart';
+import 'package:frontend/features/menu/logic/letters_notifier.dart';
+import 'package:frontend/features/menu/logic/chat_member_notifier.dart';
+import 'package:frontend/features/menu/logic/ws_connection_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 
@@ -26,42 +22,27 @@ class MenuPage extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: getIt<SessionNotifier>()),
-        BlocProvider.value(
-          value: getIt<ChatMemberBloc>()..add(ChatMemberEvent.subscribe()),
+        ChangeNotifierProvider.value(
+          value: getIt<ChatMemberNotifier>()..subscribe(),
         ),
 
-        BlocProvider(
+        ChangeNotifierProvider(
           lazy: false,
           create: (_) =>
-              GetIt.I.get<LettersBloc>(param1: roomId, param2: senderId)
-                ..add(LettersEvent.subscribed())
-                ..add(LettersEvent.joinRoom()),
+              GetIt.I.get<LettersNotifier>(param1: roomId, param2: senderId)
+                ..subscribed()
+                ..joinRoom(),
         ),
 
         // ..add(LettersEvent.joinRoom(roomId)
         // ),
-        BlocProvider(
+        ChangeNotifierProvider(
           lazy: false,
-          create: (_) => getIt<WsConnectionCubit>()..listenConnection(),
+          create: (_) => getIt<WsConnectionNotifier>()..listenConnection(),
         ),
       ],
-      child: BlocListener<WsConnectionCubit, WsConnectionStatus>(
-        listener: (context, status) {
-          switch (status) {
-            case WsConnectionStatus.initial:
-            case WsConnectionStatus.connecting:
-            case WsConnectionStatus.reconnecting:
-              break;
-            case WsConnectionStatus.reconnected:
-            case WsConnectionStatus.connected:
-              break;
-            case WsConnectionStatus.disconnecting:
-            case WsConnectionStatus.disconnected:
-              break;
-          }
-        },
-        child: const MenuView(),
-      ),
+
+      child: const MenuView(),
     );
   }
 }
@@ -86,8 +67,9 @@ class MenuView extends StatelessWidget {
                   // Placeholder for the top-left icon
                   Container(width: 30, height: 30, color: accentColor),
                   const Spacer(),
-                  BlocBuilder<ChatMemberBloc, ChatMemberState>(
-                    builder: (context, state) {
+                  Consumer<ChatMemberNotifier>(
+                    builder: (context, ntf, _) {
+                      final state = ntf.value;
                       switch (state) {
                         case InitialState():
                           return Text('-0-');
@@ -96,11 +78,12 @@ class MenuView extends StatelessWidget {
                       }
                     },
                   ),
+
                   const Spacer(),
-                  BlocBuilder<WsConnectionCubit, WsConnectionStatus>(
-                    builder: (context, state) {
+                  Consumer<WsConnectionNotifier>(
+                    builder: (context, ntf, _) {
                       return Text(
-                        state.name.toString(),
+                        ntf.value.name.toString(),
                         style: TextStyle(fontSize: 8),
                       );
                     },
@@ -274,9 +257,7 @@ class _ChatViewState extends State<_ChatView> {
                 onPressed: () {
                   final message = _controller.text;
 
-                  context.read<LettersBloc>().add(
-                    LettersEvent.newPressed(message),
-                  );
+                  context.read<LettersNotifier>().newPressed(message);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
@@ -316,8 +297,9 @@ class _ChatBody extends StatelessWidget {
                 } else {
                   senderId = -1;
                 }
-                return BlocBuilder<LettersBloc, LettersState>(
-                  builder: (context, state) {
+                return Consumer<LettersNotifier>(
+                  builder: (context, ntf, _) {
+                    final state = ntf.value;
                     if (state.letters.isEmpty) {
                       return const Center(child: Text('No letters'));
                     }
@@ -337,9 +319,9 @@ class _ChatBody extends StatelessWidget {
                                 ? IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {
-                                      context.read<LettersBloc>().add(
-                                        LettersEvent.deletePressed(letter.id),
-                                      );
+                                      context
+                                          .read<LettersNotifier>()
+                                          .deletePressed(letter.id);
                                     },
                                   )
                                 : null,
@@ -356,8 +338,9 @@ class _ChatBody extends StatelessWidget {
           Expanded(
             child: DefaultTextStyle(
               style: TextStyle(color: Colors.white70),
-              child: BlocBuilder<ChatMemberBloc, ChatMemberState>(
-                builder: (context, state) {
+              child: Consumer<ChatMemberNotifier>(
+                builder: (context, ntf, _) {
+                  final state = ntf.value;
                   switch (state) {
                     case InitialState():
                       return const Center(child: Text('Initial State'));

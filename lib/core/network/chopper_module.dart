@@ -15,13 +15,14 @@ abstract class ChopperModule {
   @lazySingleton
   ChopperClient chopperClient(
     TokenAuthenticator authenticator,
+    BearerInterceptor bearerInterceptor,
     AppConfig appConfig,
   ) {
     return ChopperClient(
       baseUrl: Uri.parse(appConfig.httpBaseUrl),
       services: [WithTokenApi.create()],
       authenticator: authenticator,
-      interceptors: [BearerInterceptor(), LoggerInterceptor()],
+      interceptors: [bearerInterceptor, LoggerInterceptor()],
       converter: JsonSerializableConverter({
         ListUnitDto: ListUnitDto.fromJsonFactory,
         UnitDto: UnitDto.fromJsonFactory,
