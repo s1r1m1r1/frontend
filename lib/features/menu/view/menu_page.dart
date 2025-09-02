@@ -363,7 +363,7 @@ class _ChatBody extends StatelessWidget {
                           final member = state.memberIds[index];
                           return ListTile(
                             title: Text(
-                              'id:${member.unitId} , name: ${member.name}',
+                              'id:${member.unitId}, name: ${member.name},bot: ${member.isBot}',
                               style: TextStyle(color: Colors.white),
                             ),
                           );

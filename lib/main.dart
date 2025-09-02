@@ -13,8 +13,8 @@ import 'inject/inject.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configInjector(getIt, env: prod.name);
-  LogNotifier.observer = AppValueNotifierObserver();
   hierarchicalLoggingEnabled = true;
+  LogNotifier.observer = AppValueNotifierObserver();
   Logger.root.onRecord.listen(watchRecords);
 
   PlatformDispatcher.instance.onError = (error, stack) {
