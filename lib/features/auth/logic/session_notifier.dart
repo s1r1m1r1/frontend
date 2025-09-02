@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/core/network/ws_repository.dart';
 import 'package:frontend/core/notifier/log_notifier.dart';
 import 'package:frontend/features/auth/domain/session.dart';
@@ -14,13 +12,9 @@ import 'package:sha_red/sha_red.dart';
 import '../../unit/domain/unit.dart';
 import '../domain/auth_repository.dart';
 import '../domain/user.dart';
-part 'session_notifier.freezed.dart';
-
-// part 'session.event.dart';
-// part 'session.bloc.freezed.dart';
 
 @lazySingleton
-class SessionNotifier extends LogNotifier<SessionState> {
+class SessionNotifier extends LogNotifier<Session> {
   final AuthRepository _authRepository;
   final TokenRepository _tokenRepository;
   final WsRepository _wsRepository;
@@ -29,24 +23,24 @@ class SessionNotifier extends LogNotifier<SessionState> {
     this._authRepository,
     this._tokenRepository,
     this._wsRepository,
-  ) : super(const SessionState());
+  ) : super(const Session.initial());
 
   FutureOr<void> readSession() async {
     final token = await _tokenRepository.readAccessToken();
     final refresh = await _tokenRepository.readRefreshToken();
     if (refresh == null || token == null) {
-      value = SessionState.logout;
+      value = const Session.logout(SessionError.expired);
       return;
     }
     _tokenRepository.accessNtf.value = token;
     _tokenRepository.refreshNtf.value = refresh;
-    value = SessionState.has(Session.pending());
+    value = Session.pending();
     final session = await _authRepository.checkToken(token);
     if (session == null) {
-      value = SessionState.logout;
+      value = const Session.logout(SessionError.notFound);
       return;
     }
-    value = SessionState.has(session);
+    value = session;
     // add(SessionEvent.updateSession(session: pending));
   }
 
@@ -60,7 +54,7 @@ class SessionNotifier extends LogNotifier<SessionState> {
           switch (error) {
             case WsAuthError.expiredToken:
               final refresh = _tokenRepository.refreshNtf.value;
-              if (refresh == null) value = SessionState.logout;
+              if (refresh == null) value = Session.logout(SessionError.expired);
               final record = await _authRepository.fetchRefreshToken(refresh!);
               if (record != null) {
                 _tokenRepository.putAccessToken(record.token);
@@ -81,55 +75,48 @@ class SessionNotifier extends LogNotifier<SessionState> {
               break;
             // stopped by other new session enter
             case WsAuthError.stoppedByAnotherSession:
+              if (value is WsSession) {
+                value = (value as WsSession).copyWith(
+                  status: WSSessionStatus.disconnectedByAnother,
+                );
+              } else {
+                value = Session.logout(SessionError.expired);
+              }
               break;
             case WsAuthError.sessionClosed:
               break;
           }
         case JoinedServerTC(:final mainRoomId, :final user, :final unit):
-          final newSession = Session.gameJoined(
+          final newSession = Session.ws(
             gameOption: WsGameOption(mainRoomId: mainRoomId),
             user: User.fromDto(user),
             unit: Unit.fromDto(unit),
+            status: WSSessionStatus.connected,
           );
-          value = SessionState.has(newSession);
+          value = newSession;
       }
     });
   }
 
   void joinWs(String token) {
-    _wsRepository.toServer(ToServer.withToken(token));
-    value = value.copyWith(status: SessionStateStatus.connecting);
-    return;
+    if (value is WsSession) {
+      _wsRepository.toServer(ToServer.withToken(token));
+      value = (value as WsSession).copyWith(status: WSSessionStatus.connecting);
+    }
+  }
+
+  Future<void> logout() async {
+    _tokenRepository.accessNtf.value = null;
+    _tokenRepository.refreshNtf.value = null;
+    await _tokenRepository.deleteAccessToken();
+    await _tokenRepository.deleteRefreshToken();
+    _wsRepository.toServer(ToServer.disconnect());
+    value = const Session.logout(SessionError.expired);
   }
 
   @override
   Future<void> dispose() async {
+    _sub?.cancel();
     return super.dispose();
   }
-}
-
-enum SessionStateStatus { initial, updating, connecting, idle, expired }
-
-@freezed
-sealed class SessionState with _$SessionState {
-  const SessionState._();
-  const factory SessionState({
-    @Default(SessionStateStatus.initial) SessionStateStatus status,
-    Session? session,
-    String? errorMessage,
-  }) = _SessionState;
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
-  //-------------------------------------------------------------------------
-  static SessionState has(Session session) => _SessionState(
-    session: session,
-    status: SessionStateStatus.idle,
-    errorMessage: null,
-  );
-
-  static const logout = _SessionState(
-    status: SessionStateStatus.expired,
-    session: null,
-    errorMessage: null,
-  );
 }

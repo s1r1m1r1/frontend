@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/app/router/routes.dart';
 import 'package:frontend/features/auth/domain/session.dart';
+import 'package:frontend/features/auth/domain/ws_game_option.dart';
 import 'package:frontend/features/auth/logic/session_notifier.dart';
 import 'package:frontend/features/unit/logic/selected_unit_notifier.dart';
 import 'package:frontend/inject/get_it.dart';
@@ -43,16 +42,11 @@ class _PendingViewState extends State<_PendingView> {
     _ntf.addListener(_onState);
   }
 
-  StreamSubscription? _sub;
   void _onState() {
-    final state = _ntf.value;
-    if (state.status == SessionStateStatus.expired) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        LoginRoute().go(context);
-      });
-    }
-    switch (state.session) {
-      case null:
+    final session = _ntf.value;
+
+    switch (session) {
+      case LogoutSession():
         WidgetsBinding.instance.addPostFrameCallback((_) {
           LoginRoute().go(context);
         });
@@ -64,20 +58,20 @@ class _PendingViewState extends State<_PendingView> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           UnitRoute().go(context);
         });
-      case GameReadySession():
+      case WsSession(status: WSSessionStatus.ready):
         WidgetsBinding.instance.addPostFrameCallback((_) {
           WsConnectingRoute().go(context);
         });
-      case GameJoinedSession(:final gameOption, :final unit):
+      case WsSession(
+        status: WSSessionStatus.connected,
+        gameOption: WsGameOption(:final mainRoomId),
+      ):
         debugPrint('GAME READY go ws');
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          MenuRoute(
-            roomId: gameOption.mainRoomId,
-            senderId: unit.id,
-          ).go(context);
+          MenuRoute(roomId: mainRoomId, senderId: session.unit.id).go(context);
         });
 
-      case GameFinishedSession():
+      default:
         break;
     }
   }

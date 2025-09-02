@@ -65,7 +65,15 @@ class MenuView extends StatelessWidget {
               child: Row(
                 children: [
                   // Placeholder for the top-left icon
-                  Container(width: 30, height: 30, color: accentColor),
+                  Container(
+                    color: accentColor,
+                    child: IconButton(
+                      icon: Icon(Icons.exit_to_app, color: Colors.black),
+                      onPressed: () {
+                        context.read<SessionNotifier>().logout();
+                      },
+                    ),
+                  ),
                   const Spacer(),
                   Consumer<ChatMemberNotifier>(
                     builder: (context, ntf, _) {
@@ -292,7 +300,7 @@ class _ChatBody extends StatelessWidget {
             child: Consumer<SessionNotifier>(
               builder: (context, ntf, _) {
                 final int senderId;
-                if (ntf.value.session case ISessionUnit(:final unit)) {
+                if (ntf.value case WsSession(:final unit)) {
                   senderId = unit.id;
                 } else {
                   senderId = -1;

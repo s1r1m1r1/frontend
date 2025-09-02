@@ -31,9 +31,12 @@ class App extends StatelessWidget {
             ChangeNotifierProvider.value(
               value: GetIt.I.get<SessionNotifier>()..subscribeWs(),
             ),
-            // BlocProvider(create: (_) => SubjectBloc()),
           ],
-          child: _AppView(goRouter()),
+          child: Builder(
+            builder: (context) {
+              return _AppView(goRouter(context));
+            },
+          ),
         ),
       ],
     );

@@ -15,7 +15,7 @@ void watchRecords(LogRecord rec) {
     // force reset level logger
     // Logger(Name.loggerName).level = Level.ALL;
   }
-  debugPrint('\n${rec.level.color}:${rec.loggerName}:${rec.message}');
+  debugPrint('\n${rec.level.color}:${rec.message}');
 }
 
 extension LevelExt on Level {
