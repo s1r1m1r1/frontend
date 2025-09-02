@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/auth/logic/session_notifier.dart';
+import 'package:frontend/features/auth/logic/token_notifier.dart';
+import 'package:provider/provider.dart';
 
 class WsStoppedSessionPage extends StatelessWidget {
   const WsStoppedSessionPage({super.key});
@@ -25,9 +28,9 @@ class _WsStoppedSessionView extends StatelessWidget {
               SizedBox(height: 10),
               Text('Please re-login if you wish to continue.'),
               TextButton(
-                child: const Text('Re-login'),
-                onPressed: () {
-                  // context.read<LogoutCubit>().logout();
+                child: Text('Re-login'),
+                onPressed: () async {
+                  await context.read<SessionNotifier>().logout();
                 },
               ),
               Spacer(),

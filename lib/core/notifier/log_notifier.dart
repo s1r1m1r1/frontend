@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:frontend/app/logger/log_colors.dart';
 import 'package:logging/logging.dart';
 
 class LogNotifier<T> extends ValueNotifier<T> {
@@ -8,12 +9,12 @@ class LogNotifier<T> extends ValueNotifier<T> {
   }
 
   void log(String message) {
-    observer?.log(this, 'log');
+    observer?.log(this, message);
   }
 
   @override
   void notifyListeners() {
-    observer?.onState(this, value);
+    observer?.onState(this);
     super.notifyListeners();
   }
 
@@ -34,32 +35,42 @@ class AppValueNotifierObserver extends ValueNotifierObserver {
   final _log = Logger(loggerName)..level = Level.ALL;
   @override
   void onCreate(ValueNotifier notifier) {
-    _log.info('onCreate: $notifier');
+    _log.info('onCreate: ${notifier.runtimeType}');
     super.onCreate(notifier);
   }
 
   @override
   void onError(ValueNotifier notifier, Object error, StackTrace stackTrace) {
-    _log.info('onError: $notifier, $error, $stackTrace');
+    _log.info(
+      '$red${notifier.runtimeType}$reset\n'
+      'error:$error\n'
+      'stackTrace:$stackTrace',
+    );
     super.onError(notifier, error, stackTrace);
   }
 
   @override
   void log(ValueNotifier notifier, String message) {
-    _log.info('log: $notifier, $message');
+    _log.info(
+      '{notifier.runtimeType}:\n'
+      '$message',
+    );
     super.log(notifier, message);
   }
 
   @override
   void onDispose(ValueNotifier notifier) {
-    _log.info('onDispose: $notifier');
+    _log.info('onDispose: ${notifier.runtimeType}');
     super.onDispose(notifier);
   }
 
   @override
-  void onState(ValueNotifier notifier, Object? message) {
-    _log.info('onState: $notifier, $message');
-    super.onState(notifier, message);
+  void onState(ValueNotifier notifier) {
+    _log.info(
+      'notifyListeners: ${notifier.runtimeType}:\n'
+      'value ${notifier.value}',
+    );
+    super.onState(notifier);
   }
 }
 
@@ -78,5 +89,5 @@ abstract class ValueNotifierObserver {
   void onDispose(ValueNotifier notifier) {}
 
   @mustCallSuper
-  void onState(ValueNotifier notifier, Object? message) {}
+  void onState(ValueNotifier notifier) {}
 }

@@ -6,42 +6,39 @@ import '../../unit/domain/unit.dart';
 import 'user.dart';
 part 'session.freezed.dart';
 
+enum SessionError { notFound, expired }
+
+enum WSSessionStatus {
+  ready,
+  connecting,
+  connected,
+  disconnected,
+  disconnectedByAnother,
+}
+
 @freezed
 sealed class Session with _$Session {
   const Session._();
 
+  const factory Session.initial() = InitialSession;
   const factory Session.pending() = PendingSession;
+  const factory Session.logout(SessionError error) = LogoutSession;
 
   @Implements<ISessionUser>()
   const factory Session.welcome({required User user}) = WelcomeSession;
 
   @Implements<ISessionUser>()
-  @Implements<ISessionUnit>()
-  const factory Session.gameReady({required User user, required Unit unit}) =
-      GameReadySession;
-
-  @Implements<ISessionUser>()
-  @Implements<ISessionUnit>()
-  @Implements<ISessionWS>()
-  const factory Session.gameJoined({
+  const factory Session.ws({
     required User user,
     required Unit unit,
-    required WsGameOption gameOption,
-  }) = GameJoinedSession;
-
-  @Implements<ISessionUser>()
-  @Implements<ISessionUnit>()
-  @Implements<ISessionWS>()
-  const factory Session.gameFinished({
-    required User user,
-    required Unit unit,
-    required WsGameOption gameOption,
-  }) = GameFinishedSession;
+    WsGameOption? gameOption,
+    @Default(WSSessionStatus.ready) WSSessionStatus status,
+  }) = WsSession;
 
   factory Session.fromDto(SessionDto dto) {
     final user = User.fromDto(dto.user);
     if (dto.unit != null) {
-      return Session.gameReady(user: user, unit: Unit.fromDto(dto.unit!));
+      return Session.ws(user: user, unit: Unit.fromDto(dto.unit!));
     }
 
     return WelcomeSession(user: user);
@@ -50,12 +47,4 @@ sealed class Session with _$Session {
 
 sealed class ISessionUser implements Session {
   User get user;
-}
-
-sealed class ISessionUnit implements Session {
-  Unit get unit;
-}
-
-sealed class ISessionWS implements Session {
-  WsGameOption get gameOption;
 }
