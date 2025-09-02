@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/logic/session_notifier.dart';
-import 'package:frontend/features/auth/logic/token_notifier.dart';
 import 'package:provider/provider.dart';
 
 class WsStoppedSessionPage extends StatelessWidget {
